@@ -1,0 +1,89 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #1a2a4a;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.Navbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 10px 24px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.Navbar img {
+  max-height: 50px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.content-wrapper {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 80%;
+  flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 35px 30px;
+  gap: 20px;
+}
+
+.welcome {
+  text-align: center;
+}
+
+.welcome h1 {
+  color: #fff;
+  font-size: 35px;
+  font-weight: 800;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.but {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-main {
+  height: 150px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.but button {
+  width: 200px;
+  padding: 9px 0;
+  margin: 12px 10px;
+  background-color: transparent;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  border: 2px solid #fff;
+  border-radius: 25px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  gap: 14px;
+}
+
+.but button:hover {
+  background-color: #fff;
+  color: #1a2a4a;
+}
