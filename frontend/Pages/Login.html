@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VISITALK</title>
+    <link rel="stylesheet" href="../CSS/Login.css" />
+  </head>
+  <body>
+    <!--Navbar-->
+    <div class="Navbar">
+      <div class="img-left">
+        <img src="../../Images/Arrow.png" class="brand" />
+        <a href="../Home/index.html"
+          ><img src="../../Images/Brand.png" class="brand"
+        /></a>
+      </div>
+      <div class="img-right">
+        <img src="../../Images/Setting.png" class="setting" />
+      </div>
+    </div>
+    <div class="form-container">
+      <div class="title">
+        <h1>CHÀO MỪNG BẠN ĐẾN VỚI</h1>
+        <img src="../../Images/Brand.png" class="brand" />
+      </div>
+
+      <!--Nhập thông tin-->
+      <div class="form-group">
+        <!--Tên đăng nhập-->
+        <div class="field">
+          <label for="username">Tên đăng nhập</label>
+          <div class="input-wrapper">
+            <input type="text" id="username" placeholder="" />
+          </div>
+        </div>
+
+        <!--Mật khẩu-->
+        <div class="field">
+          <label for="password">Mật khẩu</label>
+          <div class="input-wrapper">
+            <input type="text" id="password" placeholder="" />
+          </div>
+        </div>
+      </div>
+
+      <!--Lưu tài khoản-->
+      <div class="save-password">
+        <input type="checkbox" id="save-account" />
+        <label for="save-account">Lưu tài khoản</label>
+      </div>
+
+      <!--Nút đăng nhập-->
+      <div class="login-but">
+        <button id="login">Đăng nhập</button>
+      </div>
+
+      <!--Chưa có tài khoản-->
+      <div class="no-account">
+        <h5>Bạn chưa có tài khoản?</h5>
+        <a href="#"><b>Đăng ký ngay</b></a>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
