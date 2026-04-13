@@ -1,0 +1,39 @@
+# ==========================================
+# 1. PYTHON & BACKEND (FastAPI / Flask / AI)
+# ==========================================
+# Thư mục cache của Python (Tự sinh ra khi chạy code)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Môi trường ảo (Chứa hàng nghìn file thư viện nặng, không bao giờ push lên)
+venv/
+env/
+.venv/
+
+# Cấu hình bảo mật và Biến môi trường (CỰC KỲ QUAN TRỌNG - CHỐNG LỘ MẬT KHẨU)
+.env
+*.env
+.env.local
+
+# ==========================================
+# 2. FRONTEND & NODEJS (Dự phòng cho tương lai)
+# ==========================================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ==========================================
+# 3. HỆ ĐIỀU HÀNH & CÔNG CỤ SOẠN THẢO (IDE)
+# ==========================================
+# Thư mục cấu hình của VS Code
+.vscode/
+
+# Thư mục cấu hình của PyCharm / IntelliJ
+.idea/
+
+# File rác của macOS
+.DS_Store
+
+# File rác của Windows
+Thumbs.db
