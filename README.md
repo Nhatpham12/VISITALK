@@ -1,31 +1,170 @@
-Bối cảnh này được hình thành từ sự giao thoa giữa Nhu cầu xã hội cấp thiết và Sự chín muồi của công nghệ mà tôi sử dụng.
-1. Bối cảnh Xã hội: Rào cản giao tiếp (The Communication Gap)
-Đây là động lực chính (The "Why") để phát triển ứng dụng:
-Sự cô lập trong giao tiếp: Cộng đồng người khiếm thính và người nghe nói (hearing people) sống trong hai thế giới ngôn ngữ khác nhau. Đa số người bình thường không biết Ngôn ngữ Ký hiệu (Sign Language).
-Sự thiếu hụt phiên dịch viên: Thuê phiên dịch viên ngôn ngữ ký hiệu rất đắt đỏ và không phải lúc nào cũng khả thi (ví dụ: khi đi mua sắm, hỏi đường, hoặc tình huống y tế khẩn cấp).
-Hạn chế của giải pháp truyền thống: Việc giao tiếp qua giấy bút hoặc gõ tin nhắn trên điện thoại làm mất đi tính tự nhiên, cảm xúc và tốc độ của cuộc hội thoại.
-⇒ Giải pháp: Một WebApp hoạt động như một "phiên dịch viên ảo" 24/7 là cầu nối cần thiết.
-2. Bối cảnh Công nghệ: Sự chuyển dịch sang "Không chạm" & AI (The "How")
-Đây là nền tảng kỹ thuật mà code của tôi đang dựa vào:
-Sự phổ biến của Computer Vision (Thị giác máy tính):
-Trước đây, để nhận diện cử chỉ tay, người ta cần găng tay cảm biến đắt tiền hoặc camera độ sâu (Kinect). Ngày nay, nhờ các thư viện như MediaPipe mà tôi đang dùng có thể nhận diện 21 điểm khớp tay chỉ bằng một camera thường (webcam) trên laptop hoặc điện thoại.
-Khả năng xử lý Real-time (Thời gian thực):
-Trong file volumeHandControl.py, bạn đã tính toán FPS (khung hình trên giây) và thấy tốc độ xử lý rất nhanh. Điều này cho phép dịch thuật diễn ra tức thì, không có độ trễ, tạo cảm giác hội thoại tự nhiên.
-Sự trỗi dậy của AI/Machine Learning:
-Như đã phân tích ở bước trước, thay vì viết hàng ngàn dòng lệnh if/else (như cách kiểm tra ngón tay trong SeperatelyTracking.py), công nghệ AI hiện nay cho phép máy tính "học" hàng nghìn ký hiệu phức tạp với độ chính xác cao.
-3. Tại sao lại là WebApp? (Tính tiếp cận)
-Thay vì làm phần mềm cài đặt (Desktop App) hay Mobile App, xu hướng chuyển sang Web App (chạy trên trình duyệt) vì:
-Không cần cài đặt: Người dùng chỉ cần quét mã QR hoặc truy cập link là dùng được ngay.
-Đa nền tảng: Code Python của bạn (backend) có thể chạy trên server, hoặc mô hình AI có thể chuyển sang TensorFlow.js để chạy trực tiếp trên trình duyệt của người dùng (Client-side), tận dụng sức mạnh của thiết bị cá nhân mà không tốn chi phí server.
-4. Kết nối trực tiếp với Code của bạn
-Chương trình bạn đang viết chính là tầng thu thập dữ liệu (Input Layer) của bối cảnh này:
-HandTrackingModule.py: Là "đôi mắt" của hệ thống, giúp máy tính nhìn thấy bàn tay.
-SeperatelyTracking.py: Là bước đệm để hiểu cấu trúc bàn tay (ngón nào co, ngón nào duỗi).
-volumeHandControl.py: Chứng minh khả năng tương tác người - máy: Cử chỉ tay $\rightarrow$ Hành động máy tính. Trong WebApp dịch thuật, thay vì hành động là "tăng âm lượng", hành động sẽ là "xuất ra văn bản/giọng nói".
-Tóm lại
-Bối cảnh phát sinh của WebApp dịch thuật ngôn ngữ ký hiệu là: Sử dụng công nghệ thị giác máy tính giá rẻ (Webcam + MediaPipe) và Trí tuệ nhân tạo để xóa bỏ rào cản giao tiếp giữa người khiếm thính và cộng đồng, thông qua một nền tảng Web dễ truy cập.
+# 🤟 VISITALK — Ứng Dụng Dịch Ngôn Ngữ Ký Hiệu Thời Gian Thực
 
-Bước tiếp theo bạn có thể làm:
-Để hiện thực hóa bối cảnh này vào dự án của bạn, tôi có thể hướng dẫn bạn:
-"Cách tạo một bộ dữ liệu (Dataset) chuẩn từ webcam để bắt đầu dạy máy tính học bảng chữ cái ngôn ngữ ký hiệu."
+<div align="center">
 
+![VISITALK Banner](Images/banner.png)
+
+**Xóa bỏ rào cản giao tiếp giữa người khiếm thính và cộng đồng**
+
+![HTML](https://img.shields.io/badge/HTML-51.3%25-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-35.9%25-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-12.8%25-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-Computer%20Vision-0097A7?style=flat-square&logo=google&logoColor=white)
+![Python](https://img.shields.io/badge/Python-Backend-3776AB?style=flat-square&logo=python&logoColor=white)
+
+</div>
+
+---
+
+## 📖 Giới Thiệu
+
+**VISITALK** là một WebApp nhận diện và dịch ngôn ngữ ký hiệu theo thời gian thực, hoạt động như một **"phiên dịch viên ảo 24/7"** — không cần cài đặt, không cần thiết bị đặc biệt, chỉ cần camera thông thường trên laptop hoặc điện thoại.
+
+Dự án được xây dựng nhằm giải quyết ba vấn đề cốt lõi:
+
+| Vấn đề | Giải pháp của VISITALK |
+|--------|------------------------|
+| 🚧 Rào cản giao tiếp giữa người khiếm thính và người nghe nói | Dịch thuật tức thì qua camera |
+| 💸 Chi phí thuê phiên dịch viên ngôn ngữ ký hiệu cao | Phiên dịch viên AI miễn phí 24/7 |
+| ✍️ Giao tiếp qua giấy bút mất đi tính tự nhiên | Hội thoại trực tiếp, thời gian thực |
+
+---
+
+## ✨ Tính Năng
+
+- 🎥 **Nhận diện tay thời gian thực** — Phát hiện 21 điểm khớp tay qua webcam thông thường
+- ⚡ **Xử lý tốc độ cao** — Hiển thị FPS, không có độ trễ đáng kể
+- 🌐 **Không cần cài đặt** — Chạy trực tiếp trên trình duyệt
+- 📱 **Đa nền tảng** — Hỗ trợ laptop, máy tính bảng, điện thoại
+- 🔤 **Dịch thuật sang văn bản** — Chuyển cử chỉ tay thành chữ viết
+
+---
+
+## 🏗️ Kiến Trúc Hệ Thống
+
+```
+📷 Webcam Input
+       ↓
+🖐️ MediaPipe (Nhận diện 21 keypoints trên bàn tay)
+       ↓
+🔍 Phân tích cấu trúc ngón tay (co / duỗi)
+       ↓
+🤖 AI / ML Classifier (Nhận diện ký hiệu)
+       ↓
+📝 Text Output / 🔊 Speech Output
+```
+
+---
+
+## 📁 Cấu Trúc Dự Án
+
+```
+VISITALK/
+├── 📂 Images/          # Tài nguyên hình ảnh
+├── 📂 Pages/           # Các trang giao diện WebApp
+│   ├── index.html      # Trang chủ
+│   ├── camera.html     # Trang nhận diện ký hiệu
+│   └── about.html      # Giới thiệu dự án
+├── 📄 README.md
+└── ...
+```
+
+---
+
+## 🛠️ Công Nghệ Sử Dụng
+
+### Frontend
+- **HTML5** — Cấu trúc giao diện
+- **CSS3** — Styling và responsive design
+- **JavaScript** — Tương tác người dùng và kết nối WebAPI
+
+### Computer Vision & AI
+- **MediaPipe Hands** — Nhận diện và theo dõi bàn tay (21 landmarks)
+- **Python** — Xử lý backend và logic nhận diện
+- **Machine Learning** — Phân loại ký hiệu tay
+
+### Các Module Python
+
+| Module | Chức năng |
+|--------|-----------|
+| `HandTrackingModule.py` | "Đôi mắt" của hệ thống — phát hiện bàn tay qua webcam |
+| `SeperatelyTracking.py` | Phân tích trạng thái từng ngón tay (co / duỗi) |
+| `volumeHandControl.py` | Demo tương tác: cử chỉ tay → hành động máy tính |
+
+---
+
+## 🚀 Hướng Dẫn Cài Đặt & Chạy
+
+### Yêu cầu
+- Python 3.8+
+- Webcam
+- Trình duyệt hiện đại (Chrome, Edge, Firefox)
+
+### Cài đặt dependencies
+
+```bash
+pip install mediapipe opencv-python numpy
+```
+
+### Chạy ứng dụng
+
+```bash
+# Clone repository
+git clone https://github.com/Nhatpham12/VISITALK.git
+cd VISITALK
+
+# Chạy module nhận diện tay
+python HandTrackingModule.py
+```
+
+Hoặc mở file `Pages/index.html` trực tiếp trên trình duyệt để trải nghiệm giao diện WebApp.
+
+---
+
+## 🗺️ Lộ Trình Phát Triển
+
+- [x] Module nhận diện bàn tay (MediaPipe)
+- [x] Phân tích trạng thái ngón tay
+- [x] Demo tương tác cử chỉ tay
+- [x] Giao diện WebApp cơ bản
+- [ ] Bộ dataset bảng chữ cái ngôn ngữ ký hiệu Việt Nam
+- [ ] Tích hợp mô hình AI nhận diện ký hiệu
+- [ ] Chuyển đổi sang TensorFlow.js (chạy hoàn toàn trên trình duyệt)
+- [ ] Hỗ trợ Speech-to-Text và Text-to-Speech
+- [ ] Deploy lên cloud
+
+---
+
+## 💡 Bối Cảnh & Động Lực
+
+Dự án được hình thành từ sự giao thoa giữa **nhu cầu xã hội cấp thiết** và **sự chín muồi của công nghệ**:
+
+> *Tại Việt Nam, hàng triệu người khiếm thính đang phải đối mặt với rào cản giao tiếp hằng ngày — khi đi mua sắm, khám bệnh, hay đơn giản là hỏi đường. VISITALK ra đời để là chiếc cầu nối đó.*
+
+Nhờ sự phổ biến của **Computer Vision** (MediaPipe) và khả năng xử lý **thời gian thực** ngay trên trình duyệt, nay có thể xây dựng một phiên dịch viên ngôn ngữ ký hiệu **miễn phí, không cần cài đặt, hoạt động 24/7**.
+
+---
+
+## 🤝 Đóng Góp
+
+Mọi đóng góp đều được chào đón! Nếu bạn muốn cải thiện dự án:
+
+1. Fork repository này
+2. Tạo branch mới: `git checkout -b feature/ten-tinh-nang`
+3. Commit thay đổi: `git commit -m "Thêm tính năng XYZ"`
+4. Push lên branch: `git push origin feature/ten-tinh-nang`
+5. Tạo Pull Request
+
+---
+
+## 📬 Liên Hệ
+
+**Nhat Pham** — [@Nhatpham12](https://github.com/Nhatpham12)
+
+---
+
+<div align="center">
+
+Made with ❤️ để phục vụ cộng đồng người khiếm thính Việt Nam
+
+</div>
