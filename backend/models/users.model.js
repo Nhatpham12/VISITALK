@@ -92,7 +92,7 @@ users.update = (id, data, callback) => {
 users.delete = (id, callback) => {
   db.query(`DELETE FROM users WHERE id = ?`, [id], (err, res) => {
     if (err) return callback(err, null);
-    callBack(
+    callback(
       null,
       result.affectedRows > 0,
       "xóa băng đĩa id = " + id + " thành công",
