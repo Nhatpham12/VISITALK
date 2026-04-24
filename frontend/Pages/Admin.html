@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VISITALK</title>
-    <link rel="stylesheet" href="../CSS/Learning.css" />
+    <link rel="stylesheet" href="../CSS/Admin.css" />
   </head>
   <body>
     <!--Navbar-->
@@ -33,80 +33,48 @@
       /></a>
     </div>
 
-    <!-- Tiêu đề -->
-    <h1 class="title">TỪ ĐIỂN</h1>
-
-    <!-- Bảng từ điển -->
-    <div class="dictionary-table">
-      <!-- Header -->
-      <div class="table-header">
-        <div class="col">Chủ đề</div>
-        <div class="col">Câu</div>
-        <div class="col">Từ</div>
-        <div class="col">Bài hát</div>
-        <div class="col">A-Z</div>
+    <div class="main-content">
+      <div class="admin-profile">
+        <div class="admin-avatar">
+          <img src="../Assets/Images/Personal.png" class="avatar-icon" />
+        </div>
+        <p class="admin-label">QUẢN TRỊ VIÊN</p>
       </div>
-
-      <!-- Body -->
-      <div class="table-body">
-        <!-- Chủ đề -->
-        <div class="col">
-          <ul>
-            <li>Chào hỏi</li>
-            <li>Giao thông</li>
-            <li>Thực phẩm</li>
-            <li>Thiên nhiên</li>
-            <li>Động vật</li>
-            <li>Trang phục</li>
-            <li>Hoạt động</li>
-            <li>Giáo dục</li>
-          </ul>
-        </div>
-
-        <!-- Câu -->
-        <div class="col">
-          <ul>
-            <li>Câu đơn</li>
-            <li>Câu phức</li>
-            <li>Câu nghi vấn</li>
-            <li>Câu cầu khiến</li>
-            <li>Câu cảm thán</li>
-          </ul>
-        </div>
-
-        <!-- Từ -->
-        <div class="col">
-          <ul>
-            <li>Danh từ</li>
-            <li>Động từ</li>
-            <li>Tính từ</li>
-            <li>Trợ từ</li>
-          </ul>
-        </div>
-
-        <!-- Bài hát -->
-        <div class="col">
-          <ul>
-            <li>Bài hát tiếng Việt</li>
-            <li>Bài hát tiếng Anh</li>
-          </ul>
-        </div>
-
-        <!-- A-Z -->
-        <div class="col az-col">
-          <div class="az-grid">
-            <span>A</span><span>J</span><span>S</span> <span>B</span
-            ><span>K</span><span>T</span> <span>C</span><span>L</span
-            ><span>U</span> <span>D</span><span>M</span><span>V</span>
-            <span>E</span><span>N</span><span>W</span> <span>F</span
-            ><span>O</span><span>X</span> <span>G</span><span>P</span
-            ><span>Y</span> <span>H</span><span>Q</span><span>Z</span>
-            <span>I</span><span>R</span>
-          </div>
-        </div>
+      <div class="admin-action">
+        <button class="action-btn">
+          <img src="../Assets/Images/Group 54.png" class="btn-icon" />
+        </button>
+        <button class="action-btn">
+          <img src="../Assets/Images/Group 161.png" class="btn-icon" />
+        </button>
       </div>
     </div>
-    <!--footer-->>
+
+    <div class="table-section">
+      <div class="table-wrapper">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Họ và tên</th>
+              <th>Năm sinh</th>
+              <th>Giới tính</th>
+              <th>Email/SDT</th>
+              <th>Tên đăng nhập</th>
+              <th>Mật khẩu</th>
+              <th>Ngày tạo tài khoản</th>
+              <th>Lần đăng nhập cuối</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!--Dữ liệu database-->
+            <tr class="empty-row">
+              <td colspan="8">Chưa có dữ liệu người dùng</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!--footer-->
     <div class="footer">
       <div class="foot1">
         <h3>HỌC VIÊN CÔNG NGHỆ <br />BƯU CHÍNH VIỄN THÔNG</h3>
@@ -139,6 +107,6 @@
         <img src="../Assets/Images/Brand.png" />
       </div>
     </div>
-    <script src="script.js"></script>
   </body>
+  <script src="../JS/Admin.js"></script>
 </html>

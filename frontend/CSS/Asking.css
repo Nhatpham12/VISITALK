@@ -32,10 +32,10 @@ body {
 
 .Navbar button {
   padding: 10px 50px;
-  border: 2.5px solid #fff;
+  border: 2.5px solid #1a2a4a;
   border-radius: 25px;
-  background-color: #1a2a4a;
-  color: #fff;
+  background-color: #fff;
+  color: #1a2a4a;
   font-size: 15px;
   font-weight: bold;
   cursor: pointer;
@@ -45,8 +45,8 @@ body {
 }
 
 .Navbar button:hover {
-  background-color: #fff;
-  color: #1a2a4a;
+  background-color: #1a2a4a;
+  color: #fff;
 }
 
 .main-content {

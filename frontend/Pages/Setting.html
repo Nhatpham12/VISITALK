@@ -36,6 +36,45 @@
         <div class="Intro">
           <h1>CÀI ĐẶT</h1>
         </div>
+
+        <div class="settings-list">
+
+          <div class="setting-row">
+              <span class="setting-label">Độ sáng màn hình</span>
+              <div class="slider-wrapper">
+                <span class="slide-dot"></span>
+                <input type="range" class="setting-slider" id="brightness-slider" min="0" max="100" value="50">
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <span class="setting-label">Âm lượng</span>
+              <div class="slider-wrapper">
+                <span class="slide-dot"></span>
+                <input type="range" class="setting-slider" id="volume-slider" min="0" max="100" value="50">
+              </div>
+            </div>
+
+            <div class="setting-row">
+                <span class="setting-label">Chất lượng Video</span>
+                <div class="quality-option">
+                  <button class="quality-btn" onclick="setVideoQuality(this)">480p</button>
+                  <button class="quality-btn" onclick="setVideoQuality(this)">720p</button>
+                  <button class="quality-btn" onclick="setVideoQuality(this)">1080p</button>
+                </div>
+            </div>
+          </div>
+          
+          <div class="card-footer">
+            <div class="card-footer-icons">
+              <img src="../Assets/Images/Phone.png" class="class-icon" alt="Phone"/>
+              <img src="../Assets/Images/Chat.png" class="class-icon" alt="Chat"/>
+            </div>
+            <div class="card-footer-logo">
+              <img src="../Assets/Images/Brand.png" class="card-footer-brand" alt="VISITALK"/>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!--footer-->
