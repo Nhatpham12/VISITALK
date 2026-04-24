@@ -22,7 +22,7 @@ const getById = (req, res) => {
 
 const update = (req, res) => {
   const { id } = req.params;
-  const { full_name, email, avatar_url } = res.body;
+  const { full_name, email, avatar_url } = req.body;
 
   if (!full_name) {
     return res.status(400).json({ message: "full name không được để trống" });

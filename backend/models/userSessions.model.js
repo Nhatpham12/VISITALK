@@ -44,6 +44,16 @@ users_sessions.getActiveSession = (users_id, callback) => {
   });
 };
 
+users_sessions.getActiveSessionById = (session_id, callback) => {
+  const sqlString = `
+    SELECT * FROM users_sessions
+    WHERE sessions_id = ? AND logout_at IS NULL`;
+  db.query(sqlString, [sessions_id], (err, result) => {
+    if (err) return callback(err, null);
+    callback(null, result[0] || null);
+  });
+};
+
 // tạo phiên mới khi user đăng nhập
 users_sessions.insert = (data, callback) => {
   const sqlString = `
