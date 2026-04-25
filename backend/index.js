@@ -8,10 +8,23 @@ const app = express();
 
 app.use(helmet());
 
+// Cho phép cả file:// (origin: null) lẫn localhost khi dev
+const allowedOrigins = [
+  process.env.CLIENT_URL || "http://localhost:3000",
+  "null", // file:// protocol
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: (origin, callback) => {
+      // Cho phép nếu không có origin (Postman) hoặc nằm trong danh sách
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS: origin không được phép"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),
@@ -25,9 +38,8 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: "quá nhiều request, vui lòng thử lại sau" },
+  message: { message: "Quá nhiều request, vui lòng thử lại sau" },
 });
-
 app.use(globalLimiter);
 
 const authLimiter = rateLimit({
@@ -60,12 +72,12 @@ app.use((err, req, res, next) => {
   console.error(`[ERROR] ${err.stack}`);
   res
     .status(err.status || 500)
-    .json({ message: err.message || "Lỗi server không xác định," });
+    .json({ message: err.message || "Lỗi server không xác định" });
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server đang chạy tại https://localhost:${PORT}`);
+  console.log(`Server đang chạy tại http://localhost:${PORT}`);
 });
 
 module.exports = app;
