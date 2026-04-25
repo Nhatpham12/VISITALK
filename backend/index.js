@@ -11,6 +11,8 @@ app.use(helmet());
 // Cho phép cả file:// (origin: null) lẫn localhost khi dev
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:3000",
+  "http://localhost:5500", // Live Server
+  "http://127.0.0.1:5500", // Live Server (IP)
   "null", // file:// protocol
 ];
 
