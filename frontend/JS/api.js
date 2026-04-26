@@ -1,11 +1,6 @@
-// ============================================================
-// api.js — Đặt vào thư mục JS/, nhúng vào MỌI trang HTML
-// <script src="../JS/api.js"></script>
-// ============================================================
-
 const BASE_URL = "http://127.0.0.1:5000/api";
 
-// ─── Quản lý token & user ────────────────────────────────────
+// Quản lý token & user
 const Auth = {
   saveToken: (t) => sessionStorage.setItem("token", t),
   getToken: () => sessionStorage.getItem("token"),
@@ -25,7 +20,7 @@ const Auth = {
   },
 };
 
-// ─── Hàm gọi API trung tâm ───────────────────────────────────
+// Hàm gọi API trung tâm
 async function callAPI(
   endpoint,
   method = "GET",
@@ -64,7 +59,7 @@ async function callAPI(
   }
 }
 
-// ─── Auth API ────────────────────────────────────────────────
+//  Auth API
 const AuthAPI = {
   async register(username, full_name, password, email) {
     return callAPI(
@@ -94,7 +89,7 @@ const AuthAPI = {
   },
 };
 
-// ─── Users API ───────────────────────────────────────────────
+//Users API
 const UsersAPI = {
   async getAll() {
     return callAPI("/users");
@@ -113,7 +108,7 @@ const UsersAPI = {
   },
 };
 
-// ─── Lessons API ─────────────────────────────────────────────
+// Lessons API
 const LessonsAPI = {
   async getAll() {
     return callAPI("/lessons");
