@@ -44,7 +44,7 @@ users_sessions.getActiveSession = (users_id, callback) => {
   });
 };
 
-users_sessions.getActiveSessionById = (session_id, callback) => {
+users_sessions.getActiveSessionById = (sessions_id, callback) => {
   const sqlString = `
     SELECT * FROM users_sessions
     WHERE sessions_id = ? AND logout_at IS NULL`;
