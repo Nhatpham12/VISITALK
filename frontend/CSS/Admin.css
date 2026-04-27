@@ -138,10 +138,11 @@ body {
   border: 2.5px solid #1a2a4a;
   border-radius: 18px;
   overflow: hidden;
-  max-height: 480px;
+  max-height: 600px;
   overflow-y: auto;
   overflow-x: auto;
   padding-top: 10px;
+  min-height: 600px;
 }
 
 .table-wrapper::-webkit-scrollbar {
@@ -218,7 +219,7 @@ body {
   border-right: none;
 }
 
-.empty-row td {
+.user-row td {
   padding: 40px 16px;
   text-align: center;
   color: #aab5c8;
