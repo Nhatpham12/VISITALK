@@ -1,16 +1,8 @@
 const db = require("../common/connect");
 
-const users_sessions = (users_sessions) => {
-  // this.sessions_id = users_sessions.sessions_id;
-  // this.users_id    = users_sessions.users_id;
-  // this.login_at    = users_sessions.login_at;
-  // this.logout_at   = users_sessions.logout_at;
-  // this.duration    = users_sessions.duration;
-  // this.ip_address  = users_sessions.ip_address;
-  // this.device      = users_sessions.device;
-};
+const users_sessions = {};
 
-// lấy tất cả phiên của 1 user
+// Lấy tất cả phiên của 1 user
 users_sessions.getByUserId = (users_id, callback) => {
   const sqlString = `
     SELECT * FROM users_sessions 
@@ -22,7 +14,7 @@ users_sessions.getByUserId = (users_id, callback) => {
   });
 };
 
-// lấy 1 phiên theo sessions_id
+// Lấy 1 phiên theo sessions_id
 users_sessions.getById = (sessions_id, callback) => {
   const sqlString = `SELECT * FROM users_sessions WHERE sessions_id = ?`;
   db.query(sqlString, [sessions_id], (err, result) => {
@@ -31,7 +23,7 @@ users_sessions.getById = (sessions_id, callback) => {
   });
 };
 
-// lấy phiên đang hoạt động (chưa logout) của user
+// Lấy phiên đang hoạt động (chưa logout) mới nhất của user
 users_sessions.getActiveSession = (users_id, callback) => {
   const sqlString = `
     SELECT * FROM users_sessions 
@@ -44,6 +36,7 @@ users_sessions.getActiveSession = (users_id, callback) => {
   });
 };
 
+// Lấy phiên đang hoạt động theo sessions_id
 users_sessions.getActiveSessionById = (sessions_id, callback) => {
   const sqlString = `
     SELECT * FROM users_sessions
@@ -54,34 +47,40 @@ users_sessions.getActiveSessionById = (sessions_id, callback) => {
   });
 };
 
-// tạo phiên mới khi user đăng nhập
+// Tạo phiên mới khi user đăng nhập
+// FIX: chuẩn hóa ip_address (loại bỏ ::ffff:) và giới hạn device 100 ký tự
 users_sessions.insert = (data, callback) => {
+  const rawIp = (data.ip_address || "").replace("::ffff:", "").trim();
+  const ip_address = rawIp.length > 0 ? rawIp.substring(0, 45) : null;
+  const device = data.device ? data.device.substring(0, 100) : null;
+
   const sqlString = `
     INSERT INTO users_sessions (users_id, ip_address, device) 
     VALUES (?, ?, ?)`;
-  const values = [data.users_id, data.ip_address || null, data.device || null];
+  const values = [data.users_id, ip_address, device];
+
   db.query(sqlString, values, (err, result) => {
     if (err) return callback(err, null);
+    // FIX: bảng dùng UUID tự sinh nên insertId = 0, kiểm tra affectedRows
     callback(null, result.affectedRows > 0);
   });
 };
 
-// đóng phiên khi user đăng xuất
-// tự tính duration = logout_at - login_at (giây)
+// Đóng phiên khi user đăng xuất — tự tính duration (giây)
 users_sessions.closeSession = (sessions_id, callback) => {
   const sqlString = `
     UPDATE users_sessions
     SET logout_at = NOW(),
         duration  = TIMESTAMPDIFF(SECOND, login_at, NOW())
-    WHERE sessions_id = ?`;
+    WHERE sessions_id = ? AND logout_at IS NULL`;
   db.query(sqlString, [sessions_id], (err, result) => {
     if (err) return callback(err, null);
     callback(null, result.affectedRows > 0);
   });
 };
 
-// lấy duration sau khi đóng phiên
-// dùng để cộng vào users.total_online_time
+// Lấy duration sau khi đóng phiên
+// Dùng để cộng vào users.total_online_time
 users_sessions.getDuration = (sessions_id, callback) => {
   const sqlString = `SELECT duration FROM users_sessions WHERE sessions_id = ?`;
   db.query(sqlString, [sessions_id], (err, result) => {
@@ -90,7 +89,7 @@ users_sessions.getDuration = (sessions_id, callback) => {
   });
 };
 
-// xóa tất cả phiên của 1 user
+// Xóa tất cả phiên của 1 user (admin)
 users_sessions.deleteByUserId = (users_id, callback) => {
   const sqlString = `DELETE FROM users_sessions WHERE users_id = ?`;
   db.query(sqlString, [users_id], (err, result) => {

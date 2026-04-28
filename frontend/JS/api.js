@@ -2,18 +2,18 @@ const BASE_URL = "http://127.0.0.1:5000/api";
 
 // Quản lý token & user
 const Auth = {
-  saveToken: (t) => sessionStorage.setItem("token", t),
-  getToken: () => sessionStorage.getItem("token"),
-  saveUser: (u) => sessionStorage.setItem("user", JSON.stringify(u)),
+  saveToken: (t) => localStorage.setItem("token", t),
+  getToken: () => localStorage.getItem("token"),
+  saveUser: (u) => localStorage.setItem("user", JSON.stringify(u)),
   getUser: () => {
-    const u = sessionStorage.getItem("user");
+    const u = localStorage.getItem("user");
     return u ? JSON.parse(u) : null;
   },
   clear: () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   },
-  isLoggedIn: () => !!sessionStorage.getItem("token"),
+  isLoggedIn: () => !!localStorage.getItem("token"),
   isAdmin: () => {
     const u = Auth.getUser();
     return u?.u_role === "admin";

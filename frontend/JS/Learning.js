@@ -1,4 +1,4 @@
-if (!Auth.isLoggedIn()) window.location.href = "../Pages/Login.html";
+// if (!Auth.isLoggedIn()) window.location.href = "../Pages/Login.html";
 
 let allLessons = [];
 
