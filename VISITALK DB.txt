@@ -1,0 +1,45 @@
+CREATE DATABASE visitalk_db;
+USE visitalk_db;
+
+CREATE TABLE users (
+    id            CHAR(36)      PRIMARY KEY NOT NULL DEFAULT (UUID()),
+    username      VARCHAR(50)   UNIQUE NOT NULL,
+    full_name     VARCHAR(100)  NOT NULL,
+    password_hash VARCHAR(255)  NOT NULL,
+    u_role        ENUM('user','admin') DEFAULT 'user',
+    u_status      ENUM('active','inactive') DEFAULT 'active',
+    email         VARCHAR(100)  UNIQUE NULL,
+    last_login    DATETIME      NULL,
+    created_at    DATETIME      DEFAULT CURRENT_TIMESTAMP,
+    avatar_url    VARCHAR(255)  NULL,
+    last_seen     DATETIME      NULL,
+    total_online_time INT       DEFAULT 0
+);
+
+CREATE TABLE lessons (
+    les_id   CHAR(36)      PRIMARY KEY NOT NULL DEFAULT (UUID()),
+    title    VARCHAR(100)  NOT NULL,
+    img_url  VARCHAR(255)  NULL,
+    content  TEXT          NULL,
+    meaning  VARCHAR(255)  NULL
+);
+
+CREATE TABLE access_to (
+    users_id    CHAR(36) NOT NULL,
+    les_id      CHAR(36) NOT NULL,
+    accessed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (users_id, les_id),
+    FOREIGN KEY (users_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (les_id)   REFERENCES lessons(les_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE users_sessions (
+    sessions_id CHAR(36)     PRIMARY KEY DEFAULT (UUID()),
+    users_id    CHAR(36)     NOT NULL,
+    login_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    logout_at   DATETIME     NULL,
+    duration    INT          DEFAULT 0,
+    ip_address  VARCHAR(45)  NULL,
+    device      VARCHAR(100) NULL,
+    FOREIGN KEY (users_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
