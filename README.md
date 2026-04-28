@@ -10,7 +10,7 @@
 ![CSS](https://img.shields.io/badge/CSS-35.9%25-1572B6?style=flat-square&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-12.8%25-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
 ![MediaPipe](https://img.shields.io/badge/MediaPipe-Computer%20Vision-0097A7?style=flat-square&logo=google&logoColor=white)
-![Python](https://img.shields.io/badge/Python-Backend-3776AB?style=flat-square&logo=python&logoColor=white)
+![NodeJs](https://img.shields.io/badge/NodeJs-Backend-3776AB?style=flat-square&logo=python&logoColor=white)
 
 </div>
 
@@ -116,6 +116,8 @@ pip install -r requirements.txt
 git clone https://github.com/Nhatpham12/VISITALK.git
 cd VISITALK
 
+# chạy backend
+cd backend -> node index.js
 # Chạy module nhận diện tay
 python HandTrackingModule.py
 ```
@@ -130,6 +132,7 @@ Hoặc mở file `Pages/index.html` trực tiếp trên trình duyệt để tr�
 - [x] Phân tích trạng thái ngón tay
 - [x] Demo tương tác cử chỉ tay
 - [x] Giao diện WebApp cơ bản
+- [x] File DataCollector để thu thập dataset ngôn ngữ ký hiệu
 - [ ] Bộ dataset bảng chữ cái ngôn ngữ ký hiệu Việt Nam
 - [ ] Chuyển đổi sang TensorFlow.js (chạy hoàn toàn trên trình duyệt)
 - [ ] Deploy lên cloud
