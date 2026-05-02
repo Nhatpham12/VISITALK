@@ -1,0 +1,58 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 30px 20px;
+  align-items: flex-start;
+  width: 100%;
+  justify-content: center;
+  margin: auto;
+}
+
+/*wrapper*/
+.content-wrapper-home {
+  display: flex;
+  flex-direction: column;
+  color: #1a2a4a;
+  padding: 15px 15px;
+  margin: 15px 15px;
+}
+
+.content-wrapper-home .f1 {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 10px;
+}
+.content-wrapper-home .left {
+  flex-direction: column;
+  padding: 20px;
+}
+
+.content-wrapper-home .left p {
+  max-width: 600px;
+  font-size: 20px;
+  margin: 15px;
+}
+.content-wrapper-home .left img {
+  max-width: 300px;
+}
+
+.content-wrapper-home .right img {
+  max-width: 500px;
+}

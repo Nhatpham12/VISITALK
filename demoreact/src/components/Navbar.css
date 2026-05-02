@@ -1,0 +1,36 @@
+/*Nav*/
+.Navbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 10px 24px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.Navbar img {
+  max-height: 50px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.Navbar button {
+  padding: 10px 50px;
+  border: 2.5px solid #1a2a4a;
+  border-radius: 25px;
+  background-color: #fff;
+  color: #1a2a4a;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.Navbar button:hover {
+  background-color: #1a2a4a;
+  color: #fff;
+}

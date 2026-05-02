@@ -1,0 +1,26 @@
+/* Nội dung MỚI dành cho index.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    "Segoe UI", sans-serif; /* Bạn có thể đổi sang font chữ dự án của bạn */
+  background-color: #fff;
+  overflow-x: hidden;
+}
+
+/* Bỏ gạch chân cho các thẻ Link (thẻ a) trong React */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
