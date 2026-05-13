@@ -12,7 +12,7 @@ body {
   min-height: 100vh;
 }
 
-.main-content {
+.personal-page .main-content {
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -23,7 +23,7 @@ body {
   margin: auto;
 }
 
-.content-wrapper {
+.personal-page .content-wrapper {
   background-color: #fff;
   border: 7px solid #1a2a4a;
   border-radius: 25px;
@@ -31,7 +31,7 @@ body {
   width: 600px;
 }
 
-.content-wrapper h1 {
+.personal-page .content-wrapper h1 {
   font-size: 40px;
   font-weight: 800;
   color: #1a2a4a;
@@ -40,22 +40,23 @@ body {
   letter-spacing: 1px;
 }
 
-.field {
+.personal-page .field {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
   gap: 12px;
 }
 
-.field label {
+.personal-page .form-group .field label {
   font-size: 14px;
+  font-weight: 600;
   color: #1a2a4a;
   min-width: 200px;
   text-align: right;
   white-space: nowrap;
 }
 
-.input-wrapper input {
+.personal-page .input-wrapper input {
   border: 2px solid #1a2a4a;
   border-radius: 20px;
   padding: 7px 16px;
@@ -66,7 +67,7 @@ body {
   color: #1a2a4a;
 }
 
-.right-panel {
+.personal-page .right-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -74,21 +75,21 @@ body {
   padding-top: 8px;
 }
 
-.avatar {
+.personal-page .avatar {
   width: 180px;
   height: 210px;
   background-color: #1a2a4a;
   border-radius: 20px;
 }
 
-.change-del-avt {
+.personal-page .change-del-avt {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
 }
 
-.change-del-avt button {
+.personal-page .change-del-avt button {
   background: none;
   border: none;
   color: #1a2a4a;
@@ -97,15 +98,15 @@ body {
   padding: 2px 0;
 }
 
-.change-del-avt button:hover {
+.personal-page .change-del-avt button:hover {
   text-decoration: underline;
 }
 
-.change-inf {
+.personal-page .change-inf {
   margin-top: 8px;
 }
 
-.change-inf button {
+.personal-page .change-inf button {
   border: 2px solid #1a2a4a;
   border-radius: 20px;
   background-color: #fff;
@@ -117,16 +118,16 @@ body {
   white-space: nowrap;
 }
 
-.change-inf button:hover {
+.personal-page .change-inf button:hover {
   background-color: #1a2a4a;
   color: #fff;
 }
 
-.sign-out {
+.personal-page .sign-out {
   margin-top: -2px;
 }
 
-.sign-out button {
+.personal-page .sign-out button {
   border: 2px solid #1a2a4a;
   border-radius: 20px;
   background-color: #fff;
@@ -138,7 +139,7 @@ body {
   white-space: nowrap;
 }
 
-.sign-out button:hover {
+.personal-page .sign-out button:hover {
   background-color: #1a2a4a;
   color: #fff;
 }

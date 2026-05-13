@@ -12,7 +12,7 @@ body {
   min-height: 100vh;
 }
 
-.title {
+.learning-title {
   text-align: center;
   font-size: 48px;
   font-weight: 800;
@@ -26,13 +26,15 @@ body {
   border: 3px solid black;
   border-radius: 15px;
   overflow: hidden;
-  margin: 0 40px 40px 40px;
+  margin: 0 auto 40px;
+  max-width: 900px;
+  width: 100%;
 }
 
 /* Header */
 .table-header {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   border-bottom: 2px solid black;
 }
 
@@ -52,12 +54,12 @@ body {
 /* Body */
 .table-body {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .table-body .col {
   padding: 18px 16px;
-  border-right: 1.5px solid black;
+  border-right: 1.5px solid #1a2a4a;
   text-align: center;
   vertical-align: center;
 }
@@ -77,7 +79,7 @@ body {
 .col ul li {
   font-size: 14px;
   font-weight: 500;
-  color: #333333;
+  color: #1a2a4a;
   cursor: pointer;
 }
 

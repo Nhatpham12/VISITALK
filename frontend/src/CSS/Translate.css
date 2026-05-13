@@ -23,6 +23,7 @@ body {
   padding: 24px;
   width: 100%;
   background-color: #1a2a4a;
+  min-width: 100%;
 }
 
 .translate-page .content-wrapper {
@@ -32,6 +33,8 @@ body {
   border-radius: 18px;
   outline: 6px solid #1a2a4a;
   padding: 20px;
+  min-height: 600px;
+  min-width: 1000px;
 }
 
 .translate-page .form-group {

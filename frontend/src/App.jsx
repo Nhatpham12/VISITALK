@@ -13,6 +13,9 @@ import Signup from "./pages/Signup";
 import Termofser from "./pages/Termofser";
 import Translate from "./pages/Translate";
 import Welcome from "./pages/Welcome";
+import Greeting from "./pages/Greeting";
+import Alphabet from "./pages/Alphabet";
+import Numbers from "./pages/Numbers";
 
 function App() {
   return (
@@ -32,6 +35,9 @@ function App() {
         <Route path="/termofser" element={<Termofser />} />
         <Route path="/translate" element={<Translate />} />
         <Route path="/welcome" element={<Welcome />} />
+        <Route path="/learning/greeting" element={<Greeting />} />
+        <Route path="/learning/alphabet" element={<Alphabet />} />
+        <Route path="/learning/numbers" element={<Numbers />} />
       </Routes>
     </BrowserRouter>
   );

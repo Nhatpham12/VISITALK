@@ -88,44 +88,45 @@ body {
   object-fit: contain;
 }
 
-.admin-page.table-section {
+.admin-page .table-section {
   width: 100%;
   max-width: 1200px;
   border: 2.5px solid #1a2a4a;
   border-radius: 20px;
   margin: -15px auto 50px auto;
+  min-height: 1200px;
 }
 
-.admin-page.table-wrapper {
+.admin-page .table-wrapper {
   border: 2.5px solid #1a2a4a;
   border-radius: 18px;
   overflow: hidden;
-  max-height: 600px;
+  max-height: 1200px;
   overflow-y: auto;
   overflow-x: auto;
   padding-top: 10px;
-  min-height: 600px;
+  min-height: 1200px;
 }
 
-.admin-page.table-wrapper::-webkit-scrollbar {
+.admin-page .table-wrapper::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 
-.admin-page.table-wrapper::-webkit-scrollbar-track {
+.admin-page .table-wrapper::-webkit-scrollbar-track {
   background: #f0f4fa;
 }
 
-.admin-page.table-wrapper::-webkit-scrollbar-thumb {
+.admin-page .table-wrapper::-webkit-scrollbar-thumb {
   background: #1a2a4a;
   border-radius: 10px;
 }
 
-.admin-page.table-wrapper::-webkit-scrollbar-thumb:hover {
+.admin-page .table-wrapper::-webkit-scrollbar-thumb:hover {
   background: #2d4a80;
 }
 
-.admin-page.table-wrapper {
+.admin-page .table-wrapper {
   scrollbar-width: thin;
   scrollbar-color: #1a2a4a #f0f4fa;
 }
@@ -135,6 +136,7 @@ body {
   border-collapse: separate;
   border-spacing: 6px 0;
   min-width: 900px;
+  min-height: 1200px;
 }
 
 .admin-page .user-table thead {

@@ -2,47 +2,34 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../CSS/Learning.css";
+import { Link } from "react-router-dom";
 
 const Learning = () => {
   return (
     <>
       <Navbar />
 
-      <h1 className="title">TỪ ĐIỂN</h1>
+      <h1 className="learning-title">TỪ ĐIỂN</h1>
       <div className="dictionary-table">
         <div className="table-header">
           <div className="col">Chủ đề</div>
-          <div className="col">Câu</div>
-          <div className="col">Từ</div>
-          <div className="col">Bài hát</div>
-          <div className="col">A-Z</div>
+          <div className="col">
+            <Link to="/learning/alphabet">A-Z</Link>
+          </div>
+          <div className="col">
+            <Link to="/learning/numbers">Số tự nhiên</Link>
+          </div>
         </div>
 
         <div className="table-body">
           <div className="col">
             <ul>
-              <li>Chào hỏi</li>
+              <Link to="/learning/greeting">
+                <li>Chào hỏi</li>
+              </Link>
               <li>Giao thông</li>
             </ul>
           </div>
-          <div className="col">
-            <ul>
-              <li>Câu đơn</li>
-              <li>Câu phức</li>
-            </ul>
-          </div>
-          <div className="col">
-            <ul>
-              <li>Danh từ</li>
-              <li>Động từ</li>
-            </ul>
-          </div>
-          <div className="col">
-            <ul>
-              <li>Bài hát tiếng Việt</li>
-            </ul>
-          </div>
-
           <div className="col az-col">
             <div className="az-grid">
               <span>A</span>
@@ -72,6 +59,15 @@ const Learning = () => {
               <span>Y</span>
               <span>Z</span>
             </div>
+          </div>
+          <div className="col num-col">
+            <ul>
+              <li>1-10</li>
+              <li>11-20</li>
+              <li>21-30</li>
+              <li>31-40</li>
+              <li>41-50</li>
+            </ul>
           </div>
         </div>
       </div>
