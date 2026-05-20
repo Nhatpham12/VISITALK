@@ -91,6 +91,8 @@ const login = (req, res) => {
                 email: user.email,
                 u_role: user.u_role,
                 avatar_url: user.avatar_url,
+                dob: user.dob,
+                gender: user.gender,
               },
             });
           });
