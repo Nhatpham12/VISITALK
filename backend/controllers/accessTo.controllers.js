@@ -11,8 +11,8 @@ const getByUserId = (req, res) => {
 
 // Lấy tất cả user đã truy cập 1 bài học — chỉ admin
 const getByLessonId = (req, res) => {
-  const { lessonId } = req.params;
-  accessTo.getByLessonId(lessonId, (err, result) => {
+  const { les_id } = req.params;
+  accessTo.getByLessonId(les_id, (err, result) => {
     if (err) return res.status(500).json({ message: "Lỗi server" });
     res.status(200).json(result);
   });

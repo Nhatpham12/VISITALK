@@ -22,7 +22,7 @@ users.getById = (id, callback) => {
     FROM users WHERE id = ?`;
   db.query(sqlString, [id], (err, result) => {
     if (err) return callback(err, null);
-    callback(null, result[0] || null); // FIX: result[0]
+    callback(null, result[0] || null);
   });
 };
 
@@ -31,7 +31,7 @@ users.getByUsername = (username, callback) => {
   const sqlString = `SELECT * FROM users WHERE username = ?`;
   db.query(sqlString, [username], (err, result) => {
     if (err) return callback(err, null);
-    callback(null, result[0] || null); // FIX: result[0]
+    callback(null, result[0] || null);
   });
 };
 
@@ -40,7 +40,7 @@ users.getByEmail = (email, callback) => {
   const sqlString = `SELECT * FROM users WHERE email = ?`;
   db.query(sqlString, [email], (err, result) => {
     if (err) return callback(err, null);
-    callback(null, result[0] || null); // FIX: result[0]
+    callback(null, result[0] || null);
   });
 };
 
@@ -75,11 +75,11 @@ users.update = (id, data, callback) => {
   });
 };
 
-// Xóa user — FIX: đổi tham số res → result
+// Xóa user
 users.delete = (id, callback) => {
   db.query(`DELETE FROM users WHERE id = ?`, [id], (err, result) => {
     if (err) return callback(err, null);
-    callback(null, result.affectedRows > 0); // FIX: result thay vì res
+    callback(null, result.affectedRows > 0);
   });
 };
 

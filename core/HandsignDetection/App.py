@@ -7,7 +7,7 @@ from cvzone.ClassificationModule import Classifier
 
 # Khởi tạo Webcam và Detector
 cap = cv2.VideoCapture(0)
-detector = HandDetector(maxHands=1)
+detector = HandDetector(maxHands=2)
 
 import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
