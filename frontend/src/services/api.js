@@ -1,6 +1,6 @@
 // frontend/src/services/api.js
 
-const API_BASE = import.meta.env.VITE_API_URL || "/api";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 const getToken = () => localStorage.getItem("access_token");
 
@@ -33,18 +33,17 @@ const apiCall = async (endpoint, options = {}) => {
 
 export const authService = {
   register: (data) =>
-    apiCall("/auth/signup", {
-      // ⚠️ Cần sửa thành "/api/auth/signup"? Xem bên dưới
+    apiCall("/auth/register", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
   // ✅ SỬA LẠI: thêm "/api" phía trước
   login: (username, password) =>
-    apiCall("/api/auth/login", {
+    apiCall("/auth/login", {
       // 👈 ĐÃ SỬA
       method: "POST",
-      body: JSON.stringify({ username, hashedPassword: password }),
+      body: JSON.stringify({ username, password }),
     }),
 
   logout: () => apiCall("/api/auth/logout", { method: "POST" }), // 👈 SỬA

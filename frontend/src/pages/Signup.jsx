@@ -44,7 +44,7 @@ const Signup = () => {
         dob,
         email,
         username,
-        hashedpassword: password, // backend nhận hashedPassword
+        password, // backend nhận hashedPassword
       });
       // Đăng ký xong → về trang login
       navigate("/login");
