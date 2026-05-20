@@ -1,4 +1,14 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+// frontend/src/App.jsx
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import { useContext } from "react";
+import { AuthProvider, AuthContext } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Learning from "./pages/Learning";
 import Login from "./pages/Login";
@@ -17,29 +27,141 @@ import Greeting from "./pages/Greeting";
 import Alphabet from "./pages/Alphabet";
 import Numbers from "./pages/Numbers";
 
+// Guard ngược: đã login thì không vào /login /signup /welcome được nữa
+function PublicOnlyRoute({ children }) {
+  const { user, loading } = useContext(AuthContext);
+  const location = useLocation();
+  if (loading) return null;
+  return user ? (
+    <Navigate to={location.state?.from || "/"} replace />
+  ) : (
+    children
+  );
+}
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/learning" element={<Learning />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/personal" element={<Personal />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/asking" element={<Asking />} />
-        <Route path="/introduce" element={<Introduce />} />
-        <Route path="/report" element={<Report />} />
-        <Route path="/securitypolicy" element={<Securitypolicy />} />
-        <Route path="/setting" element={<Setting />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/termofser" element={<Termofser />} />
-        <Route path="/translate" element={<Translate />} />
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/learning/greeting" element={<Greeting />} />
-        <Route path="/learning/alphabet" element={<Alphabet />} />
-        <Route path="/learning/numbers" element={<Numbers />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public — ai cũng xem được */}
+          <Route path="/" element={<Home />} />
+          <Route path="/introduce" element={<Introduce />} />
+          <Route path="/securitypolicy" element={<Securitypolicy />} />
+          <Route path="/termofser" element={<Termofser />} />
+
+          {/* Chỉ khi CHƯA đăng nhập */}
+          <Route
+            path="/login"
+            element={
+              <PublicOnlyRoute>
+                <Login />
+              </PublicOnlyRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicOnlyRoute>
+                <Signup />
+              </PublicOnlyRoute>
+            }
+          />
+          <Route
+            path="/welcome"
+            element={
+              <PublicOnlyRoute>
+                <Welcome />
+              </PublicOnlyRoute>
+            }
+          />
+
+          {/* Cần đăng nhập */}
+          <Route
+            path="/personal"
+            element={
+              <ProtectedRoute>
+                <Personal />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/setting"
+            element={
+              <ProtectedRoute>
+                <Setting />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/asking"
+            element={
+              <ProtectedRoute>
+                <Asking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/translate"
+            element={
+              <ProtectedRoute>
+                <Translate />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/report"
+            element={
+              <ProtectedRoute>
+                <Report />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning"
+            element={
+              <ProtectedRoute>
+                <Learning />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning/greeting"
+            element={
+              <ProtectedRoute>
+                <Greeting />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning/alphabet"
+            element={
+              <ProtectedRoute>
+                <Alphabet />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning/numbers"
+            element={
+              <ProtectedRoute>
+                <Numbers />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Chỉ admin */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

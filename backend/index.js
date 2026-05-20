@@ -11,9 +11,17 @@ app.use(helmet());
 // Cho phép cả file:// (origin: null) lẫn localhost khi dev
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:3000",
-  "http://localhost:5500", // Live Server
-  "http://127.0.0.1:5500", // Live Server (IP)
-  "null", // file:// protocol
+
+  // React Vite
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+
+  // React CRA
+  "http://localhost:3000",
+
+  // Live Server
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
 ];
 
 app.use(
@@ -77,7 +85,7 @@ app.use((err, req, res, next) => {
     .json({ message: err.message || "Lỗi server không xác định" });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server đang chạy tại http://localhost:${PORT}`);
 });
