@@ -24,6 +24,10 @@ body {
   padding: 10px 24px;
   height: 60px;
   flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 .Navbar2 img {
