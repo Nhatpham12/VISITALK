@@ -91,6 +91,7 @@ const Signup = () => {
           {[
             { id: "fullname", label: "Họ và tên", type: "text" },
             { id: "dob", label: "Ngày tháng năm sinh", type: "text" },
+            { id: "gender", label: "Giới tính", type: "text" },
             { id: "email", label: "Email", type: "email" },
             { id: "username", label: "Tên đăng nhập", type: "text" },
             { id: "password", label: "Mật khẩu", type: "password" },
