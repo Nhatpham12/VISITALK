@@ -2,16 +2,17 @@
 
 <div align="center">
 
-![VISITALK Banner](./frontend/Assets/Images/Brand.png)
+![VISITALK Banner](./frontend/public/Assets/Images/Brand.png)
 
 **Xóa bỏ rào cản giao tiếp giữa người khiếm thính và cộng đồng**
 
-![JavaScript](https://img.shields.io/badge/JavaScript-70%25-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
-![CSS](https://img.shields.io/badge/CSS-26.6%25-1572B6?style=flat-square&logo=css3&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.2%25-3776AB?style=flat-square&logo=python&logoColor=white)
-![React](https://img.shields.io/badge/React-18+-61DAFB?style=flat-square&logo=react&logoColor=black)
+![JavaScript](https://img.shields.io/badge/JavaScript-72.9%25-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![CSS](https://img.shields.io/badge/CSS-24%25-1572B6?style=flat-square&logo=css3&logoColor=white)
+![Python](https://img.shields.io/badge/Python-2.9%25-3776AB?style=flat-square&logo=python&logoColor=white)
+![React](https://img.shields.io/badge/React-19+-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-Latest-646CFF?style=flat-square&logo=vite&logoColor=white)
-![MediaPipe](https://img.shields.io/badge/MediaPipe-Computer%20Vision-0097A7?style=flat-square&logo=google&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat-square&logo=node.js&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?style=flat-square&logo=mysql&logoColor=white)
 
 </div>
 
@@ -19,26 +20,45 @@
 
 ## 📖 Giới Thiệu
 
-**VISITALK** là một WebApp nhận diện và dịch ngôn ngữ ký hiệu theo thời gian thực, hoạt động như một **"phiên dịch viên ảo 24/7"** — không cần cài đặt, không cần phần mềm riêng. Chỉ cần bắt đầu và bắt tay nói chuyện! 🚀
+**VISITALK** là một nền tảng web toàn diện kết hợp **nhận diện ngôn ngữ ký hiệu thời gian thực**, **quản lý người dùng**, và **hệ thống học tập tương tác**. Ứng dụng cung cấp:
 
-Dự án được xây dựng nhằm giải quyết ba vấn đề cốt lõi:
-
-| Vấn Đề | Giải Pháp của VISITALK |
-|--------|----------------------|
-| 🚫 Rào cản giao tiếp giữa người khiếm thính và người nghe nói | ✅ Dịch thuật tức thì qua camera |
-| 💰 Chi phí thuê phiên dịch viên ngôn ngữ ký hiệu cao | ✅ Phiên dịch viên AI miễn phí 24/7 |
-| ✏️ Giao tiếp qua giấy bút mất đi tính tự nhiên | ✅ Hội thoại trực tiếp, thời gian thực |
+✅ **Dịch thuật thời gian thực** — Nhận diện cử chỉ tay qua webcam  
+✅ **Quản lý tài khoản đầy đủ** — Xác thực, hồ sơ, lịch sử phiên làm việc  
+✅ **Hệ thống học tập** — Khóa học về chào hỏi, bảng chữ cái, số đếm  
+✅ **Dashboard Admin** — Quản lý người dùng, bài học, báo cáo  
+✅ **Giao diện responsive** — Tối ưu cho desktop, tablet, điện thoại  
 
 ---
 
-## ✨ Tính Năng
+## ✨ Tính Năng Chính
 
-- 🎯 **Nhận diện tay thời gian thực** — Phát hiện 21 điểm khớp tay qua webcam thông thường
-- ⚡ **Xử lý tốc độ cao** — Hiển thị FPS, không có độ trễ đáng kể
-- 🌐 **Không cần cài đặt** — Chạy trực tiếp trên trình duyệt hiện đại
-- 📱 **Đa nền tảng** — Hỗ trợ laptop, máy tính bảng, điện thoại
-- 📝 **Dịch thuật sang văn bản** — Chuyển cử chỉ tay thành chữ viết
-- 🎨 **Giao diện hiện đại** — Xây dựng với React + Vite, responsive trên mọi thiết bị
+### 🎯 Dịch Thuật & Nhận Diện
+- Nhận diện cử chỉ tay qua webcam thường
+- Dịch thuật thời gian thực sang văn bản
+- Hỗ trợ ngôn ngữ ký hiệu Việt Nam
+
+### 👤 Quản Lý Tài Khoản
+- **Đăng ký/Đăng nhập** với xác thực an toàn (bcrypt, JWT)
+- **Hồ sơ cá nhân** — Cập nhật thông tin, avatar
+- **Lịch sử phiên** — Theo dõi hoạt động, thời gian trực tuyến
+- **Bảo mật** — Rate limiting, HTTPS-ready, token JWT
+
+### 📚 Hệ Thống Học Tập
+- **Khóa học có cấu trúc** — Greeting, Alphabet, Numbers
+- **Theo dõi tiến độ** — Ghi nhận khoá học đã truy cập
+- **Giao diện tương tác** — Hình ảnh, ý nghĩa, nội dung chi tiết
+
+### 🛡️ Quyền Hạn & Bảo Mật
+- **Phân quyền** — User vs Admin
+- **Protected Routes** — Đăng nhập bắt buộc cho tính năng nhạy cảm
+- **Rate Limiting** — Chống brute-force, DDoS
+- **CORS & Helmet** — Bảo vệ header HTTP
+
+### ⚙️ Dashboard Admin
+- Quản lý toàn bộ người dùng
+- Thêm/sửa/xóa bài học
+- Xem báo cáo hoạt động
+- Quản lý phiên làm việc
 
 ---
 
@@ -46,108 +66,196 @@ Dự án được xây dựng nhằm giải quyết ba vấn đề cốt lõi:
 
 ```
 ┌─────────────────────────────────────┐
-│   Frontend (React + Vite)           │
-│  ├─ Giao diện người dùng            │
-│  ├─ MediaPipe.js (JS Version)       │
-│  └─ Real-time visualization         │
+│   Frontend (React 19 + Vite)        │
+│  ├─ Pages (Home, Login, Translate)  │
+│  ├─ Components (Navbar, Footer)     │
+│  ├─ Context (Auth State)            │
+│  ├─ Services (API Client)           │
+│  └─ CSS (Responsive Design)         │
 └──────────────┬──────────────────────┘
-               │
-               ↓ WebSocket/API
-┌──────────────────────────────────────┐
-│   Backend (Node.js / Python)         │
-│  ├─ Xử lý MediaPipe Hands            │
-│  ├─ ML Classifier (Nhận diện)        │
-│  └─ Text/Speech Output               │
+               │ HTTP/HTTPS + JWT
+┌──────────────┴───────────────────────┐
+│   Backend (Node.js + Express)        │
+│  ├─ Routes (Auth, Users, Lessons)    │
+│  ├─ Controllers (Business Logic)     │
+│  ├─ Middleware (Auth, Rate Limit)    │
+│  ├─ Models (Database Schema)         │
+│  └─ Common (Utilities)               │
 └──────────────┬───────────────────────┘
-               │
+               │ SQL Query
                ↓
-┌──────────────────────────────────────┐
-│   Webcam Input → 21 Keypoints        │
-│   → AI Classifier → Text Output 🔊   │
-└──────────────────────────────────────┘
+        ┌──────────────────┐
+        │   MySQL Database │
+        │  ├─ users        │
+        │  ├─ lessons      │
+        │  ├─ access_to    │
+        │  └─ sessions     │
+        └──────────────────┘
 ```
 
 ---
 
-## 📁 Cấu Trúc Dự Án
+## 📁 Cấu Trúc Dự Án Chi Tiết
 
 ```
 VISITALK/
-├── 📂 frontend/                    # React + Vite Frontend
+├── 📂 frontend/                           # React + Vite Frontend
 │   ├── src/
-│   │   ├── components/            # React Components
-│   │   │   ├── Camera.jsx         # Component xử lý camera & MediaPipe
-│   │   │   ├── Translator.jsx     # Component dịch thuật
-│   │   │   ├── About.jsx          # Trang About
+│   │   ├── App.jsx                        # Main routing component
+│   │   ├── main.jsx                       # Vite entry point
+│   │   ├── CSS/                           # Global styles
+│   │   │   └── index.css
+│   │   ├── components/                    # Reusable React components
+│   │   │   ├── Navbar.jsx                 # Navigation header
+│   │   │   ├── Navbar.css
+│   │   │   ├── Footer.jsx                 # Footer component
+│   │   │   ├── Footer.css
+│   │   │   ├── ProtectedRoute.jsx         # Auth guard for routes
 │   │   │   └── ...
-│   │   ├── hooks/                 # Custom React Hooks
-│   │   │   ├── useMediaPipe.js    # Hook nhận diện tay
-│   │   │   └── useTranslator.js   # Hook dịch thuật
-│   │   ├── styles/                # CSS modules
-│   │   ├── utils/                 # Utility functions
-│   │   ├── App.jsx
-│   │   └── main.jsx
+│   │   ├── pages/                         # Page components (React Router)
+│   │   │   ├── Home.jsx                   # Trang chủ
+│   │   │   ├── Login.jsx                  # Đăng nhập
+│   │   │   ├── Signup.jsx                 # Đăng ký
+│   │   │   ├── Welcome.jsx                # Trang chào mừng
+│   │   │   ├── Translate.jsx              # 🎯 Chính: Dịch thuật thời gian thực
+│   │   │   ├── Learning.jsx               # Trung tâm học tập
+│   │   │   ├── Greeting.jsx               # Khóa: Chào hỏi
+│   │   │   ├── Alphabet.jsx               # Khóa: Bảng chữ cái
+│   │   │   ├── Numbers.jsx                # Khóa: Số đếm
+│   │   │   ├── Personal.jsx               # Hồ sơ cá nhân
+│   │   │   ├── Setting.jsx                # Cài đặt
+│   │   │   ├── Admin.jsx                  # Dashboard admin
+│   │   │   ├── Asking.jsx                 # Hỗ trợ/Liên hệ
+│   │   │   ├── Report.jsx                 # Báo cáo
+│   │   │   ├── Introduce.jsx              # Giới thiệu dự án
+│   │   │   ├── Securitypolicy.jsx         # Chính sách bảo mật
+│   │   │   └── Termofser.jsx              # Điều khoản dịch vụ
+│   │   ├── context/                       # React Context (State management)
+│   │   │   └── AuthContext.jsx            # Quản lý trạng thái xác thực
+│   │   ├── services/                      # API client
+│   │   │   └── api.js                     # Axios instance + API methods
+│   │   └── ...
 │   ├── public/
-│   │   ├── Assets/
-│   │   │   └── Images/            # Hình ảnh brand
-│   │   └── models/                # MediaPipe models
-│   ├── vite.config.js
+│   │   ├── Assets/                        # Hình ảnh, tài nguyên tĩnh
+│   │   ├── favicon.svg
+│   │   ├── icons.svg
+│   │   └── index.html                     # HTML entry point
+│   ├── vite.config.js                     # Vite config
+│   ├── eslint.config.js                   # ESLint config
 │   ├── package.json
-│   └── ...
-├── 📂 backend/                     # Backend (Node.js/Python)
-│   ├── HandTrackingModule.py       # MediaPipe tracking
-│   ├── SeperatelyTracking.py       # Phân tích ngón tay
-│   ├── volumeHandControl.py        # Demo tương tác
-│   ├── index.js                    # Node.js server
-│   └── requirements.txt
-├── 📄 README.md
-└── .gitignore
+│   └── README.md
+│
+├── 📂 backend/                            # Node.js + Express Backend
+│   ├── routes/                            # API route handlers
+│   │   ├── auth.routes.js                 # /api/auth — Login/Signup
+│   │   ├── users.routes.js                # /api/users — User CRUD
+│   │   ├── lessons.routes.js              # /api/lessons — Lesson management
+│   │   └── userSessions.routes.js         # /api/user-sessions — Session tracking
+│   ├── controllers/                       # Business logic
+│   │   ├── auth.controllers.js            # Login, Signup, Token refresh
+│   │   ├── user.controllers.js            # Get profile, Update profile
+│   │   ├── lessons.controllers.js         # Get lessons, Create lesson
+│   │   ├── accessTo.controllers.js        # Lesson access tracking
+│   │   └── session.controllers.js         # Session management
+│   ├── middleware/                        # Express middleware
+│   │   ├── auth.middleware.js             # JWT verification
+│   │   ├── roleCheck.middleware.js        # Admin role check
+│   │   └── errorHandler.js                # Error handling
+│   ├── models/                            # Database models/helpers
+│   │   ├── User.js
+│   │   ├── Lesson.js
+│   │   └── Database.js
+│   ├── common/                            # Utility functions
+│   │   ├── database.js                    # MySQL connection
+│   │   ├── constants.js                   # Constants, error codes
+│   │   └── validators.js                  # Input validation
+│   ├── index.js                           # Server entry point
+│   ├── package.json
+│   └── .env.example                       # Environment variables example
+│
+├── 📄 README.md                           # This file (Vietnamese)
+├── 📄 VISITALK DB.txt                     # Database schema SQL
+├── requirements.txt                       # Python dependencies (legacy)
+├── .gitignore
+└── ...
+
 ```
 
 ---
 
-## 🛠️ Công Nghệ Sử Dụng
+## 🛠️ Công Nghệ Stack
 
 ### Frontend Stack
-
-| Công Nghệ | Mục Đích | Phiên Bản |
-|-----------|---------|---------|
-| **React** | UI Framework | 18+ |
-| **Vite** | Build tool & Dev server | Latest |
-| **MediaPipe Hands** | Hand gesture detection | JS SDK |
-| **TensorFlow.js** | Machine Learning (Browser) | Latest |
-| **Axios** | HTTP Client | Latest |
-| **React Router** | Routing | 6+ |
-| **CSS3 / Tailwind** | Styling | Latest |
+| Công Nghệ | Phiên Bản | Mục Đích |
+|-----------|----------|---------|
+| **React** | 19.2.5 | UI Framework, Component-based |
+| **Vite** | 8.0+ | Build tool, Fast dev server |
+| **React Router** | 7.14+ | Client-side routing |
+| **Axios** | Latest | HTTP client for API calls |
+| **CSS3** | - | Styling, Responsive design |
+| **JavaScript (ES6+)** | - | Language |
 
 ### Backend Stack
-
 | Công Nghệ | Mục Đích |
 |-----------|---------|
-| **Node.js** | Runtime & API Server |
-| **Python 3.8+** | AI/ML Processing |
-| **MediaPipe** | Hand tracking & recognition |
-| **OpenCV** | Computer Vision |
-| **TensorFlow** | Model training & inference |
+| **Node.js** | Runtime environment |
+| **Express** | Web framework, Routing |
+| **MySQL2** | Database driver |
+| **JWT (jsonwebtoken)** | Token-based authentication |
+| **bcrypt** | Password hashing |
+| **CORS** | Cross-origin requests |
+| **Helmet** | HTTP header security |
+| **Express Rate Limit** | DDoS protection |
+| **dotenv** | Environment variables |
 
-### Modules Python
+### Database (MySQL)
+```sql
+-- Bảng người dùng
+users (id, username, full_name, password_hash, role, email, created_at, avatar_url, total_online_time)
 
-| Module | Chức Năng |
-|--------|---------|
-| `HandTrackingModule.py` | "Đôi mắt" của hệ thống — phát hiện bàn tay |
-| `SeperatelyTracking.py` | Phân tích trạng thái từng ngón tay (co/duỗi) |
-| `volumeHandControl.py` | Demo tương tác: cử chỉ tay → hành động |
+-- Bảng bài học
+lessons (les_id, title, img_url, content, meaning)
+
+-- Theo dõi truy cập bài học
+access_to (users_id, les_id, accessed_at)
+
+-- Quản lý phiên đăng nhập
+users_sessions (sessions_id, users_id, login_at, logout_at, duration, ip_address, device)
+```
+
+### Dependencies Chính
+
+**Frontend:**
+```json
+{
+  "react": "^19.2.5",
+  "react-dom": "^19.2.5",
+  "react-router-dom": "^7.14.2"
+}
+```
+
+**Backend:**
+```json
+{
+  "express": "^5.2.1",
+  "mysql2": "^3.22.2",
+  "bcrypt": "^6.0.0",
+  "jsonwebtoken": "^9.0.3",
+  "cors": "^2.8.6",
+  "helmet": "^8.1.0",
+  "express-rate-limit": "^8.4.0"
+}
+```
 
 ---
 
 ## 🚀 Hướng Dẫn Cài Đặt & Chạy
 
 ### Yêu Cầu
-
-- **Node.js** 16+ & **npm** hoặc **yarn**
-- **Python** 3.8+
-- **Webcam** (bắt buộc)
-- **Trình duyệt hiện đại**: Chrome, Edge, Firefox (phiên bản mới)
+- **Node.js** 16+ với **npm** hoặc **yarn**
+- **MySQL** 5.7+ (hoặc MariaDB)
+- **Webcam** (cho tính năng dịch thuật)
+- **Trình duyệt hiện đại**: Chrome, Edge, Firefox
 
 ### 1️⃣ Clone Repository
 
@@ -156,263 +264,517 @@ git clone https://github.com/Nhatpham12/VISITALK.git
 cd VISITALK
 ```
 
-### 2️⃣ Setup Frontend (React + Vite)
+### 2️⃣ Setup Database (MySQL)
 
 ```bash
-cd frontend
+# Đăng nhập MySQL
+mysql -u root -p
 
-# Cài đặt dependencies
-npm install
-# hoặc
-yarn install
+# Chạy SQL schema từ file VISITALK DB.txt
+source "VISITALK DB.txt"
 
-# Chạy development server
-npm run dev
-# hoặc
-yarn dev
+# Hoặc tạo database thủ công:
+CREATE DATABASE visitalk_db;
+USE visitalk_db;
+# ... (copy nội dung từ VISITALK DB.txt)
 ```
 
-Frontend sẽ chạy tại: **http://localhost:5173**
-
-### 3️⃣ Setup Backend (Python)
+### 3️⃣ Setup Backend (Node.js + Express)
 
 ```bash
 cd backend
 
-# Tạo virtual environment (tùy chọn nhưng khuyến khích)
-python -m venv venv
-
-# Kích hoạt virtual environment
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-
-# Cài đặt dependencies
-pip install -r requirements.txt
-```
-
-### 4️⃣ Chạy Backend (tùy chọn)
-
-```bash
-# Chạy Node.js server
-node index.js
-
-# Hoặc chạy Python module
-python HandTrackingModule.py
-```
-
----
-
-## 📦 Cài Đặt Dependencies Chi Tiết
-
-### Frontend Dependencies
-
-```bash
+# Cài dependencies
 npm install
-# Tự động cài:
-# - react@latest
-# - react-dom@latest
-# - vite@latest
-# - @mediapipe/tasks-vision
-# - @tensorflow/tfjs
-# - axios
-# - react-router-dom
-# - tailwindcss (nếu sử dụng)
+
+# Tạo file .env
+cp .env.example .env
+
+# Cấu hình .env với thông tin MySQL
+# PORT=5001
+# DB_HOST=localhost
+# DB_USER=root
+# DB_PASSWORD=your_password
+# DB_NAME=visitalk_db
+# JWT_SECRET=your_secret_key
+
+# Chạy server
+npm start
+# hoặc dev mode: npm run dev
 ```
 
-### Backend Dependencies (Python)
+Backend chạy tại: **http://localhost:5001**
 
-```bash
-# Tạo requirements.txt nếu chưa có
-pip install mediapipe opencv-python numpy tensorflow flask flask-cors
-
-# hoặc cài từ requirements.txt
-pip install -r requirements.txt
-```
-
-**Nội dung requirements.txt mẫu:**
-```
-mediapipe==0.10.0
-opencv-python==4.8.0.76
-numpy==1.24.3
-tensorflow==2.13.0
-flask==2.3.2
-flask-cors==4.0.0
-```
-
----
-
-## 🎯 Build & Deploy
-
-### Build Frontend cho Production
+### 4️⃣ Setup Frontend (React + Vite)
 
 ```bash
 cd frontend
 
-# Tạo production build
-npm run build
-# Output: dist/ folder
+# Cài dependencies
+npm install
 
-# Preview production build locally
+# Chạy development server
+npm run dev
+
+# Hoặc build production
+npm run build
+```
+
+Frontend chạy tại: **http://localhost:5173**
+
+### 5️⃣ Kiểm Tra Kết Nối
+
+```bash
+# Test API health check
+curl http://localhost:5001/api/health
+
+# Kết quả dự kiến:
+# {"status":"ok","timestamp":"2026-05-20T14:52:35Z"}
+```
+
+---
+
+## 🔐 Cấu Hình Bảo Mật
+
+### .env Backend Example
+```env
+PORT=5001
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_secure_password
+DB_NAME=visitalk_db
+JWT_SECRET=your_jwt_secret_key_minimum_32_characters_long
+JWT_EXPIRE=7d
+CLIENT_URL=http://localhost:5173
+NODE_ENV=development
+```
+
+### CORS Configuration
+Frontend được phép gọi từ:
+- `http://localhost:5173` (Vite dev)
+- `http://localhost:3000` (React CRA)
+- `http://localhost:5500` (Live Server)
+
+### Rate Limiting
+- **Global**: 200 requests / 15 phút
+- **Auth**: 10 requests / 5 phút (chống brute-force)
+
+---
+
+## 📊 API Endpoints
+
+### Authentication (`/api/auth`)
+```http
+POST   /api/auth/register       # Đăng ký tài khoản mới
+POST   /api/auth/login          # Đăng nhập
+POST   /api/auth/logout         # Đăng xuất
+POST   /api/auth/refresh        # Làm mới token JWT
+```
+
+### Users (`/api/users`)
+```http
+GET    /api/users/:id           # Lấy thông tin user
+PUT    /api/users/:id           # Cập nhật profile
+GET    /api/users               # Danh sách users (admin only)
+DELETE /api/users/:id           # Xóa user (admin only)
+```
+
+### Lessons (`/api/lessons`)
+```http
+GET    /api/lessons             # Lấy tất cả bài học
+GET    /api/lessons/:id         # Chi tiết bài học
+POST   /api/lessons             # Tạo bài học mới (admin only)
+PUT    /api/lessons/:id         # Cập nhật bài học (admin only)
+DELETE /api/lessons/:id         # Xóa bài học (admin only)
+```
+
+### User Sessions (`/api/user-sessions`)
+```http
+POST   /api/user-sessions       # Bắt đầu phiên mới
+PUT    /api/user-sessions/:id   # Kết thúc phiên
+GET    /api/user-sessions/:uid  # Lịch sử phiên của user
+```
+
+---
+
+## 🎯 Flow Chính của Ứng Dụng
+
+### 1. **Trang Chủ & Giới Thiệu** (Công khai)
+- Hiển thị giới thiệu VISITALK
+- Link đến Chính sách bảo mật, Điều khoản dịch vụ
+- Nút đăng nhập/đăng ký
+
+### 2. **Xác Thực** (Chưa đăng nhập)
+```
+Signup → Tạo tài khoản mới
+  ↓
+Validation (bcrypt hash mật khẩu)
+  ↓
+Login → Xác minh email + mật khẩu
+  ↓
+JWT Token → Lưu localStorage
+  ↓
+Redirect → Home hoặc Translate
+```
+
+### 3. **Dịch Thuật (Chính)** (Đã đăng nhập)
+```
+/translate
+  ↓
+Webcam Access → getUserMedia()
+  ↓
+Hand Detection → MediaPipe (Python/JS)
+  ↓
+Gesture Recognition → AI Model
+  ↓
+Text Output → Hiển thị & Lưu DB
+  ↓
+Access Tracking → Ghi nhận trong access_to table
+```
+
+### 4. **Học Tập**
+```
+/learning
+  ├─ /learning/greeting → Khóa chào hỏi
+  ├─ /learning/alphabet → Khóa bảng chữ cái
+  └─ /learning/numbers → Khóa số đếm
+```
+
+### 5. **Hồ Sơ & Cài Đặt** (Đã đăng nhập)
+```
+/personal → Xem & Chỉnh sửa thông tin
+/setting → Thay đổi mật khẩu, Cài đặt
+```
+
+### 6. **Admin Panel** (Chỉ admin)
+```
+/admin
+  ├─ Quản lý Users
+  ├─ Quản lý Lessons
+  └─ Xem Analytics & Reports
+```
+
+---
+
+## 🌳 Component Structure (Frontend)
+
+```
+App (Router)
+├── Home (Public)
+├── Layout
+│   ├── Navbar
+│   └── Footer
+├── Auth Pages
+│   ├── Login
+│   ├── Signup
+│   └── Welcome
+├── Protected Pages
+│   ├── Translate (Main feature)
+│   ├── Learning
+│   │   ├── Greeting
+│   │   ├── Alphabet
+│   │   └── Numbers
+│   ├── Personal
+│   ├── Setting
+│   ├── Asking
+│   └── Report
+├── Admin Pages
+│   └── Admin Dashboard
+└── Info Pages
+    ├── Introduce
+    ├── Securitypolicy
+    └── Termofser
+```
+
+---
+
+## 🔒 Quy Trình Xác Thực
+
+### Register
+```javascript
+{
+  username: "john_doe",
+  full_name: "John Doe",
+  email: "john@example.com",
+  password: "securePassword123"
+}
+↓
+Validate (email format, password strength)
+↓
+Hash password (bcrypt rounds: 10)
+↓
+Save to users table
+↓
+Return success message
+```
+
+### Login
+```javascript
+{
+  email: "john@example.com",
+  password: "securePassword123"
+}
+↓
+Find user by email
+↓
+Compare password (bcrypt verify)
+↓
+Generate JWT token
+↓
+Create session record
+↓
+Return token + user info
+```
+
+### Protected Routes
+```javascript
+GET /api/protected
+Header: Authorization: Bearer <JWT_TOKEN>
+↓
+Verify JWT signature
+↓
+Check token expiration
+↓
+Extract user ID
+↓
+Allow/Deny request
+```
+
+---
+
+## 📈 Build & Deploy
+
+### Build Production Frontend
+
+```bash
+cd frontend
+
+npm run build
+# Output: dist/ folder (optimized, minified)
+
+# Preview locally
 npm run preview
 ```
 
-### Deploy lên Vercel / Netlify
+### Deploy Frontend
 
-**Vercel:**
+**Vercel (Khuyến khích)**
 ```bash
 npm install -g vercel
 vercel
 ```
 
-**Netlify:**
+**Netlify**
 ```bash
 npm install -g netlify-cli
 netlify deploy --prod --dir=dist
 ```
 
----
-
-## 🗺️ Lộ Trình Phát Triển
-
-- [x] Module nhận diện bàn tay (MediaPipe)
-- [x] Phân tích trạng thái ngón tay
-- [x] Demo tương tác cử chỉ tay
-- [x] Giao diện WebApp cơ bản
-- [x] Chuyển sang React + Vite
-- [ ] Tối ưu hóa performance
-- [ ] Bộ dataset bảng chữ cái ngôn ngữ ký hiệu Việt Nam
-- [ ] Triển khai TensorFlow.js hoàn toàn trên Browser
-- [ ] Hỗ trợ Video streaming (RTC)
-- [ ] Deploy lên cloud (Vercel / Netlify)
-- [ ] Progressive Web App (PWA) support
-- [ ] Offline mode
-
----
-
-## 💡 Bối Cảnh & Động Lực
-
-Dự án được hình thành từ sự giao thoa giữa **nhu cầu xã hội cấp thiết** và **sự chín muồi của công nghệ**:
-
-> _Tại Việt Nam, hàng triệu người khiếm thính đang phải đối mặt với rào cản giao tiếp hằng ngày — khi đi mua sắm, khám bệnh, hay đơn giản là hỏi đường. Họ phải mang theo người phiên dịch, viết giấy, hoặc sử dụng những ứng dụng dịch chữ chậm chạp._
-
-Nhờ sự phổ biến của **Computer Vision** (MediaPipe) và khả năng xử lý **thời gian thực** ngay trên trình duyệt, nay có thể xây dựng một **phiên dịch viên ngôn ngữ ký hiệu miễn phí, luôn sẵn sàng, hoàn toàn đáng tin cậy**.
-
-**VISITALK** không chỉ là một ứng dụng — nó là **một cuộc cách mạng nhỏ trong giao tiếp**.
-
----
-
-## 🤝 Đóng Góp
-
-Mọi đóng góp đều được chào đón! Cách tham gia:
-
-### 1. Fork Repository
-
-Nhấp nút **Fork** trên GitHub
-
-### 2. Tạo Feature Branch
-
+**Traditional Hosting (CPanel, etc)**
 ```bash
-git checkout -b feature/ten-tinh-nang
+# Upload dist/ folder nội dung đến public_html
+scp -r dist/* user@host:/var/www/html/
 ```
 
-### 3. Commit Thay Đổi
+### Deploy Backend
 
+**Option 1: Heroku**
 ```bash
-git commit -m "feat: Thêm tính năng [tên chi tiết]"
+heroku login
+heroku create visitalk-backend
+git push heroku main
 ```
 
-### 4. Push Lên Branch
+**Option 2: Railway / Render**
+- Connect GitHub repository
+- Set environment variables
+- Auto-deploy on push
 
+**Option 3: VPS / Server Riêng**
 ```bash
-git push origin feature/ten-tinh-nang
+ssh user@your_server_ip
+git clone <repo>
+cd VISITALK/backend
+npm install
+npm start
+# Hoặc dùng PM2 cho production:
+pm2 start index.js --name "visitalk-backend"
+pm2 save
 ```
-
-### 5. Tạo Pull Request
-
-Mở Pull Request từ GitHub và mô tả thay đổi của bạn rõ ràng.
-
-### Hướng Dẫn Commit
-
-- `feat:` - Tính năng mới
-- `fix:` - Sửa lỗi
-- `docs:` - Cập nhật tài liệu
-- `style:` - Formatting
-- `refactor:` - Cấu trúc lại code
-- `test:` - Thêm/cập nhật test
 
 ---
 
-## 📚 Tài Liệu & Tham Khảo
+## 📚 Hướng Dẫn Sử Dụng
 
-### MediaPipe
-- [MediaPipe Hands Documentation](https://mediapipe.dev/solutions/hands)
-- [MediaPipe Solutions](https://ai.google.dev/edge/mediapipe/solutions)
+### Cho Người Dùng Thường
 
-### React + Vite
-- [React Documentation](https://react.dev)
-- [Vite Documentation](https://vitejs.dev)
-- [Vite + React Template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react)
+1. **Truy cập trang chủ** → `/`
+2. **Đăng ký tài khoản** → `/signup`
+3. **Đăng nhập** → `/login`
+4. **Sử dụng dịch thuật** → `/translate` (bật webcam, thực hiện cử chỉ)
+5. **Học bài học** → `/learning` → Chọn khóa học
+6. **Quản lý hồ sơ** → `/personal`
 
-### TensorFlow.js
-- [TensorFlow.js Documentation](https://www.tensorflow.org/js)
-- [Hand Pose Detection](https://github.com/tensorflow/tfjs-models/tree/master/hand-pose-detection)
+### Cho Admin
 
-### Computer Vision
-- [OpenCV Documentation](https://docs.opencv.org)
-- [Python Computer Vision Guide](https://www.pyimagesearch.com)
+1. Đăng nhập với tài khoản admin
+2. Truy cập `/admin`
+3. Quản lý người dùng, bài học, xem báo cáo
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Camera không hoạt động
+### Webcam không hoạt động
 ```bash
-# Kiểm tra quyền truy cập camera
-# Chrome: Cài đặt → Quyền → Camera
-# Firefox: Cài đặt → Quyền → Camera
+# Kiểm tra quyền
+# Chrome: Settings → Privacy → Site Settings → Camera
+# Firefox: about:preferences → Privacy → Permissions → Camera
+
+# Xóa cache & reload
+Ctrl+Shift+R (hoặc Cmd+Shift+R trên Mac)
 ```
 
-### MediaPipe không tải
-```bash
-# Đảm bảo có kết nối internet
-# Kiểm tra console (F12) xem lỗi nào
-# Xóa cache và tải lại trang
+### Lỗi "CORS: origin không được phép"
+```javascript
+// Kiểm tra trong backend/index.js
+// Đảm bảo frontend URL được thêm vào allowedOrigins
+
+const allowedOrigins = [
+  "http://localhost:5173",  // Frontend dev
+  "http://localhost:3000",  // Alternative dev
+  "https://yourdomain.com"  // Production
+];
 ```
 
-### Performance chậm
+### MySQL Connection Error
 ```bash
-# Giảm resolution camera
-# Tắt các features không cần thiết
-# Kiểm tra CPU/GPU usage
+# Kiểm tra MySQL running
+sudo systemctl status mysql  # Linux
+brew services list         # macOS
+net start mysql80          # Windows
+
+# Kiểm tra .env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=visitalk_db
+```
+
+### JWT Token Expired
+```javascript
+// Frontend tự động refresh token hoặc
+// Yêu cầu user login lại
 ```
 
 ---
 
-## 📬 Liên Hệ & Hỗ Trợ
+## 📞 Hỗ Trợ & Liên Hệ
 
-**Nhat Pham** — [@Nhatpham12](https://github.com/Nhatpham12)
+**Tác Giả**: Nhat Pham [@Nhatpham12](https://github.com/Nhatpham12)
 
-- 📧 Email: [your-email@example.com]
-- 💬 Issues: [GitHub Issues](https://github.com/Nhatpham12/VISITALK/issues)
-- 💡 Discussions: [GitHub Discussions](https://github.com/Nhatpham12/VISITALK/discussions)
+- 📧 **Email**: [contact@visitalk.com]
+- 💬 **Issues**: [GitHub Issues](https://github.com/Nhatpham12/VISITALK/issues)
+- 💡 **Discussions**: [GitHub Discussions](https://github.com/Nhatpham12/VISITALK/discussions)
+- 🌐 **Website**: [visitalk.com]
 
 ---
 
 ## 📄 License
 
-MIT License © 2024 - Nhat Pham
+MIT License © 2024-2026 — Nhat Pham & Contributors
 
 ---
 
+## 🎯 Lộ Trình Phát Triển (Roadmap)
+
+- [x] Cấu trúc backend (Express + Routes + Controllers)
+- [x] Database schema (Users, Lessons, Sessions)
+- [x] Authentication (Login/Signup/JWT)
+- [x] Frontend routing (React Router)
+- [x] User management (Profile, Settings)
+- [x] Lesson management system
+- [x] Admin dashboard (basics)
+- [ ] **Tích hợp AI nhận diện cử chỉ tay (Priority)**
+- [ ] Real-time webcam translation
+- [ ] Dataset bảng chữ cái Tiếng Ký Hiệu Việt Nam
+- [ ] Tối ưu performance (caching, lazy loading)
+- [ ] Progressive Web App (PWA)
+- [ ] Offline mode support
+- [ ] Video streaming (WebRTC)
+- [ ] Analytics & Reports dashboard
+- [ ] Multi-language support
+
+---
+
+## 🤝 Đóng Góp
+
+Mọi đóng góp đều được chào đón! Vui lòng theo quy trình:
+
+### 1. Fork Repository
+```bash
+# Nhấp "Fork" trên GitHub hoặc:
+gh repo fork Nhatpham12/VISITALK --clone
+```
+
+### 2. Tạo Feature Branch
+```bash
+git checkout -b feature/your-feature-name
+```
+
+### 3. Commit Thay Đổi
+```bash
+git commit -m "feat: Thêm [tính năng cụ thể]"
+```
+
+**Commit Message Format:**
+- `feat:` - Tính năng mới
+- `fix:` - Sửa lỗi
+- `docs:` - Tài liệu
+- `style:` - Formatting
+- `refactor:` - Cấu trúc lại
+- `test:` - Unit test
+
+### 4. Push & Create Pull Request
+```bash
+git push origin feature/your-feature-name
+# Tạo PR trên GitHub
+```
+
+---
+
+## 📖 Tài Liệu & Tham Khảo
+
+### Frontend Documentation
+- [React Docs](https://react.dev)
+- [Vite Guide](https://vitejs.dev)
+- [React Router](https://reactrouter.com)
+- [Axios](https://axios-http.com)
+
+### Backend Documentation
+- [Express.js](https://expressjs.com)
+- [MySQL2/Promise](https://github.com/sidorares/node-mysql2)
+- [JWT (jsonwebtoken)](https://github.com/auth0/node-jsonwebtoken)
+- [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
+
+### Additional Resources
+- [CORS Explained](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
+- [REST API Best Practices](https://restfulapi.net)
+- [SQL Tutorial](https://www.w3schools.com/sql)
+
+---
+
+## 🎉 Cảm Ơn
+
+**VISITALK** được xây dựng với tình yêu để phục vụ cộng đồng người khiếm thính Việt Nam.
+
+Nếu thấy hữu ích, vui lòng **⭐ Star** repository này!
+
 <div align="center">
 
-### Made with ❤️ để phục vụ cộng đồng người khiếm thính Việt Nam
+### Made with ❤️ để mở ra những cơ hội giao tiếp mới
 
-**Hãy chia sẻ dự án này và giúp mở rộng cộng đồng!** ⭐
-
-![Stars](https://img.shields.io/github/stars/Nhatpham12/VISITALK?style=social)
-![Forks](https://img.shields.io/github/forks/Nhatpham12/VISITALK?style=social)
+![GitHub Stars](https://img.shields.io/github/stars/Nhatpham12/VISITALK?style=social)
+![GitHub Forks](https://img.shields.io/github/forks/Nhatpham12/VISITALK?style=social)
 
 </div>
