@@ -30,59 +30,42 @@ const apiCall = async (endpoint, options = {}) => {
 };
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
-
 export const authService = {
   register: (data) =>
-    apiCall("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
+    apiCall("/auth/register", { method: "POST", body: JSON.stringify(data) }),
 
-  // ✅ SỬA LẠI: thêm "/api" phía trước
   login: (username, password) =>
     apiCall("/auth/login", {
-      // 👈 ĐÃ SỬA
       method: "POST",
       body: JSON.stringify({ username, password }),
     }),
 
-  logout: () => apiCall("/api/auth/logout", { method: "POST" }), // 👈 SỬA
+  logout: () => apiCall("/auth/logout", { method: "POST" }),
 
-  getMe: () => apiCall("/api/auth/me"), // 👈 SỬA
+  getMe: () => apiCall("/auth/me"),
 };
 
 // ─── Users ───────────────────────────────────────────────────────────────────
-
 export const userService = {
-  getAll: () => apiCall("/api/users"), // 👈 SỬA
-  getById: (id) => apiCall(`/api/users/${id}`), // 👈 SỬA
+  getAll: () => apiCall("/users"),
+  getById: (id) => apiCall(`/users/${id}`),
   update: (id, data) =>
-    apiCall(`/api/users/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    }),
+    apiCall(`/users/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   updateStatus: (id, status) =>
-    apiCall(`/api/users/${id}/status`, {
+    apiCall(`/users/${id}/status`, {
       method: "PATCH",
       body: JSON.stringify({ u_status: status }),
     }),
-  delete: (id) => apiCall(`/api/users/${id}`, { method: "DELETE" }),
+  delete: (id) => apiCall(`/users/${id}`, { method: "DELETE" }),
 };
 
 // ─── Lessons ─────────────────────────────────────────────────────────────────
-
 export const lessonService = {
-  getAll: () => apiCall("/api/lessons"), // 👈 SỬA
-  getById: (id) => apiCall(`/api/lessons/${id}`), // 👈 SỬA
+  getAll: () => apiCall("/lessons"),
+  getById: (id) => apiCall(`/lessons/${id}`),
   create: (data) =>
-    apiCall("/api/lessons", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
+    apiCall("/lessons", { method: "POST", body: JSON.stringify(data) }),
   update: (id, data) =>
-    apiCall(`/api/lessons/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    }),
-  delete: (id) => apiCall(`/api/lessons/${id}`, { method: "DELETE" }),
+    apiCall(`/lessons/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  delete: (id) => apiCall(`/lessons/${id}`, { method: "DELETE" }),
 };

@@ -1,20 +1,20 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Navigate } from "react-router-dom";
 import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
+
   return (
     <div className="Navbar">
-      <Link to="/">
-        <img
-          src="/Assets/Images/Arrow.png"
-          className="brand"
-          alt="Arrow"
-          onClick={navigate(-1)}
-        />
-      </Link>
+      <img
+        src="/Assets/Images/Arrow.png"
+        className="brand"
+        alt="Arrow"
+        onClick={() => navigate(-1)}
+        style={{ cursor: "pointer" }}
+      />
+
       <Link to="/">
         <img src="/Assets/Images/Brand.png" className="brand" alt="Brand" />
       </Link>

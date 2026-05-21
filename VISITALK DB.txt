@@ -2,18 +2,29 @@ CREATE DATABASE visitalk_db;
 USE visitalk_db;
 
 CREATE TABLE users (
-    id            CHAR(36)      PRIMARY KEY NOT NULL DEFAULT (UUID()),
-    username      VARCHAR(50)   UNIQUE NOT NULL,
-    full_name     VARCHAR(100)  NOT NULL,
-    password_hash VARCHAR(255)  NOT NULL,
-    u_role        ENUM('user','admin') DEFAULT 'user',
-    u_status      ENUM('active','inactive') DEFAULT 'active',
-    email         VARCHAR(100)  UNIQUE NULL,
-    last_login    DATETIME      NULL,
-    created_at    DATETIME      DEFAULT CURRENT_TIMESTAMP,
-    avatar_url    VARCHAR(255)  NULL,
-    last_seen     DATETIME      NULL,
-    total_online_time INT       DEFAULT 0
+    id                CHAR(36)      PRIMARY KEY NOT NULL DEFAULT (UUID()),
+    username          VARCHAR(50)   UNIQUE NOT NULL,
+    full_name         VARCHAR(100)  NOT NULL,
+    password_hash     VARCHAR(255)  NOT NULL,
+    email             VARCHAR(100)  UNIQUE NULL,
+    dob               DATE          NULL,
+    gender            ENUM('male','female','other') NULL,
+    avatar_url        VARCHAR(255)  NULL,
+    u_role            ENUM('user','admin') DEFAULT 'user',
+    u_status          ENUM('active','inactive') DEFAULT 'active',
+    last_login        DATETIME      NULL,
+    last_seen         DATETIME      NULL,
+    total_online_time INT           DEFAULT 0,
+    created_at        DATETIME      DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_email
+        CHECK (email IS NULL OR email REGEXP '^[^@]+@[^@]+\\.[^@]+$'),
+    CONSTRAINT chk_username
+        CHECK (username REGEXP '^[a-zA-Z0-9_]+$'),
+    CONSTRAINT chk_password
+        CHECK (LENGTH(password_hash) >= 8),
+    CONSTRAINT chk_online_time
+        CHECK (total_online_time >= 0)
 );
 
 CREATE TABLE lessons (
@@ -21,16 +32,21 @@ CREATE TABLE lessons (
     title    VARCHAR(100)  NOT NULL,
     img_url  VARCHAR(255)  NULL,
     content  TEXT          NULL,
-    meaning  VARCHAR(255)  NULL
+    meaning  VARCHAR(255)  NULL,
+
+    CONSTRAINT chk_title CHECK (TRIM(title) != '')
 );
 
 CREATE TABLE access_to (
-    users_id    CHAR(36) NOT NULL,
-    les_id      CHAR(36) NOT NULL,
-    accessed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    users_id    CHAR(36)  NOT NULL,
+    les_id      CHAR(36)  NOT NULL,
+    accessed_at DATETIME  DEFAULT CURRENT_TIMESTAMP,
+
     PRIMARY KEY (users_id, les_id),
-    FOREIGN KEY (users_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (les_id)   REFERENCES lessons(les_id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (users_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (les_id) REFERENCES lessons(les_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE users_sessions (
@@ -41,5 +57,12 @@ CREATE TABLE users_sessions (
     duration    INT          DEFAULT 0,
     ip_address  VARCHAR(45)  NULL,
     device      VARCHAR(100) NULL,
-    FOREIGN KEY (users_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+
+    FOREIGN KEY (users_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CONSTRAINT chk_logout_after_login
+        CHECK (logout_at IS NULL OR logout_at >= login_at),
+    CONSTRAINT chk_duration
+        CHECK (duration >= 0)
 );
