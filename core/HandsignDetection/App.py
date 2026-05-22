@@ -1,88 +1,85 @@
-
+import keras
+import streamlit as st
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import cv2
 import numpy as np
-import math
-from cvzone.HandTrackingModule import HandDetector
-from cvzone.ClassificationModule import Classifier
+import tensorflow as tf
+import mediapipe as mp
 
-# Khởi tạo Webcam và Detector
-cap = cv2.VideoCapture(0)
-detector = HandDetector(maxHands=2)
+# 1. Tải mô hình đã upload
+try:
+    model = keras.models.load_model('vietnamese_sign_language_model.keras')
+    print("Model loaded successfully with Keras 3!")
+except Exception as e:
+    print(f"Lỗi load model: {e}")
 
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-classifier = Classifier(
-    os.path.join(BASE_DIR, "Model", "keras_model.h5"),
-    os.path.join(BASE_DIR, "Model", "labels.txt")
-)
+# 2. Danh sách nhãn (Bạn hãy thay đổi danh sách này khớp với các lớp lúc bạn train model)
+labels = ['A', 'B', 'C', 'D', 'Đ', 'E', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y']
 
-# Khai báo các thông số (giống hệt lúc thu thập dữ liệu)
-offset = 20
-imgSize = 300
+# 3. Khởi tạo MediaPipe để nhận diện tay
+mp_hands = mp.solutions.hands
+hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.7)
+mp_draw = mp.solutions.drawing_utils
 
-# Danh sách nhãn (Phải đúng thứ tự với file labels.txt)
-labels = ["Hello", "Thank you"]  # Thay đổi theo các nhãn bạn đã train
+class SignLanguageTransformer(VideoTransformerBase):
+    def transform(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        results = hands.process(img_rgb)
+        
+        prediction_text = ""
+        
+        if results.multi_hand_landmarks:
+            for hand_landmarks in results.multi_hand_landmarks:
+                # Vẽ khung xương tay lên màn hình
+                mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                
+                # Trích xuất tọa độ để cắt vùng bàn tay
+                h, w, _ = img.shape
+                x_max = 0
+                y_max = 0
+                x_min = w
+                y_min = h
+                for lm in hand_landmarks.landmark:
+                    x, y = int(lm.x * w), int(lm.y * h)
+                    if x > x_max: x_max = x
+                    if x < x_min: x_min = x
+                    if y > y_max: y_max = y
+                    if y < y_min: y_min = y
+                
+                # Thêm lề (padding) cho vùng cắt
+                offset = 20
+                try:
+                    hand_img = img_rgb[y_min-offset:y_max+offset, x_min-offset:x_max+offset]
+                    # Resize về 128x128 theo yêu cầu của model
+                    hand_img = cv2.resize(hand_img, (128, 128))
+                    hand_img = np.expand_dims(hand_img, axis=0) # (1, 128, 128, 3)
+                    
+                    # Dự đoán
+                    prediction = model.predict(hand_img, verbose=0)
+                    class_id = np.argmax(prediction)
+                    confidence = prediction[0][class_id]
+                    
+                    if confidence > 0.8: # Chỉ hiển thị nếu độ tin cậy cao
+                        prediction_text = labels[class_id]
+                        cv2.putText(img, f"Ket qua: {prediction_text} ({confidence*100:.1f}%)", 
+                                    (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                except:
+                    pass
 
-while True:
-    success, img = cap.read()
-    imgOutput = img.copy()  # Tạo bản sao để vẽ kết quả lên
-    hands, img = detector.findHands(img)
+        return img
 
-    if hands:
-        hand = hands[0]
-        x, y, w, h = hand["bbox"]
+# --- Giao diện Streamlit ---
+st.set_page_config(page_title="VISITALK - Translate", layout="wide")
+st.title("🤟 VISITALK: Hệ Thống Dịch Ngôn Ngữ Ký Hiệu Tiếng Việt")
 
-        imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255
+col1, col2 = st.columns([2, 1])
 
-        try:
-            # Cắt ảnh tay
-            imgCrop = img[y - offset: y + h + offset, x - offset: x + w + offset]
-            aspectRatio = h / w
+with col1:
+    st.subheader("Webcam Access")
+    webrtc_streamer(key="sign-language", video_transformer_factory=SignLanguageTransformer)
 
-            # Căn chỉnh và dán lên nền trắng
-            if aspectRatio > 1:
-                k = imgSize / h
-                wCal = math.ceil(k * w)
-                imgResized = cv2.resize(imgCrop, (wCal, imgSize))
-                wGap = math.ceil((imgSize - wCal) / 2)
-                imgWhite[:, wGap: wCal + wGap] = imgResized
-            else:
-                k = imgSize / w
-                hCal = math.ceil(k * h)
-                imgResized = cv2.resize(imgCrop, (imgSize, hCal))
-                hGap = math.ceil((imgSize - hCal) / 2)
-                imgWhite[hGap: hCal + hGap, :] = imgResized
-
-            # --- ĐƯA ẢNH VÀO MÔ HÌNH AI ---
-            # Hàm getPrediction trả về danh sách dự đoán và index của nhãn cao nhất
-            prediction, index = classifier.getPrediction(imgWhite, draw=False)
-
-            # Lấy tên nhãn dựa vào index
-            detected_word = labels[index]
-
-            # --- HIỂN THỊ KẾT QUẢ ---
-            # Vẽ hình chữ nhật nền đen chữ trắng hiển thị kết quả
-            cv2.rectangle(imgOutput, (x - offset, y - offset - 50),
-                          (x - offset + 200, y - offset - 5 + 50), (0, 0, 0), cv2.FILLED)
-            cv2.putText(imgOutput, detected_word, (x, y - 20),
-                        cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
-
-            # Vẽ khung bao quanh tay
-            cv2.rectangle(imgOutput, (x - offset, y - offset),
-                          (x + w + offset, y + h + offset), (0, 255, 0), 4)
-
-            cv2.imshow('ImageCrop', imgCrop)
-            cv2.imshow('ImageWhite', imgWhite)
-
-        except Exception as e:
-            # Tránh văng app khi tay ra khỏi màn hình
-            pass
-
-    cv2.imshow('VISITALK - Translation', imgOutput)
-
-    key = cv2.waitKey(1)
-    if key == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
+with col2:
+    st.subheader("Kết quả dịch")
+    st.info("Đưa bàn tay vào khung hình để bắt đầu dịch sang văn bản.")
+    # Ở đây bạn có thể thêm logic để lưu các chữ cái đã nhận diện thành từ
