@@ -7,9 +7,9 @@
 body {
   display: flex;
   flex-direction: column;
+  align-items: center;
   min-height: 100vh;
   background-color: #f0f0f0;
-  align-items: center;
   font-family: "Segoe UI", sans-serif;
 }
 
@@ -41,7 +41,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin: auto;
+  margin: 60px auto 32px;
 }
 
 /* Tiêu đề */

@@ -10,8 +10,6 @@ const Translate = () => {
           <div className="content-wrapper">
             <div className="form-group"></div>
           </div>
-
-          <div className="right-panel"></div>
         </div>
       </div>
     </>
