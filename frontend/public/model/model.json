@@ -1,0 +1,389 @@
+{
+  "format": "layers-model",
+  "generatedBy": "VSL-Colab-Notebook",
+  "convertedBy": null,
+  "modelTopology": {
+    "class_name": "Functional",
+    "config": {
+      "name": "VSL_CNN",
+      "layers": [
+        {
+          "className": "InputLayer",
+          "config": {
+            "batchInputShape": [null, 128, 128, 3],
+            "dtype": "float32",
+            "sparse": false,
+            "ragged": false,
+            "name": "input"
+          },
+          "inboundNodes": [],
+          "name": "input"
+        },
+        {
+          "className": "Rescaling",
+          "config": {
+            "name": "rescaling",
+            "trainable": true,
+            "scale": 0.00392156862745098,
+            "offset": 0.0
+          },
+          "inboundNodes": [["input", 0, 0, {}]],
+          "name": "rescaling"
+        },
+        {
+          "className": "Conv2D",
+          "config": {
+            "name": "conv1",
+            "trainable": true,
+            "filters": 32,
+            "kernelSize": [3, 3],
+            "strides": [1, 1],
+            "padding": "same",
+            "dataFormat": "channelsLast",
+            "dilationRate": [1, 1],
+            "activation": "linear",
+            "useBias": true
+          },
+          "inboundNodes": [["rescaling", 0, 0, {}]],
+          "name": "conv1"
+        },
+        {
+          "className": "BatchNormalization",
+          "config": {
+            "name": "bn1",
+            "trainable": false,
+            "axis": -1,
+            "momentum": 0.99,
+            "epsilon": 0.001,
+            "center": true,
+            "scale": true
+          },
+          "inboundNodes": [["conv1", 0, 0, {}]],
+          "name": "bn1"
+        },
+        {
+          "className": "Activation",
+          "config": {
+            "name": "relu1",
+            "trainable": true,
+            "activation": "relu"
+          },
+          "inboundNodes": [["bn1", 0, 0, {}]],
+          "name": "relu1"
+        },
+        {
+          "className": "MaxPooling2D",
+          "config": {
+            "name": "pool1",
+            "trainable": true,
+            "poolSize": [2, 2],
+            "strides": [2, 2],
+            "padding": "valid",
+            "dataFormat": "channelsLast"
+          },
+          "inboundNodes": [["relu1", 0, 0, {}]],
+          "name": "pool1"
+        },
+        {
+          "className": "Dropout",
+          "config": {
+            "name": "drop1",
+            "trainable": true,
+            "rate": 0.0
+          },
+          "inboundNodes": [["pool1", 0, 0, {}]],
+          "name": "drop1"
+        },
+        {
+          "className": "Conv2D",
+          "config": {
+            "name": "conv2",
+            "trainable": true,
+            "filters": 64,
+            "kernelSize": [3, 3],
+            "strides": [1, 1],
+            "padding": "same",
+            "dataFormat": "channelsLast",
+            "dilationRate": [1, 1],
+            "activation": "linear",
+            "useBias": true
+          },
+          "inboundNodes": [["drop1", 0, 0, {}]],
+          "name": "conv2"
+        },
+        {
+          "className": "BatchNormalization",
+          "config": {
+            "name": "bn2",
+            "trainable": false,
+            "axis": -1,
+            "momentum": 0.99,
+            "epsilon": 0.001,
+            "center": true,
+            "scale": true
+          },
+          "inboundNodes": [["conv2", 0, 0, {}]],
+          "name": "bn2"
+        },
+        {
+          "className": "Activation",
+          "config": {
+            "name": "relu2",
+            "trainable": true,
+            "activation": "relu"
+          },
+          "inboundNodes": [["bn2", 0, 0, {}]],
+          "name": "relu2"
+        },
+        {
+          "className": "MaxPooling2D",
+          "config": {
+            "name": "pool2",
+            "trainable": true,
+            "poolSize": [2, 2],
+            "strides": [2, 2],
+            "padding": "valid",
+            "dataFormat": "channelsLast"
+          },
+          "inboundNodes": [["relu2", 0, 0, {}]],
+          "name": "pool2"
+        },
+        {
+          "className": "Dropout",
+          "config": {
+            "name": "drop2",
+            "trainable": true,
+            "rate": 0.0
+          },
+          "inboundNodes": [["pool2", 0, 0, {}]],
+          "name": "drop2"
+        },
+        {
+          "className": "Conv2D",
+          "config": {
+            "name": "conv3",
+            "trainable": true,
+            "filters": 128,
+            "kernelSize": [3, 3],
+            "strides": [1, 1],
+            "padding": "same",
+            "dataFormat": "channelsLast",
+            "dilationRate": [1, 1],
+            "activation": "linear",
+            "useBias": true
+          },
+          "inboundNodes": [["drop2", 0, 0, {}]],
+          "name": "conv3"
+        },
+        {
+          "className": "BatchNormalization",
+          "config": {
+            "name": "bn3",
+            "trainable": false,
+            "axis": -1,
+            "momentum": 0.99,
+            "epsilon": 0.001,
+            "center": true,
+            "scale": true
+          },
+          "inboundNodes": [["conv3", 0, 0, {}]],
+          "name": "bn3"
+        },
+        {
+          "className": "Activation",
+          "config": {
+            "name": "relu3",
+            "trainable": true,
+            "activation": "relu"
+          },
+          "inboundNodes": [["bn3", 0, 0, {}]],
+          "name": "relu3"
+        },
+        {
+          "className": "MaxPooling2D",
+          "config": {
+            "name": "pool3",
+            "trainable": true,
+            "poolSize": [2, 2],
+            "strides": [2, 2],
+            "padding": "valid",
+            "dataFormat": "channelsLast"
+          },
+          "inboundNodes": [["relu3", 0, 0, {}]],
+          "name": "pool3"
+        },
+        {
+          "className": "Dropout",
+          "config": {
+            "name": "drop3",
+            "trainable": true,
+            "rate": 0.0
+          },
+          "inboundNodes": [["pool3", 0, 0, {}]],
+          "name": "drop3"
+        },
+        {
+          "className": "Flatten",
+          "config": {
+            "name": "flatten",
+            "trainable": true,
+            "dataFormat": "channelsLast"
+          },
+          "inboundNodes": [["drop3", 0, 0, {}]],
+          "name": "flatten"
+        },
+        {
+          "className": "Dense",
+          "config": {
+            "name": "fc1",
+            "trainable": true,
+            "units": 256,
+            "activation": "relu",
+            "useBias": true
+          },
+          "inboundNodes": [["flatten", 0, 0, {}]],
+          "name": "fc1"
+        },
+        {
+          "className": "Dropout",
+          "config": {
+            "name": "drop_fc",
+            "trainable": true,
+            "rate": 0.0
+          },
+          "inboundNodes": [["fc1", 0, 0, {}]],
+          "name": "drop_fc"
+        },
+        {
+          "className": "Dense",
+          "config": {
+            "name": "output",
+            "trainable": true,
+            "units": 29,
+            "activation": "softmax",
+            "useBias": true
+          },
+          "inboundNodes": [["drop_fc", 0, 0, {}]],
+          "name": "output"
+        }
+      ]
+    }
+  },
+  "weightsManifest": [
+    {
+      "paths": ["group1-shard1of1.bin"],
+      "weights": [
+        {
+          "name": "conv1/kernel",
+          "shape": [3, 3, 3, 32],
+          "dtype": "float32"
+        },
+        {
+          "name": "conv1/bias",
+          "shape": [32],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn1/gamma",
+          "shape": [32],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn1/beta",
+          "shape": [32],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn1/moving_mean",
+          "shape": [32],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn1/moving_variance",
+          "shape": [32],
+          "dtype": "float32"
+        },
+        {
+          "name": "conv2/kernel",
+          "shape": [3, 3, 32, 64],
+          "dtype": "float32"
+        },
+        {
+          "name": "conv2/bias",
+          "shape": [64],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn2/gamma",
+          "shape": [64],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn2/beta",
+          "shape": [64],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn2/moving_mean",
+          "shape": [64],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn2/moving_variance",
+          "shape": [64],
+          "dtype": "float32"
+        },
+        {
+          "name": "conv3/kernel",
+          "shape": [3, 3, 64, 128],
+          "dtype": "float32"
+        },
+        {
+          "name": "conv3/bias",
+          "shape": [128],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn3/gamma",
+          "shape": [128],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn3/beta",
+          "shape": [128],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn3/moving_mean",
+          "shape": [128],
+          "dtype": "float32"
+        },
+        {
+          "name": "bn3/moving_variance",
+          "shape": [128],
+          "dtype": "float32"
+        },
+        {
+          "name": "fc1/kernel",
+          "shape": [32768, 256],
+          "dtype": "float32"
+        },
+        {
+          "name": "fc1/bias",
+          "shape": [256],
+          "dtype": "float32"
+        },
+        {
+          "name": "output/kernel",
+          "shape": [256, 29],
+          "dtype": "float32"
+        },
+        {
+          "name": "output/bias",
+          "shape": [29],
+          "dtype": "float32"
+        }
+      ]
+    }
+  ]
+}

@@ -5,7 +5,7 @@ const users = (users) => {};
 // Lấy tất cả — KHÔNG trả password_hash
 users.getAll = (callback) => {
   const sqlString = `
-    SELECT id, username, full_name, email, u_role, u_status,
+    SELECT id, username, full_name, dob, gender, email, u_role, u_status,
            avatar_url, last_login, created_at, last_seen, total_online_time
     FROM users`;
   db.query(sqlString, (err, result) => {
@@ -17,7 +17,7 @@ users.getAll = (callback) => {
 // Lấy theo id — trả object hoặc null
 users.getById = (id, callback) => {
   const sqlString = `
-    SELECT id, username, full_name, email, u_role, u_status,
+    SELECT id, username, full_name, dob, gender,email, u_role, u_status,
            avatar_url, last_login, created_at, last_seen, total_online_time
     FROM users WHERE id = ?`;
   db.query(sqlString, [id], (err, result) => {
@@ -47,11 +47,13 @@ users.getByEmail = (email, callback) => {
 // Thêm user mới
 users.insert = (data, callback) => {
   const sqlString = `
-    INSERT INTO users (username, full_name, password_hash, email, avatar_url)
-    VALUES (?, ?, ?, ?, ?)`;
+    INSERT INTO users (username, full_name, dob, gender, password_hash, email, avatar_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?)`;
   const values = [
     data.username,
     data.full_name,
+    data.dob,
+    data.gender,
     data.password_hash,
     data.email || null,
     data.avatar_url || null,
@@ -66,9 +68,16 @@ users.insert = (data, callback) => {
 users.update = (id, data, callback) => {
   const sqlString = `
     UPDATE users
-    SET full_name = ?, email = ?, avatar_url = ?
+    SET full_name = ?, dob = ?, gender = ?, email = ?, avatar_url = ?
     WHERE id = ?`;
-  const values = [data.full_name, data.email, data.avatar_url, id];
+  const values = [
+    data.full_name,
+    data.dob,
+    data.gender,
+    data.email,
+    data.avatar_url,
+    id,
+  ];
   db.query(sqlString, values, (err, result) => {
     if (err) return callback(err, null);
     callback(null, result.affectedRows > 0);

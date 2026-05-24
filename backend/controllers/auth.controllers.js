@@ -7,9 +7,10 @@ const SALT_ROUNDS = 10;
 
 // Đăng ký
 const register = (req, res) => {
-  const { username, full_name, password, email, avatar_url } = req.body;
+  const { username, full_name, dob, gender, password, email, avatar_url } =
+    req.body;
 
-  if (!username || !full_name || !password) {
+  if (!username || !full_name || !password || !dob || !gender) {
     return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
   }
 
@@ -21,7 +22,15 @@ const register = (req, res) => {
     bcrypt.hash(password, SALT_ROUNDS, (err, password_hash) => {
       if (err) return res.status(500).json({ message: "Lỗi mã hóa password" });
 
-      const data = { username, full_name, password_hash, email, avatar_url };
+      const data = {
+        username,
+        dob,
+        gender,
+        full_name,
+        password_hash,
+        email,
+        avatar_url,
+      };
       users.insert(data, (err) => {
         if (err) return res.status(500).json({ message: "Lỗi tạo tài khoản" });
         res.status(201).json({ message: "Đăng ký thành công" });
@@ -104,6 +113,9 @@ const login = (req, res) => {
 
 // Đăng xuất
 const logout = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Người dùng chưa đăng nhập" });
+  }
   const { sessions_id, id: users_id } = req.user;
 
   users_sessions.closeSession(sessions_id, (err) => {

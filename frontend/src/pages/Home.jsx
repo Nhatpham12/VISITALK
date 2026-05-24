@@ -40,14 +40,6 @@ const Home = () => {
                 </p>
               </div>
             </div>
-
-            <div className="f3">
-              <h2>CHÍNH SÁCH BẢO MẬT</h2>
-            </div>
-
-            <div className="f4">
-              <h2>ĐIỀU KHOẢN SỬ DỤNG</h2>
-            </div>
           </div>
         </div>
       </div>

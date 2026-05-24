@@ -37,3 +37,4 @@ yarn-error.log
 
 # File rác của Windows
 Thumbs.db
+model/*.keras

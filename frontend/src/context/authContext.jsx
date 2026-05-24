@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const data = await authService.login(username, password);
-      localStorage.setItem("access_token", data.accessToken);
+      localStorage.setItem("access_token", data.token);
       setUser(data.user ?? { userId: data.userId });
       return data;
     } catch (err) {

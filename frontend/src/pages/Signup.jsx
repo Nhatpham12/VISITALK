@@ -11,6 +11,7 @@ const Signup = () => {
   const [form, setForm] = useState({
     fullname: "",
     dob: "",
+    gender: "", // Đã thêm gender vào state khởi tạo
     email: "",
     username: "",
     password: "",
@@ -25,9 +26,18 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    const { fullname, dob, email, username, password, password2 } = form;
+    const { fullname, dob, gender, email, username, password, password2 } =
+      form;
 
-    if (!fullname || !email || !username || !password || !password2) {
+    if (
+      !fullname ||
+      !dob ||
+      !gender ||
+      !email ||
+      !username ||
+      !password ||
+      !password2
+    ) {
       setError("Vui lòng điền đầy đủ thông tin.");
       return;
     }
@@ -42,11 +52,11 @@ const Signup = () => {
       await register({
         full_name: fullname,
         dob,
+        gender,
         email,
         username,
-        password, // backend nhận hashedPassword
+        password,
       });
-      // Đăng ký xong → về trang login
       navigate("/login");
     } catch (err) {
       setError(err.message || "Đăng ký thất bại. Vui lòng thử lại.");
@@ -90,23 +100,51 @@ const Signup = () => {
         <form className="form-group" onSubmit={handleSignup}>
           {[
             { id: "fullname", label: "Họ và tên", type: "text" },
-            { id: "dob", label: "Ngày tháng năm sinh", type: "text" },
-            { id: "gender", label: "Giới tính", type: "text" },
+            { id: "dob", label: "Ngày tháng năm sinh", type: "date" }, // Đổi thành type="date" cho hợp lý hơn
+            {
+              id: "gender",
+              label: "Giới tính",
+              type: "select", // Đổi thành dạng select
+              options: [
+                { value: "male", label: "Nam (Male)" },
+                { value: "female", label: "Nữ (Female)" },
+                { value: "other", label: "Khác (Other)" },
+              ],
+            },
             { id: "email", label: "Email", type: "email" },
             { id: "username", label: "Tên đăng nhập", type: "text" },
             { id: "password", label: "Mật khẩu", type: "password" },
             { id: "password2", label: "Nhập lại mật khẩu", type: "password" },
-          ].map(({ id, label, type }) => (
+          ].map(({ id, label, type, options }) => (
             <div className="field" key={id}>
               <label htmlFor={id}>{label}</label>
               <div className="input-wrapper">
-                <input
-                  type={type}
-                  id={id}
-                  value={form[id]}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
+                {/* Logic render có điều kiện: nếu là select thì hiện dropdown, ngược lại hiện input thường */}
+                {type === "select" ? (
+                  <select
+                    id={id}
+                    value={form[id]}
+                    onChange={handleChange}
+                    disabled={loading}
+                  >
+                    <option value="" disabled>
+                      -- Vui lòng chọn --
+                    </option>
+                    {options.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={type}
+                    id={id}
+                    value={form[id]}
+                    onChange={handleChange}
+                    disabled={loading}
+                  />
+                )}
               </div>
             </div>
           ))}
