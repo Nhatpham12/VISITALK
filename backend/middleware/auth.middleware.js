@@ -35,7 +35,7 @@ const verifyToken = (req, res, next) => {
         u_role: decoded.u_role,
         sessions_id: decoded.sessions_id,
       };
-
+      req.user = user;
       next();
     });
   });
