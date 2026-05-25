@@ -31,12 +31,15 @@ import Numbers from "./pages/Numbers";
 function PublicOnlyRoute({ children }) {
   const { user, loading } = useContext(AuthContext);
   const location = useLocation();
+
   if (loading) return null;
-  return user ? (
-    <Navigate to={location.state?.from || "/"} replace />
-  ) : (
-    children
-  );
+
+  if (user) {
+    const fallbackRedirect = user.u_role === "admin" ? "/admin" : "/";
+    return <Navigate to={location.state?.from || fallbackRedirect} replace />;
+  }
+
+  return children;
 }
 
 function App() {

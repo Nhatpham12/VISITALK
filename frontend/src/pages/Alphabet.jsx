@@ -1,38 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { lessonService } from "../services/api";
 import "../CSS/Alphabet.css";
 
-const ALPHABET_ENTRIES = [
-  { id: 1, letter: "Aa" },
-  { id: 2, letter: "Bb" },
-  { id: 3, letter: "Cc" },
-  { id: 4, letter: "Dd" },
-  { id: 5, letter: "Ee" },
-  { id: 6, letter: "Ff" },
-  { id: 7, letter: "Gg" },
-  { id: 8, letter: "Hh" },
-  { id: 9, letter: "Ii" },
-  { id: 10, letter: "Jj" },
-  { id: 11, letter: "Kk" },
-  { id: 12, letter: "Ll" },
-  { id: 13, letter: "Mm" },
-  { id: 14, letter: "Nn" },
-  { id: 15, letter: "Oo" },
-  { id: 16, letter: "Pp" },
-  { id: 17, letter: "Qq" },
-  { id: 18, letter: "Rr" },
-  { id: 19, letter: "Ss" },
-  { id: 20, letter: "Tt" },
-  { id: 21, letter: "Uu" },
-  { id: 22, letter: "Vv" },
-  { id: 23, letter: "Ww" },
-  { id: 24, letter: "Xx" },
-  { id: 25, letter: "Yy" },
-  { id: 26, letter: "Zz" },
-];
-
 const Alphabet = () => {
+  const [lessons, setLessons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    lessonService
+      .getAll()
+      .then((data) => {
+        const alphabetLessons = data
+          .filter((lesson) => lesson.title.toLowerCase().includes("chữ"))
+          .sort((a, b) => a.meaning.localeCompare(b.meaning));
+        setLessons(alphabetLessons);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -42,26 +34,53 @@ const Alphabet = () => {
         <h2>A-Z</h2>
       </div>
 
-      <div className="alphabet-container">
-        {ALPHABET_ENTRIES.map((entry) => (
-          <div className="alphabet-card" key={entry.id}>
-            <div className="alphabet-card__tags">
-              <span className="tag tag--type">
-                <img src="/Assets/Images/icon-type.png" alt="" />
-                Loại từ
-              </span>
-              <span className="tag tag--region">
-                <img src="/Assets/Images/icon-region.png" alt="" />
-                Phạm vi sử dụng
-              </span>
-            </div>
+      {loading && <div className="alphabet-status">Đang tải dữ liệu...</div>}
 
-            <div className="alphabet-card__letter-box">
-              <span className="alphabet-card__letter">{entry.letter}</span>
+      {error && (
+        <div className="alphabet-status alphabet-status--error">
+          Lỗi: {error}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <div className="alphabet-container">
+          {lessons.map((lesson) => (
+            <div className="alphabet-card" key={lesson.les_id}>
+              <div className="alphabet-card__tags">
+                <span className="tag tag--type">
+                  <img src="/Assets/Images/icon-type.png" alt="" />
+                  Ngôn ngữ ký hiệu
+                </span>
+                <span className="tag tag--region">
+                  <img src="/Assets/Images/icon-region.png" alt="" />
+                  Bảng chữ cái
+                </span>
+              </div>
+
+              {lesson.img_url && (
+                <div className="alphabet-card__img-box">
+                  <img
+                    src={lesson.img_url}
+                    alt={lesson.meaning}
+                    className="alphabet-card__img"
+                  />
+                </div>
+              )}
+
+              <div className="alphabet-card__letter-box">
+                <span className="alphabet-card__letter">
+                  {lesson.meaning.replace("Chữ ", "")}
+                  {lesson.meaning.replace("Chữ ", "").toLowerCase()}
+                </span>
+              </div>
+
+              <div className="alphabet-card__content">
+                <p>{lesson.content}</p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <Footer />
     </>

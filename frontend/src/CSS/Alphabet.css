@@ -32,6 +32,18 @@ body {
   margin-top: 4px;
 }
 
+/* ── Status (loading / error) ── */
+.alphabet-status {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #374c72;
+}
+
+.alphabet-status--error {
+  color: #c0392b;
+}
+
 /* ── Grid container ── */
 .alphabet-container {
   display: grid;
@@ -98,11 +110,26 @@ body {
   vertical-align: middle;
 }
 
+/* ── Image ── */
+.alphabet-card__img-box {
+  display: flex;
+  justify-content: center;
+}
+
+.alphabet-card__img {
+  width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #eef3f8;
+}
+
+/* ── Letter ── */
 .alphabet-card__letter-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 110px;
+  min-height: 80px;
 }
 
 .alphabet-card__letter {
@@ -111,4 +138,17 @@ body {
   color: #1a2a4a;
   letter-spacing: -1px;
   line-height: 1;
+}
+
+/* ── Description ── */
+.alphabet-card__content {
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.alphabet-card__content p {
+  font-size: 13.5px;
+  color: #1a2a4a;
+  line-height: 1.6;
 }

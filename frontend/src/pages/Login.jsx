@@ -23,10 +23,14 @@ const Login = () => {
     setLoading(true);
     setError("");
     try {
-      await login(username, password);
-      // Redirect về trang user đang vào trước đó, hoặc về "/"
-      const from = location.state?.from?.pathname || "/";
-      navigate(from, { replace: true });
+      const data = await login(username, password);
+
+      if (data && data.user && data.user.u_role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        const from = location.state?.from?.pathname || "/";
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       setError(err.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     } finally {

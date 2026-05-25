@@ -28,15 +28,17 @@ const verifyToken = (req, res, next) => {
         });
       }
 
-      // Gắn thông tin user vào request để các middleware/controller sau dùng
+      // ĐÚNG: Gắn thông tin giải mã từ token vào request
       req.user = {
         id: decoded.id,
         username: decoded.username,
         u_role: decoded.u_role,
         sessions_id: decoded.sessions_id,
       };
-      req.user = user;
-      next();
+
+      // ❌ ĐÃ XÓA dòng: req.user = user;
+
+      next(); // Chuyển tiếp sang controller/middleware tiếp theo
     });
   });
 };

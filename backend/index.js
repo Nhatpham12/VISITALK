@@ -1,9 +1,10 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const seedAdmin = require("./seeders/seedAdmin");
-require("dotenv").config();
 
 const app = express();
 
