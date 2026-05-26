@@ -3,9 +3,16 @@ const db = require("../common/connect");
 const users_sessions = {};
 
 // Lấy tất cả phiên của 1 user
+// userSessions.model.js — sửa getByUserId
 users_sessions.getByUserId = (users_id, callback) => {
   const sqlString = `
-    SELECT * FROM users_sessions 
+    SELECT *,
+      CASE 
+        WHEN logout_at IS NULL 
+        THEN TIMESTAMPDIFF(SECOND, login_at, NOW())  -- ✅ tính realtime khi còn active
+        ELSE duration                                  -- dùng giá trị đã lưu nếu đã logout
+      END AS current_duration
+    FROM users_sessions 
     WHERE users_id = ? 
     ORDER BY login_at DESC`;
   db.query(sqlString, [users_id], (err, result) => {
@@ -85,7 +92,10 @@ users_sessions.getDuration = (sessions_id, callback) => {
   const sqlString = `SELECT duration FROM users_sessions WHERE sessions_id = ?`;
   db.query(sqlString, [sessions_id], (err, result) => {
     if (err) return callback(err, null);
-    callback(null, result[0]?.duration || 0);
+    if (!result[0]) return callback(new Error("Session không tồn tại"), null);
+
+    const duration = result[0].duration ?? 0; // ✅ dùng ?? thay || để phân biệt 0 và null
+    callback(null, duration);
   });
 };
 
