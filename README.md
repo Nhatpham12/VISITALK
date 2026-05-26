@@ -774,13 +774,10 @@ MIT License © 2024-2026 — Nhat Pham & Contributors
 - [x] **🆕 AI Models Integration** — Model v1 & v2 cho nhận diện cử chỉ
 - [x] **🆕 Duration Tracking** — Theo dõi chính xác thời gian sử dụng
 - [ ] Real-time performance optimization
-- [ ] Dataset bảng chữ cái Tiếng Ký Hiệu Việt Nam (mở rộng)
+- [x] Dataset bảng chữ cái Tiếng Ký Hiệu Việt Nam (mở rộng)
 - [ ] Progressive Web App (PWA)
-- [ ] Offline mode support
 - [ ] Video streaming (WebRTC)
 - [ ] Advanced Analytics & Reports dashboard
-- [ ] Multi-language support (EN, CN, JP, etc.)
-- [ ] Mobile app (React Native)
 
 ---
 
@@ -859,8 +856,5 @@ Nếu thấy hữu ích, vui lòng **⭐ Star** repository này!
 
 ![GitHub Stars](https://img.shields.io/github/stars/Nhatpham12/VISITALK?style=social)
 ![GitHub Forks](https://img.shields.io/github/forks/Nhatpham12/VISITALK?style=social)
-
-**Phiên bản**: 1.2.0 (Updated: 2026-05-26)  
-**Status**: 🚀 Đang phát triển tích cực
 
 </div>
