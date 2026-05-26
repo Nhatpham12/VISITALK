@@ -6,9 +6,9 @@
 
 **Xóa bỏ rào cản giao tiếp giữa người khiếm thính và cộng đồng**
 
-![JavaScript](https://img.shields.io/badge/JavaScript-72.9%25-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
-![CSS](https://img.shields.io/badge/CSS-24%25-1572B6?style=flat-square&logo=css3&logoColor=white)
-![Python](https://img.shields.io/badge/Python-2.9%25-3776AB?style=flat-square&logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-75.9%25-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![CSS](https://img.shields.io/badge/CSS-23.9%25-1572B6?style=flat-square&logo=css3&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-0.2%25-E34C26?style=flat-square&logo=html5&logoColor=white)
 ![React](https://img.shields.io/badge/React-19+-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-Latest-646CFF?style=flat-square&logo=vite&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat-square&logo=node.js&logoColor=white)
@@ -20,12 +20,15 @@
 
 ## 📖 Giới Thiệu
 
-**VISITALK** là một nền tảng web toàn diện kết hợp **nhận diện ngôn ngữ ký hiệu thời gian thực**, **quản lý người dùng**, và **hệ thống học tập tương tác**. Ứng dụng cung cấp:
+**VISITALK** là một nền tảng web toàn diện kết hợp **nhận diện ngôn ngữ ký hiệu thời gian thực**, **quản lý người dùng**, và **hệ thống học tập tương tác**. Ứng dụng sử dụng **AI Models** để nhận diện cử chỉ tay, cung cấp dịch thuật tức thì, và hỗ trợ người khiếm thính giao tiếp hiệu quả hơn.
 
-✅ **Dịch thuật thời gian thực** — Nhận diện cử chỉ tay qua webcam  
-✅ **Quản lý tài khoản đầy đủ** — Xác thực, hồ sơ, lịch sử phiên làm việc  
+### ✨ Điểm Nổi Bật
+
+✅ **Dịch thuật thời gian thực** — Nhận diện cử chỉ tay qua webcam với AI Models  
+✅ **Super Admin System** — Quản lý toàn diện hệ thống  
+✅ **Quản lý tài khoản đầy đủ** — Xác thực, hồ sơ, lịch sử phiên làm việc (với theo dõi duration)  
 ✅ **Hệ thống học tập** — Khóa học về chào hỏi, bảng chữ cái, số đếm  
-✅ **Dashboard Admin** — Quản lý người dùng, bài học, báo cáo  
+✅ **Dashboard Admin Nâng Cao** — Quản lý người dùng, bài học, báo cáo toàn diện  
 ✅ **Giao diện responsive** — Tối ưu cho desktop, tablet, điện thoại  
 
 ---
@@ -34,13 +37,15 @@
 
 ### 🎯 Dịch Thuật & Nhận Diện
 - Nhận diện cử chỉ tay qua webcam thường
-- Dịch thuật thời gian thực sang văn bản
+- Dịch thuật thời gian thực sang văn bản sử dụng **AI Models**
 - Hỗ trợ ngôn ngữ ký hiệu Việt Nam
+- 🆕 **Cải thiện độ chính xác nhận diện** — Upload model v2 với performance tốt hơn
 
 ### 👤 Quản Lý Tài Khoản
 - **Đăng ký/Đăng nhập** với xác thực an toàn (bcrypt, JWT)
 - **Hồ sơ cá nhân** — Cập nhật thông tin, avatar
 - **Lịch sử phiên** — Theo dõi hoạt động, thời gian trực tuyến
+- **Theo dõi duration** — Ghi nhận chính xác thời gian sử dụng trong mỗi phiên
 - **Bảo mật** — Rate limiting, HTTPS-ready, token JWT
 
 ### 📚 Hệ Thống Học Tập
@@ -49,16 +54,18 @@
 - **Giao diện tương tác** — Hình ảnh, ý nghĩa, nội dung chi tiết
 
 ### 🛡️ Quyền Hạn & Bảo Mật
-- **Phân quyền** — User vs Admin
+- **Phân quyền ba cấp** — User vs Admin vs **Super Admin**
+- **Super Admin Capabilities** — Quản lý toàn bộ admin, cấu hình hệ thống
 - **Protected Routes** — Đăng nhập bắt buộc cho tính năng nhạy cảm
 - **Rate Limiting** — Chống brute-force, DDoS
 - **CORS & Helmet** — Bảo vệ header HTTP
 
-### ⚙️ Dashboard Admin
-- Quản lý toàn bộ người dùng
-- Thêm/sửa/xóa bài học
-- Xem báo cáo hoạt động
-- Quản lý phiên làm việc
+### ⚙️ Dashboard Admin Nâng Cao
+- Quản lý toàn bộ người dùng (lọc, tìm kiếm)
+- Thêm/sửa/xóa bài học với quản lý hình ảnh
+- Xem báo cáo hoạt động chi tiết
+- Quản lý phiên làm việc (duration, IP tracking)
+- **🆕 Super Admin Dashboard** — Quản lý tài khoản admin, cài đặt hệ thống
 
 ---
 
@@ -84,6 +91,13 @@
 └──────────────┬───────────────────────┘
                │ SQL Query
                ↓
+┌──────────────────────────────────────┐
+│      AI Models & Recognition         │
+│  ├─ Hand Detection (MediaPipe)       │
+│  ├─ Gesture Recognition Models v1,v2 │
+│  └─ Real-time Inference              │
+└──────────────┬───────────────────────┘
+               │
         ┌──────────────────┐
         │   MySQL Database │
         │  ├─ users        │
@@ -124,7 +138,7 @@ VISITALK/
 │   │   │   ├── Numbers.jsx                # Khóa: Số đếm
 │   │   │   ├── Personal.jsx               # Hồ sơ cá nhân
 │   │   │   ├── Setting.jsx                # Cài đặt
-│   │   │   ├── Admin.jsx                  # Dashboard admin
+│   │   │   ├── Admin.jsx                  # Dashboard admin (cải thiện)
 │   │   │   ├── Asking.jsx                 # Hỗ trợ/Liên hệ
 │   │   │   ├── Report.jsx                 # Báo cáo
 │   │   │   ├── Introduce.jsx              # Giới thiệu dự án
@@ -150,16 +164,16 @@ VISITALK/
 │   │   ├── auth.routes.js                 # /api/auth — Login/Signup
 │   │   ├── users.routes.js                # /api/users — User CRUD
 │   │   ├── lessons.routes.js              # /api/lessons — Lesson management
-│   │   └── userSessions.routes.js         # /api/user-sessions — Session tracking
+│   │   └── userSessions.routes.js         # /api/user-sessions — Session tracking (duration)
 │   ├── controllers/                       # Business logic
 │   │   ├── auth.controllers.js            # Login, Signup, Token refresh
 │   │   ├── user.controllers.js            # Get profile, Update profile
 │   │   ├── lessons.controllers.js         # Get lessons, Create lesson
 │   │   ├── accessTo.controllers.js        # Lesson access tracking
-│   │   └── session.controllers.js         # Session management
+│   │   └── session.controllers.js         # Session management + duration calculation
 │   ├── middleware/                        # Express middleware
 │   │   ├── auth.middleware.js             # JWT verification
-│   │   ├── roleCheck.middleware.js        # Admin role check
+│   │   ├── roleCheck.middleware.js        # Admin & Super Admin role check
 │   │   └── errorHandler.js                # Error handling
 │   ├── models/                            # Database models/helpers
 │   │   ├── User.js
@@ -169,9 +183,14 @@ VISITALK/
 │   │   ├── database.js                    # MySQL connection
 │   │   ├── constants.js                   # Constants, error codes
 │   │   └── validators.js                  # Input validation
-│   ├── index.js                           # Server entry point
+│   ├── index.js                           # Server entry point (with Super Admin init)
 │   ├── package.json
 │   └── .env.example                       # Environment variables example
+│
+├── 📂 models/                             # 🆕 AI Models Directory
+│   ├── model_v1.pkl                       # Gesture recognition model v1
+│   ├── model_v2.pkl                       # Gesture recognition model v2 (improved)
+│   └── README_MODELS.md                   # Model documentation
 │
 ├── 📄 README.md                           # This file (Vietnamese)
 ├── 📄 VISITALK DB.txt                     # Database schema SQL
@@ -208,6 +227,13 @@ VISITALK/
 | **Express Rate Limit** | DDoS protection |
 | **dotenv** | Environment variables |
 
+### AI & Machine Learning
+| Công Nghệ | Mục Đích |
+|-----------|---------|
+| **MediaPipe** | Hand detection & pose estimation |
+| **TensorFlow/Scikit-learn** | AI Models (v1, v2) |
+| **OpenCV** | Image processing (optional) |
+
 ### Database (MySQL)
 ```sql
 -- Bảng người dùng
@@ -230,7 +256,8 @@ users_sessions (sessions_id, users_id, login_at, logout_at, duration, ip_address
 {
   "react": "^19.2.5",
   "react-dom": "^19.2.5",
-  "react-router-dom": "^7.14.2"
+  "react-router-dom": "^7.14.2",
+  "axios": "^1.x.x"
 }
 ```
 
@@ -247,6 +274,13 @@ users_sessions (sessions_id, users_id, login_at, logout_at, duration, ip_address
 }
 ```
 
+**AI Models:**
+```
+mediapipe>=0.9.0
+tensorflow>=2.x or scikit-learn>=1.0
+numpy>=1.20
+```
+
 ---
 
 ## 🚀 Hướng Dẫn Cài Đặt & Chạy
@@ -256,6 +290,7 @@ users_sessions (sessions_id, users_id, login_at, logout_at, duration, ip_address
 - **MySQL** 5.7+ (hoặc MariaDB)
 - **Webcam** (cho tính năng dịch thuật)
 - **Trình duyệt hiện đại**: Chrome, Edge, Firefox
+- **Python** 3.8+ (nếu chạy AI models locally)
 
 ### 1️⃣ Clone Repository
 
@@ -297,13 +332,17 @@ cp .env.example .env
 # DB_PASSWORD=your_password
 # DB_NAME=visitalk_db
 # JWT_SECRET=your_secret_key
+# SUPER_ADMIN_EMAIL=superadmin@visitalk.com
+# SUPER_ADMIN_PASSWORD=super_secure_password
 
-# Chạy server
+# Chạy server (Super Admin sẽ được khởi tạo tự động)
 npm start
 # hoặc dev mode: npm run dev
 ```
 
 Backend chạy tại: **http://localhost:5001**
+
+> 🆕 **Super Admin Auto-Initialization**: Khi server khởi động, nó sẽ tự động tạo tài khoản Super Admin nếu chưa tồn tại.
 
 ### 4️⃣ Setup Frontend (React + Vite)
 
@@ -322,14 +361,23 @@ npm run build
 
 Frontend chạy tại: **http://localhost:5173**
 
-### 5️⃣ Kiểm Tra Kết Nối
+### 5️⃣ Setup AI Models (Optional - Local Inference)
+
+```bash
+# Cài Python dependencies
+pip install -r requirements.txt
+
+# Models sẽ được sử dụng tại: /models/model_v1.pkl hoặc /models/model_v2.pkl
+```
+
+### 6️⃣ Kiểm Tra Kết Nối
 
 ```bash
 # Test API health check
 curl http://localhost:5001/api/health
 
 # Kết quả dự kiến:
-# {"status":"ok","timestamp":"2026-05-20T14:52:35Z"}
+# {"status":"ok","timestamp":"2026-05-26T08:37:38Z"}
 ```
 
 ---
@@ -347,6 +395,8 @@ JWT_SECRET=your_jwt_secret_key_minimum_32_characters_long
 JWT_EXPIRE=7d
 CLIENT_URL=http://localhost:5173
 NODE_ENV=development
+SUPER_ADMIN_EMAIL=superadmin@visitalk.com
+SUPER_ADMIN_PASSWORD=your_super_secure_password
 ```
 
 ### CORS Configuration
@@ -391,7 +441,7 @@ DELETE /api/lessons/:id         # Xóa bài học (admin only)
 ### User Sessions (`/api/user-sessions`)
 ```http
 POST   /api/user-sessions       # Bắt đầu phiên mới
-PUT    /api/user-sessions/:id   # Kết thúc phiên
+PUT    /api/user-sessions/:id   # Kết thúc phiên (tính duration)
 GET    /api/user-sessions/:uid  # Lịch sử phiên của user
 ```
 
@@ -407,37 +457,37 @@ GET    /api/user-sessions/:uid  # Lịch sử phiên của user
 ### 2. **Xác Thực** (Chưa đăng nhập)
 ```
 Signup → Tạo tài khoản mới
-  ↓
+   ↓
 Validation (bcrypt hash mật khẩu)
-  ↓
+   ↓
 Login → Xác minh email + mật khẩu
-  ↓
+   ↓
 JWT Token → Lưu localStorage
-  ↓
+   ↓
 Redirect → Home hoặc Translate
 ```
 
 ### 3. **Dịch Thuật (Chính)** (Đã đăng nhập)
 ```
 /translate
-  ↓
+   ↓
 Webcam Access → getUserMedia()
-  ↓
-Hand Detection → MediaPipe (Python/JS)
-  ↓
-Gesture Recognition → AI Model
-  ↓
+   ↓
+Hand Detection → MediaPipe
+   ↓
+Gesture Recognition → AI Model (v1 hoặc v2)
+   ↓
 Text Output → Hiển thị & Lưu DB
-  ↓
+   ↓
 Access Tracking → Ghi nhận trong access_to table
 ```
 
 ### 4. **Học Tập**
 ```
 /learning
-  ├─ /learning/greeting → Khóa chào hỏi
-  ├─ /learning/alphabet → Khóa bảng chữ cái
-  └─ /learning/numbers → Khóa số đếm
+   ├─ /learning/greeting → Khóa chào hỏi
+   ├─ /learning/alphabet → Khóa bảng chữ cái
+   └─ /learning/numbers → Khóa số đếm
 ```
 
 ### 5. **Hồ Sơ & Cài Đặt** (Đã đăng nhập)
@@ -446,12 +496,13 @@ Access Tracking → Ghi nhận trong access_to table
 /setting → Thay đổi mật khẩu, Cài đặt
 ```
 
-### 6. **Admin Panel** (Chỉ admin)
+### 6. **Admin Panel** (Admin/Super Admin)
 ```
 /admin
-  ├─ Quản lý Users
-  ├─ Quản lý Lessons
-  └─ Xem Analytics & Reports
+   ├─ Quản lý Users (lọc, tìm kiếm)
+   ├─ Quản lý Lessons (tạo, sửa, xóa)
+   ├─ Xem Analytics & Reports
+   └─ 🆕 Super Admin Dashboard (quản lý admin, cài đặt)
 ```
 
 ---
@@ -479,7 +530,8 @@ App (Router)
 │   ├── Asking
 │   └── Report
 ├── Admin Pages
-│   └── Admin Dashboard
+│   ├── Admin Dashboard
+│   └── 🆕 Super Admin Dashboard
 └── Info Pages
     ├── Introduce
     ├── Securitypolicy
@@ -535,7 +587,9 @@ Verify JWT signature
 ↓
 Check token expiration
 ↓
-Extract user ID
+Extract user ID & role
+↓
+Check role (Admin/Super Admin if needed)
 ↓
 Allow/Deny request
 ```
@@ -619,7 +673,13 @@ pm2 save
 
 1. Đăng nhập với tài khoản admin
 2. Truy cập `/admin`
-3. Quản lý người dùng, bài học, xem báo cáo
+3. Quản lý người dùng, bài học, xem báo cáo, theo dõi duration
+
+### Cho Super Admin
+
+1. Đăng nhập với tài khoản super admin được khởi tạo tự động
+2. Truy cập `/admin` để xem các quyền cao nhất
+3. Quản lý tài khoản admin, cài đặt hệ thống
 
 ---
 
@@ -667,6 +727,21 @@ DB_NAME=visitalk_db
 // Yêu cầu user login lại
 ```
 
+### AI Model không tìm thấy
+```bash
+# Đảm bảo models/ folder tồn tại
+# Kiểm tra model paths trong code:
+# - /models/model_v1.pkl
+# - /models/model_v2.pkl
+```
+
+### Duration không tính chính xác
+```bash
+# Kiểm tra backend xử lý duration
+# Đảm bảo logout_at được ghi nhận chính xác
+# Kiểm tra MySQL sessions table có dữ liệu không
+```
+
 ---
 
 ## 📞 Hỗ Trợ & Liên Hệ
@@ -695,15 +770,17 @@ MIT License © 2024-2026 — Nhat Pham & Contributors
 - [x] User management (Profile, Settings)
 - [x] Lesson management system
 - [x] Admin dashboard (basics)
-- [ ] **Tích hợp AI nhận diện cử chỉ tay (Priority)**
-- [ ] Real-time webcam translation
-- [ ] Dataset bảng chữ cái Tiếng Ký Hiệu Việt Nam
-- [ ] Tối ưu performance (caching, lazy loading)
+- [x] **🆕 Super Admin System** — Quản lý admin, cài đặt hệ thống
+- [x] **🆕 AI Models Integration** — Model v1 & v2 cho nhận diện cử chỉ
+- [x] **🆕 Duration Tracking** — Theo dõi chính xác thời gian sử dụng
+- [ ] Real-time performance optimization
+- [ ] Dataset bảng chữ cái Tiếng Ký Hiệu Việt Nam (mở rộng)
 - [ ] Progressive Web App (PWA)
 - [ ] Offline mode support
 - [ ] Video streaming (WebRTC)
-- [ ] Analytics & Reports dashboard
-- [ ] Multi-language support
+- [ ] Advanced Analytics & Reports dashboard
+- [ ] Multi-language support (EN, CN, JP, etc.)
+- [ ] Mobile app (React Native)
 
 ---
 
@@ -757,10 +834,16 @@ git push origin feature/your-feature-name
 - [JWT (jsonwebtoken)](https://github.com/auth0/node-jsonwebtoken)
 - [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
 
+### AI & ML Documentation
+- [MediaPipe](https://mediapipe.dev)
+- [TensorFlow.js](https://www.tensorflow.org/js)
+- [Scikit-learn](https://scikit-learn.org)
+
 ### Additional Resources
 - [CORS Explained](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
 - [REST API Best Practices](https://restfulapi.net)
 - [SQL Tutorial](https://www.w3schools.com/sql)
+- [Sign Language Recognition Guide](https://developers.google.com/mediapipe/solutions/vision/hand_landmarker)
 
 ---
 
@@ -776,5 +859,8 @@ Nếu thấy hữu ích, vui lòng **⭐ Star** repository này!
 
 ![GitHub Stars](https://img.shields.io/github/stars/Nhatpham12/VISITALK?style=social)
 ![GitHub Forks](https://img.shields.io/github/forks/Nhatpham12/VISITALK?style=social)
+
+**Phiên bản**: 1.2.0 (Updated: 2026-05-26)  
+**Status**: 🚀 Đang phát triển tích cực
 
 </div>
