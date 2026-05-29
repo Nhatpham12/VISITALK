@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+
 import "../CSS/Greeting.css";
 
 const GREETING_ENTRIES = [
@@ -80,17 +81,11 @@ const Greeting = () => {
 
               <div className="greeting-card__tags">
                 <span className="tag tag--type">
-                  <img
-                    src="/Assets/Images/icon-type.png"
-                    alt="loại từ"
-                  />
+                  <img src="/Assets/Images/icon-type.png" alt="loại từ" />
                   {entry.type}
                 </span>
                 <span className="tag tag--region">
-                  <img
-                    src="/Assets/Images/icon-region.png"
-                    alt="khu vực"
-                  />
+                  <img src="/Assets/Images/icon-region.png" alt="khu vực" />
                   {entry.region}
                 </span>
               </div>

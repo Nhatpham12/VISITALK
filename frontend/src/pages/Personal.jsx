@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/authContext";
 import { userService } from "../services/api";
 import "../CSS/Personal.css";
 
@@ -29,8 +29,7 @@ const Personal = () => {
     setLoading(true);
     setMessage("");
     try {
-      const updated = await userService.update(user.userId || user._id, form);
-      // Cập nhật lại user trong AuthContext nếu có hàm updateUser
+      const updated = await userService.update(user.id, form);
       if (typeof updateUser === "function") updateUser(updated);
       setMessage("Cập nhật thành công!");
     } catch (err) {

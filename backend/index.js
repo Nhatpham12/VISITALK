@@ -58,7 +58,7 @@ app.use(globalLimiter);
 
 const authLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
-  max: 10,
+  max: 100,
   message: { message: "Quá nhiều lần thử đăng nhập, vui lòng chờ 5 phút" },
 });
 
@@ -66,11 +66,13 @@ const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/users.routes");
 const lessonsRoutes = require("./routes/lessons.routes");
 const userSessionRoutes = require("./routes/userSessions.routes");
+const reportRoutes = require("./routes/report.routes");
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/lessons", lessonsRoutes);
 app.use("/api/user-sessions", userSessionRoutes);
+app.use("/api/reports", reportRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });

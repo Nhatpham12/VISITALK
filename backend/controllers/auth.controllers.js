@@ -31,7 +31,7 @@ const register = (req, res) => {
         email,
         avatar_url,
       };
-      users.insert(data, (err) => {
+      users.insert(data, (err, insertId) => {
         if (err) return res.status(500).json({ message: "Lỗi tạo tài khoản" });
         res.status(201).json({ message: "Đăng ký thành công" });
       });

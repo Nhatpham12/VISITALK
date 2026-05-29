@@ -7,7 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useContext } from "react";
-import { AuthProvider, AuthContext } from "./context/AuthContext";
+import { AuthProvider, AuthContext } from "./context/authContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Learning from "./pages/Learning";
