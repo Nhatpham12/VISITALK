@@ -54,22 +54,6 @@ const Admin = () => {
             </div>
             <p className="admin-label">QUẢN TRỊ VIÊN</p>
           </div>
-          <div className="admin-actions">
-            <button className="action-btn">
-              <img
-                src="/Assets/Images/Adduser.png"
-                className="btn-icon"
-                alt="Thêm"
-              />
-            </button>
-            <button className="action-btn">
-              <img
-                src="/Assets/Images/Deluser.png"
-                className="btn-icon"
-                alt="Xóa"
-              />
-            </button>
-          </div>
         </div>
 
         <div className="table-section">
