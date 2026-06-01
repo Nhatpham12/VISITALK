@@ -5,7 +5,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import "../CSS/Translate.css";
-import TfWorker from "../workers/tfWorker?worker";
 
 const CLASSES = [
   "A",
@@ -64,8 +63,10 @@ export default function Translate() {
 
   // ── Bước 1: Tạo Worker, load model bên trong Worker ──
   useEffect(() => {
-    // Sử dụng Vite's worker import
-    const worker = new TfWorker();
+    // Tạo worker từ file public với Vite URL
+    const worker = new Worker(new URL("../workers/tfWorker.js", import.meta.url), {
+      type: "module",
+    });
     workerRef.current = worker;
 
     worker.onmessage = ({ data }) => {
