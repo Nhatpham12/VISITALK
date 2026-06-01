@@ -1,4 +1,4 @@
-// public/tfWorker.js  ← đặt file này vào thư mục public/
+// src/workers/tfWorker.js
 // Web Worker: load TF.js + model hoàn toàn tách khỏi main thread
 
 importScripts(

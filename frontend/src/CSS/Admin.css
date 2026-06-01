@@ -53,41 +53,6 @@ body {
   margin-top: -25px;
 }
 
-.admin-actions {
-  display: flex;
-  gap: 6px;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.admin-page .action-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  border: 1.8px solid #1a2a4a;
-  border-radius: 25px;
-  background-color: #fff;
-  color: #1a2a4a;
-  cursor: pointer;
-  min-width: 155px;
-  transition:
-    background 0.2s,
-    color 0.2s;
-}
-
-.admin-page .action-btn:hover {
-  background-color: #1a2a4a;
-  color: #fff;
-}
-
-.admin-page .action-btn .btn-icon {
-  width: 180px;
-  height: auto;
-  object-fit: contain;
-}
-
 .admin-page .table-section {
   width: 100%;
   max-width: 1200px;

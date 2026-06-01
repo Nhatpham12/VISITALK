@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Worker file: src/workers/tfWorker.js (Vite sẽ tự handle)
 // Model:       public/model/model.json + public/model/group1-shard1of1.bin
 // Package:     npm install @tensorflow/tfjs  (vẫn cần cho type hints, ko dùng trực tiếp)
@@ -276,272 +277,24 @@ export default function Translate() {
     error: "Lỗi",
   };
 
+=======
+import React from "react";
+import Navbar from "../components/Navbar";
+import "../CSS/Translate.css";
+const Translate = () => {
+>>>>>>> 61a5838 (sửa 1)
   return (
     <>
       <Navbar />
       <div className="translate-page">
         <div className="main-content">
           <div className="content-wrapper">
-            {/* Header */}
-            <div className="tl-header">
-              <div className="tl-title">
-                <span className="tl-icon">🤟</span>
-                <div>
-                  <h1>VSL Translator</h1>
-                  <p>Nhận diện ngôn ngữ ký hiệu theo thời gian thực</p>
-                </div>
-              </div>
-              <div className="tl-header-right">
-                <div className="tl-status">
-                  <span className={`status-dot s-${phase}`} />
-                  <span>{phase === "error" ? "Lỗi" : phaseLabel[phase]}</span>
-                </div>
-                <button
-                  className="btn-cache"
-                  onClick={clearCache}
-                  title="Xoá cache model (dùng khi update model)"
-                >
-                  🗑 Cache
-                </button>
-              </div>
-            </div>
-
-            <div className="tl-body">
-              {/* Camera */}
-              <div className="cam-panel">
-                <div className="cam-viewport">
-                  {/* Loading overlay — chỉ che ô camera, UI còn lại vẫn dùng được */}
-                  {phase !== "ready" && (
-                    <div
-                      className={`cam-loading ${phase === "error" ? "is-error" : ""}`}
-                    >
-                      {phase === "error" ? (
-                        <>
-                          <span className="err-icon">⚠️</span>
-                          <p className="err-msg">{errorMsg}</p>
-                          <p className="err-hint">
-                            Kiểm tra: public/model/model.json có tồn tại không?
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <div className="load-ring">
-                            <svg viewBox="0 0 44 44" width="72" height="72">
-                              <circle
-                                cx="22"
-                                cy="22"
-                                r="18"
-                                fill="none"
-                                stroke="#1a2f50"
-                                strokeWidth="4"
-                              />
-                              <circle
-                                cx="22"
-                                cy="22"
-                                r="18"
-                                fill="none"
-                                stroke="#2979ff"
-                                strokeWidth="4"
-                                strokeDasharray={`${(loadPct / 100) * 113.1} 113.1`}
-                                strokeLinecap="round"
-                                transform="rotate(-90 22 22)"
-                                style={{
-                                  transition: "stroke-dasharray 0.4s ease",
-                                }}
-                              />
-                              <text
-                                x="22"
-                                y="27"
-                                textAnchor="middle"
-                                fill="white"
-                                fontSize="10"
-                                fontFamily="monospace"
-                              >
-                                {loadPct}%
-                              </text>
-                            </svg>
-                          </div>
-                          <p className="load-msg">{loadMsg}</p>
-                          {loadPct > 0 && loadPct < 100 && (
-                            <p className="load-hint">
-                              ⚡ Lần sau load từ cache — gần như tức thì
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  )}
-
-                  <video
-                    ref={videoRef}
-                    className="cam-video"
-                    playsInline
-                    muted
-                    style={{ transform: "scaleX(-1)" }}
-                  />
-                  <canvas
-                    ref={canvasRef}
-                    width={640}
-                    height={480}
-                    style={{ display: "none" }}
-                  />
-                  <canvas
-                    ref={overlayRef}
-                    className="cam-overlay"
-                    width={640}
-                    height={480}
-                  />
-
-                  {prediction && phase === "ready" && (
-                    <div className="pred-badge">
-                      <span className="pred-letter">{prediction}</span>
-                    </div>
-                  )}
-
-                  {phase === "ready" && (
-                    <div className="conf-arc">
-                      <svg viewBox="0 0 36 36" width="58" height="58">
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="15.9"
-                          fill="none"
-                          stroke="#ffffff12"
-                          strokeWidth="3"
-                        />
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="15.9"
-                          fill="none"
-                          stroke={confidence >= 80 ? "#00e676" : "#2979ff"}
-                          strokeWidth="3"
-                          strokeDasharray={`${confidence} 100`}
-                          strokeLinecap="round"
-                          transform="rotate(-90 18 18)"
-                          style={{ transition: "stroke-dasharray 0.15s" }}
-                        />
-                        <text
-                          x="18"
-                          y="21.5"
-                          textAnchor="middle"
-                          fill="white"
-                          fontSize="7"
-                          fontFamily="monospace"
-                        >
-                          {confidence}%
-                        </text>
-                      </svg>
-                    </div>
-                  )}
-
-                  <div className="stable-bar">
-                    <div
-                      className="stable-fill"
-                      style={{ width: `${stablePct}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="cam-controls">
-                  <button
-                    className={`btn-ctrl ${paused ? "btn-play" : "btn-pause"}`}
-                    onClick={() => setPaused((p) => !p)}
-                    disabled={phase !== "ready"}
-                  >
-                    {paused ? "▶ Tiếp tục" : "⏸ Tạm dừng"}
-                  </button>
-                  <div className="hint-row">
-                    <span className="hint">📍 Đặt tay vào khung sáng</span>
-                    <span className="hint">
-                      ⏱ Giữ {STABLE_FRAMES} frame để xác nhận
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Output */}
-              <div className="output-panel">
-                <div className="current-sign">
-                  <p className="section-label">Ký hiệu hiện tại</p>
-                  <div className={`sign-display ${prediction ? "active" : ""}`}>
-                    {prediction ?? "—"}
-                  </div>
-                  <div className="conf-text">
-                    {prediction
-                      ? `Độ tin cậy: ${confidence}%`
-                      : "Chưa phát hiện"}
-                  </div>
-                  {stablePct > 0 && (
-                    <div className="stable-label">Xác nhận: {stablePct}%</div>
-                  )}
-                </div>
-
-                <div className="text-output-block">
-                  <div className="output-header">
-                    <p className="section-label">Văn bản đầu ra</p>
-                    <div className="output-actions">
-                      <button
-                        className="btn-sm"
-                        onClick={() =>
-                          outputText &&
-                          navigator.clipboard.writeText(outputText)
-                        }
-                      >
-                        📋 Sao chép
-                      </button>
-                      <button
-                        className="btn-sm btn-danger"
-                        onClick={() => setOutputText("")}
-                      >
-                        🗑 Xoá
-                      </button>
-                    </div>
-                  </div>
-                  <div className="text-output">
-                    {outputText || (
-                      <span className="placeholder">
-                        Các ký tự sẽ xuất hiện ở đây...
-                      </span>
-                    )}
-                    <span className="cursor-blink">|</span>
-                  </div>
-                </div>
-
-                <div className="legend-block">
-                  <p className="section-label">Ký hiệu đặc biệt</p>
-                  <div className="legend-grid">
-                    {[
-                      { sign: "nothing", desc: "Không có ký hiệu — bỏ qua" },
-                      { sign: "space", desc: "Chèn khoảng trắng" },
-                      { sign: "del", desc: "Xoá ký tự cuối" },
-                    ].map(({ sign, desc }) => (
-                      <div key={sign} className="legend-item">
-                        <span className="legend-badge">{sign}</span>
-                        <span className="legend-desc">{desc}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="alphabet-block">
-                  <p className="section-label">Bảng chữ cái</p>
-                  <div className="alphabet-grid">
-                    {CLASSES.slice(0, 26).map((c) => (
-                      <div
-                        key={c}
-                        className={`alpha-cell ${prediction === c ? "alpha-active" : ""}`}
-                      >
-                        {c}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div className="form-group"></div>
           </div>
         </div>
       </div>
     </>
   );
-}
+};
+
+export default Translate;
