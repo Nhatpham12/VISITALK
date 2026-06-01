@@ -1,10 +1,11 @@
-// Worker file: public/tfWorker.js  (file riêng, đã tạo sẵn)
+// Worker file: src/workers/tfWorker.js (Vite sẽ tự handle)
 // Model:       public/model/model.json + public/model/group1-shard1of1.bin
 // Package:     npm install @tensorflow/tfjs  (vẫn cần cho type hints, ko dùng trực tiếp)
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import "../CSS/Translate.css";
+import TfWorker from "../workers/tfWorker?worker";
 
 const CLASSES = [
   "A",
@@ -63,8 +64,8 @@ export default function Translate() {
 
   // ── Bước 1: Tạo Worker, load model bên trong Worker ──
   useEffect(() => {
-    // Worker file nằm ở public/ → Vite serve tĩnh, worker có thể fetch model cùng origin
-    const worker = new Worker("/tfWorker.js");
+    // Sử dụng Vite's worker import
+    const worker = new TfWorker();
     workerRef.current = worker;
 
     worker.onmessage = ({ data }) => {
