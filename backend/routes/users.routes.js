@@ -16,10 +16,8 @@ router.get("/", verifyToken, requireRole("admin"), (req, res) => {
 router.get("/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  if (req.user.id !== id && req.user.u_role !== "admin") {
-    return res
-      .status(403)
-      .json({ message: "Không có quyền xem thông tin này" });
+  if (String(req.user.id) !== String(id) && req.user.u_role !== "admin") {
+    return res.status(403).json({ message: "Không có quyền chỉnh sửa" });
   }
 
   users.getById(id, (err, user) => {
@@ -34,21 +32,25 @@ router.get("/:id", verifyToken, (req, res) => {
 router.put("/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
-  if (req.user.id !== id && req.user.u_role !== "admin") {
+  if (String(req.user.id) !== String(id) && req.user.u_role !== "admin") {
     return res.status(403).json({ message: "Không có quyền chỉnh sửa" });
   }
 
-  const { full_name, email, avatar_url } = req.body;
+  const { full_name, dob, gender, email, avatar_url } = req.body;
   if (!full_name) {
     return res.status(400).json({ message: "full_name không được để trống" });
   }
 
-  users.update(id, { full_name, email, avatar_url }, (err, updated) => {
-    if (err) return res.status(500).json({ message: "Lỗi server" });
-    if (!updated)
-      return res.status(404).json({ message: "Không tìm thấy người dùng" });
-    res.status(200).json({ message: "Cập nhật thành công" });
-  });
+  users.update(
+    id,
+    { full_name, dob, gender, email, avatar_url },
+    (err, updated) => {
+      if (err) return res.status(500).json({ message: "Lỗi server" });
+      if (!updated)
+        return res.status(404).json({ message: "Không tìm thấy người dùng" });
+      res.status(200).json({ message: "Cập nhật thành công" });
+    },
+  );
 });
 
 // PATCH /api/users/:id/status — chỉ admin ban/unban user

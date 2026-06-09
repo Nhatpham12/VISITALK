@@ -1,7 +1,7 @@
 // frontend/src/pages/Signup.jsx
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/authContext";
 import "../CSS/Signup.css";
 
 const Signup = () => {
@@ -11,7 +11,7 @@ const Signup = () => {
   const [form, setForm] = useState({
     fullname: "",
     dob: "",
-    gender: "", // Đã thêm gender vào state khởi tạo
+    gender: "",
     email: "",
     username: "",
     password: "",

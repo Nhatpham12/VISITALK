@@ -21,7 +21,7 @@ const Admin = () => {
     if (!window.confirm("Bạn chắc chắn muốn xóa người dùng này?")) return;
     try {
       await userService.delete(id);
-      setUsers(users.filter((u) => u._id !== id));
+      setUsers(users.filter((u) => u.id !== id));
     } catch (err) {
       alert(err.message);
     }
@@ -32,7 +32,7 @@ const Admin = () => {
     try {
       await userService.updateStatus(id, newStatus);
       setUsers(
-        users.map((u) => (u._id === id ? { ...u, u_status: newStatus } : u)),
+        users.map((u) => (u.id === id ? { ...u, u_status: newStatus } : u)),
       );
     } catch (err) {
       alert(err.message);
@@ -53,22 +53,6 @@ const Admin = () => {
               />
             </div>
             <p className="admin-label">QUẢN TRỊ VIÊN</p>
-          </div>
-          <div className="admin-actions">
-            <button className="action-btn">
-              <img
-                src="/Assets/Images/Adduser.png"
-                className="btn-icon"
-                alt="Thêm"
-              />
-            </button>
-            <button className="action-btn">
-              <img
-                src="/Assets/Images/Deluser.png"
-                className="btn-icon"
-                alt="Xóa"
-              />
-            </button>
           </div>
         </div>
 
@@ -97,22 +81,20 @@ const Admin = () => {
                     </tr>
                   ) : (
                     users.map((u) => (
-                      <tr className="user-row" key={u._id}>
+                      <tr className="user-row" key={u.id}>
                         <td>{u.full_name}</td>
                         <td>{u.dob}</td>
                         <td>{u.gender}</td>
                         <td>{u.email}</td>
                         <td>{u.username}</td>
                         <td>
-                          {u.createdAt
-                            ? new Date(u.createdAt).toLocaleDateString("vi-VN")
+                          {u.created_at
+                            ? new Date(u.created_at).toLocaleDateString("vi-VN")
                             : "-"}
                         </td>
                         <td>
                           <button
-                            onClick={() =>
-                              handleToggleStatus(u._id, u.u_status)
-                            }
+                            onClick={() => handleToggleStatus(u.id, u.u_status)}
                             style={{
                               color: u.u_status === "active" ? "green" : "gray",
                               fontSize: "12px",
@@ -123,7 +105,7 @@ const Admin = () => {
                         </td>
                         <td>
                           <button
-                            onClick={() => handleDelete(u._id)}
+                            onClick={() => handleDelete(u.id)}
                             style={{ color: "red", fontSize: "12px" }}
                           >
                             Xóa

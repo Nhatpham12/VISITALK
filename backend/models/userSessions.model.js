@@ -55,7 +55,6 @@ users_sessions.getActiveSessionById = (sessions_id, callback) => {
 };
 
 // Tạo phiên mới khi user đăng nhập
-// FIX: chuẩn hóa ip_address (loại bỏ ::ffff:) và giới hạn device 100 ký tự
 users_sessions.insert = (data, callback) => {
   const rawIp = (data.ip_address || "").replace("::ffff:", "").trim();
   const ip_address = rawIp.length > 0 ? rawIp.substring(0, 45) : null;
@@ -94,7 +93,7 @@ users_sessions.getDuration = (sessions_id, callback) => {
     if (err) return callback(err, null);
     if (!result[0]) return callback(new Error("Session không tồn tại"), null);
 
-    const duration = result[0].duration ?? 0; // ✅ dùng ?? thay || để phân biệt 0 và null
+    const duration = result[0].duration ?? 0;
     callback(null, duration);
   });
 };
