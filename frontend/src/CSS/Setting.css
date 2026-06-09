@@ -13,7 +13,7 @@ body {
   background-color: #fff;
 }
 
-.main-content {
+.main-content-setting {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -24,7 +24,7 @@ body {
   margin: auto;
 }
 
-.content-wrapper {
+.content-wrapper-setting {
   background-color: #fff;
   border: 7px solid #1a2a4a;
   border-radius: 25px;
@@ -56,6 +56,7 @@ body {
   gap: 16px;
   align-items: center;
   flex-wrap: nowrap;
+  margin-bottom: 22px;
 }
 
 .setting-label {
@@ -115,13 +116,14 @@ body {
   box-shadow: 0 0 0 2px #1a2a4a;
 }
 
-.quality-option {
+.yn-option {
   display: flex;
   gap: 8px;
   margin-left: auto;
+  margin-right: 36px;
 }
 
-.quality-btn {
+.yn-btn {
   padding: 6px 18px;
   border: 2px solid #1a2a4a;
   border-radius: 20px;
@@ -135,14 +137,40 @@ body {
     color 0.2s;
 }
 
-.quality-btn.active {
+.yn-btn.active {
   background: #b0bfd4;
   color: #1a2a4a;
   border-color: #b0bfd4;
 }
 
-.quality-btn:hover:not(.active) {
+.yn-btn:hover:not(.active) {
   background: #e8ecf2;
+}
+
+.signout-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.signout-btn {
+  min-width: 180px;
+  padding: 12px 34px;
+  border: 2.5px solid #1a2a4a;
+  border-radius: 25px;
+  background-color: #1a2a4a;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.signout-btn:hover {
+  background-color: #fff;
+  color: #1a2a4a;
 }
 
 .card-footer {
@@ -155,18 +183,46 @@ body {
 
 .card-footer-icons {
   display: flex;
+  align-items: center;
   gap: 16px;
 }
 
 .card-icon {
-  width: 24px;
-  height: 24px;
+  width: 64px;
+  height: auto;
   cursor: pointer;
   transition: opacity 0.2s;
   object-fit: contain;
 }
 
 .card-icon:hover {
+  opacity: 0.6;
+}
+
+.card-footer-report {
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+
+.report-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.report-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+.report-btn:hover {
   opacity: 0.6;
 }
 

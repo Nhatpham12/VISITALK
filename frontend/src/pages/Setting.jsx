@@ -2,18 +2,18 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Link, useNavigate } from "react-router-dom";
 import "../CSS/Setting.css";
 
 const Setting = () => {
   const [brightness, setBrightness] = useState(50);
-  const [volume, setVolume] = useState(50);
-  const [videoQuality, setVideoQuality] = useState("720p");
+  const [saveChatHistory, setSaveChatHistory] = useState("Có");
 
   return (
     <>
       <Navbar />
-      <div className="main-content">
-        <div className="content-wrapper">
+      <div className="main-content-setting">
+        <div className="content-wrapper-setting">
           <div className="Intro">
             <h1>CÀI ĐẶT</h1>
           </div>
@@ -35,48 +35,48 @@ const Setting = () => {
             </div>
 
             <div className="setting-row">
-              <span className="setting-label">Âm lượng</span>
-              <div className="slider-wrapper">
-                <input
-                  type="range"
-                  className="setting-slider"
-                  min="0"
-                  max="100"
-                  value={volume}
-                  onChange={(e) => setVolume(e.target.value)}
-                />
-                <span>{volume}%</span>
-              </div>
-            </div>
-
-            <div className="setting-row">
-              <span className="setting-label">Chất lượng Video</span>
-              <div className="quality-option">
-                {["480p", "720p", "1080p"].map((q) => (
+              <span className="setting-label">Lưu lịch sử hội thoại</span>
+              <div className="yn-option">
+                {["Có", "Không"].map((q) => (
                   <button
                     key={q}
-                    className={`quality-btn ${videoQuality === q ? "active" : ""}`}
-                    onClick={() => setVideoQuality(q)}
+                    className={`yn-btn ${saveChatHistory === q ? "active" : ""}`}
+                    onClick={() => setSaveChatHistory(q)}
                   >
                     {q}
                   </button>
                 ))}
               </div>
             </div>
+
+            <div className="signout-row">
+              <button className="signout-btn">Đăng xuất</button>
+            </div>
           </div>
 
           <div className="card-footer">
             <div className="card-footer-icons">
-              <img
-                src="/Assets/Images/Phone.png"
-                className="class-icon"
-                alt="Phone"
-              />
-              <img
-                src="/Assets/Images/Chat.png"
-                className="class-icon"
-                alt="Chat"
-              />
+              <Link to="/admin">
+                <img
+                  src="/Assets/Images/Personal.png"
+                  className="card-icon"
+                  alt="Admin"
+                />
+              </Link>
+              <div className="card-footer-report">
+                <Link to="/report">
+                  <img
+                    src="/Assets/Images/btn_background.png"
+                    className="report-bg"
+                    alt=""
+                  />
+                  <img
+                    src="/Assets/Images/Report.png"
+                    className="report-btn"
+                    alt="Report"
+                  />
+                </Link>
+              </div>
             </div>
             <div className="card-footer-logo">
               <img

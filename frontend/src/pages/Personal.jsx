@@ -97,11 +97,6 @@ const Personal = () => {
                 {loading ? "Đang lưu..." : "Thay đổi thông tin cá nhân"}
               </button>
             </div>
-            <div className="sign-out">
-              <button id="out" onClick={handleLogout}>
-                Đăng xuất
-              </button>
-            </div>
           </div>
         </div>
       </div>
