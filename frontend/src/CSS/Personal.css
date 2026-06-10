@@ -122,24 +122,3 @@ body {
   background-color: #1a2a4a;
   color: #fff;
 }
-
-.personal-page .sign-out {
-  margin-top: -2px;
-}
-
-.personal-page .sign-out button {
-  border: 2px solid #1a2a4a;
-  border-radius: 20px;
-  background-color: #fff;
-  color: #1a2a4a;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 8px 18px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.personal-page .sign-out button:hover {
-  background-color: #1a2a4a;
-  color: #fff;
-}

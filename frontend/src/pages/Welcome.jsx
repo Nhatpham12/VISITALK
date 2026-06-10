@@ -5,19 +5,19 @@ const Welcome = () => {
   return (
     <>
       <div className="welcome-page">
-        <div className="Navbar">
+        <div className="Navbar-welcome">
           <Link to="/">
-            <img src="../Assets/Images/Brand.png" className="brand" />
+            <img src="/Assets/Images/Brand.png" className="brand" />
           </Link>
           <Link to="/setting">
-            <img src="../Assets/Images/Setting.png" className="setting" />
+            <img src="/Assets/Images/Setting.png" className="setting" />
           </Link>
         </div>
-        <div className="content-wrapper">
+        <div className="welcome-content-wrapper">
           <div className="welcome">
             <h1>CHÀO MỪNG BẠN ĐẾN VỚI</h1>
             <img
-              src="../Assets/Images/Brand.png"
+              src="/Assets/Images/Brand.png"
               alt="VISITALK"
               className="brand-main"
             />

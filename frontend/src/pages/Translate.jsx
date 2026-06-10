@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+// Worker file: public/tfWorker.js  (file riêng, đã tạo sẵn)
+// Model:       public/model/model.json + public/model/group1-shard1of1.bin
+// Package:     npm install @tensorflow/tfjs  (vẫn cần cho type hints, ko dùng trực tiếp)
+
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import "../CSS/Translate.css";
 
@@ -34,257 +38,20 @@ const CLASSES = [
   "space",
 ];
 
-// FIX #6/#7: Đúng ngưỡng theo yêu cầu
-const CONF_THRESH = 0.8; // 80%
-const STABLE_FRAMES = 12; // 12 frame liên tiếp
-const MODEL_URL = "/model/model.json";
-const MODEL_TIMEOUT_MS = 120_000;
+const CONF_THRESH = 0.8;
+const STABLE_FRAMES = 12;
 
-// ─────────────────────────────────────────────────────────────────
-// WEB WORKER SOURCE
-// FIX #1: Không dùng tf.browser.fromPixels() trong Worker (không có DOM)
-//         → tách RGB thủ công từ RGBA Uint8Array
-// FIX #2: Dùng đúng GlobalAveragePooling2D (mean over spatial dims)
-//         thay vì reshape([n, 32768]) (Flatten – sai kiến trúc)
-// FIX #8: fromPixels thay bằng tf.tensor3d trực tiếp từ Float32Array RGB
-// ─────────────────────────────────────────────────────────────────
-const WORKER_SRC = `
-importScripts("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js");
-
-let weights = null;
-
-// ── Helpers ──────────────────────────────────────────────────────
-function joinModelPath(base, rel) {
-  return new URL(rel, base).href;
-}
-
-function concatBuffers(buffers) {
-  const total = buffers.reduce((s, b) => s + b.byteLength, 0);
-  const out   = new Uint8Array(total);
-  let   off   = 0;
-  for (const b of buffers) { out.set(new Uint8Array(b), off); off += b.byteLength; }
-  return out.buffer;
-}
-
-async function fetchBuf(url, onProg) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(url + " → HTTP " + res.status);
-  const total = Number(res.headers.get("content-length")) || 0;
-  if (!res.body) {
-    const buf = await res.arrayBuffer();
-    if (onProg) onProg(buf.byteLength, buf.byteLength || total);
-    return buf;
-  }
-  const reader = res.body.getReader();
-  const chunks = [];
-  let got = 0;
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    got += value.byteLength;
-    if (onProg) onProg(got, total);
-  }
-  return concatBuffers(chunks.map(c => c.buffer.slice(c.byteOffset, c.byteOffset + c.byteLength)));
-}
-
-// ── Batch Normalization ───────────────────────────────────────────
-function applyBN(x, name) {
-  return tf.batchNorm(
-    x,
-    weights[name + "/moving_mean"],
-    weights[name + "/moving_variance"],
-    weights[name + "/beta"],
-    weights[name + "/gamma"],
-    0.001
-  );
-}
-
-// ── Conv block: Conv2D → BN → ReLU → MaxPool ─────────────────────
-function convBlock(x, convName, bnName) {
-  return tf.tidy(() => {
-    const conv = tf.conv2d(x, weights[convName + "/kernel"], [1,1], "same")
-                   .add(weights[convName + "/bias"]);
-    const bn   = applyBN(conv, bnName);
-    return tf.maxPool(bn.relu(), [2,2], [2,2], "valid");
-  });
-}
-
-// ── Forward pass ─────────────────────────────────────────────────
-// Architecture từ model.json:
-//   Input [1,128,128,3]
-//   Rescaling ÷255        → đã xử lý trước khi gọi hàm này
-//   convBlock1 → [1,64,64,32]
-//   convBlock2 → [1,32,32,64]
-//   convBlock3 → [1,16,16,128]
-//   GlobalAveragePooling2D → mean over axes [1,2] → [1,128]   ← FIX #2 & #9
-//   Dense(256, relu)       → [1,256]
-//   Dropout(0.4)           → bypass khi inference
-//   Dense(29, softmax)     → [1,29]
-function predictTensor(input) {
-  return tf.tidy(() => {
-    // Rescaling: ÷255 (scale = 0.00392156862745098 từ model.json)
-    let x = input.toFloat().mul(0.00392156862745098);
-
-    x = convBlock(x, "conv1", "bn1");   // → [1, 64, 64,  32]
-    x = convBlock(x, "conv2", "bn2");   // → [1, 32, 32,  64]
-    x = convBlock(x, "conv3", "bn3");   // → [1, 16, 16, 128]
-
-    // FIX #2: GlobalAveragePooling2D = mean over spatial axes (1 và 2)
-    x = x.mean([1, 2]);                 // → [1, 128]
-
-    // Dense fc1: relu
-    x = tf.matMul(x, weights["fc1/kernel"])
-          .add(weights["fc1/bias"])
-          .relu();                       // → [1, 256]
-
-    // Dropout bỏ qua khi inference (training=false là mặc định)
-
-    // Dense output: softmax
-    x = tf.matMul(x, weights["output/kernel"])
-          .add(weights["output/bias"]); // → [1, 29]
-
-    return tf.softmax(x);
-  });
-}
-
-// ── Load model weights từ model.json + .bin ───────────────────────
-async function loadWeights(modelUrl) {
-  const res = await fetch(modelUrl);
-  if (!res.ok) throw new Error("Không tải được model.json: HTTP " + res.status);
-  const json     = await res.json();
-  const manifest = json.weightsManifest || [];
-  const specs    = manifest.flatMap(g => g.weights || []);
-  const paths    = manifest.flatMap(g => g.paths   || []);
-
-  const buffers = [];
-  let done = 0;
-  for (const p of paths) {
-    const url = joinModelPath(modelUrl, p);
-    const buf = await fetchBuf(url, (got, total) => {
-      const base  = done / paths.length;
-      const share = 1   / paths.length;
-      const pct   = Math.min(95, Math.round(10 + (base + share * (total > 0 ? got / total : 0)) * 85));
-      self.postMessage({ type: "progress", pct, msg: "Đang tải trọng số... " + pct + "%" });
-    });
-    buffers.push(buf);
-    done++;
-  }
-
-  self.postMessage({ type: "progress", pct: 97, msg: "Đang khởi tạo bộ nhớ tensor..." });
-  weights = tf.io.decodeWeights(concatBuffers(buffers), specs);
-
-  // Kiểm tra đủ weights
-  const required = [
-    "conv1/kernel","conv1/bias","bn1/gamma","bn1/beta","bn1/moving_mean","bn1/moving_variance",
-    "conv2/kernel","conv2/bias","bn2/gamma","bn2/beta","bn2/moving_mean","bn2/moving_variance",
-    "conv3/kernel","conv3/bias","bn3/gamma","bn3/beta","bn3/moving_mean","bn3/moving_variance",
-    "fc1/kernel","fc1/bias","output/kernel","output/bias",
-  ];
-  const missing = required.filter(n => !weights[n]);
-  if (missing.length) throw new Error("Thiếu weights: " + missing.join(", "));
-}
-
-// ── FIX #1 & #8: Chuyển RGBA Uint8Array → Float32 RGB tensor ─────
-// Web Worker không có DOM, không có ImageData interface cho tf.browser.fromPixels
-// → tách thủ công: bỏ kênh Alpha, giữ R,G,B
-function rgbaToRgbTensor(rgbaUint8, w, h) {
-  const n      = w * h;
-  const rgb32  = new Float32Array(n * 3);
-  for (let i = 0; i < n; i++) {
-    rgb32[i * 3]     = rgbaUint8[i * 4];     // R
-    rgb32[i * 3 + 1] = rgbaUint8[i * 4 + 1]; // G
-    rgb32[i * 3 + 2] = rgbaUint8[i * 4 + 2]; // B
-  }
-  // Shape: [h, w, 3] rồi resize bên dưới
-  return tf.tensor3d(rgb32, [h, w, 3]);
-}
-
-// ── Message handler ───────────────────────────────────────────────
-self.onmessage = async ({ data }) => {
-
-  // ── LOAD ──
-  if (data.type === "load") {
-    try {
-      self.postMessage({ type: "progress", pct: 3, msg: "Đang khởi động luồng nền..." });
-      await tf.setBackend("cpu");
-      await tf.ready();
-      self.postMessage({ type: "progress", pct: 8, msg: "Đang tải model.json..." });
-
-      await loadWeights(data.modelUrl);
-
-      // Warm-up: chạy thử một tensor rỗng để JIT compile kernel
-      const dummy  = tf.zeros([1, 128, 128, 3]);
-      const warmup = predictTensor(dummy);
-      warmup.dispose();
-      dummy.dispose();
-
-      self.postMessage({ type: "ready" });
-    } catch (err) {
-      self.postMessage({ type: "error", msg: "Lỗi tải model: " + err.message });
-    }
-    return;
-  }
-
-  // ── PREDICT ──
-  if (data.type === "predict" && weights) {
-    try {
-      // FIX #1/#8: Tách RGB từ RGBA, không dùng tf.browser.fromPixels
-      const rgba   = new Uint8Array(data.pixels);
-      const scores = tf.tidy(() => {
-        const rgb3d   = rgbaToRgbTensor(rgba, data.width, data.height); // [H, W, 3]
-        const resized = tf.image.resizeBilinear(rgb3d, [128, 128]);      // [128, 128, 3]
-        const batched = resized.expandDims(0);                           // [1, 128, 128, 3]
-        return predictTensor(batched);
-      });
-
-      const arr = await scores.data();
-      scores.dispose();
-
-      let maxIdx = 0;
-      for (let i = 1; i < arr.length; i++) {
-        if (arr[i] > arr[maxIdx]) maxIdx = i;
-      }
-
-      self.postMessage({
-        type:  "result",
-        label: data.classes[maxIdx],
-        conf:  arr[maxIdx],
-      });
-    } catch (err) {
-      self.postMessage({ type: "predictError", msg: err.message });
-    } finally {
-      self.postMessage({ type: "idle" });
-    }
-  }
-};
-`;
-
-// ─────────────────────────────────────────────────────────────────
-function createWorker() {
-  const blob = new Blob([WORKER_SRC], { type: "application/javascript" });
-  return new Worker(URL.createObjectURL(blob));
-}
-
-// ─────────────────────────────────────────────────────────────────
 export default function Translate() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const overlayRef = useRef(null);
   const workerRef = useRef(null);
   const rafRef = useRef(null);
-
-  // Dùng ref cho các giá trị loop cần đọc nhưng không trigger re-render
   const stableRef = useRef(0);
-  const lastLabelRef = useRef(null);
-  const busyRef = useRef(false);
-  const camReadyRef = useRef(false);
-  const modelReadyRef = useRef(false);
-  // FIX #3: Tránh loop re-create do dependency [prediction]
-  const predictionRef = useRef(null);
-  const pausedRef = useRef(false);
+  const lastLblRef = useRef(null);
+  const busyRef = useRef(false); // worker đang xử lý?
 
-  const [phase, setPhase] = useState("model"); // "model" | "cam" | "ready" | "error"
+  const [phase, setPhase] = useState("model"); // model|cam|ready|error
   const [loadPct, setLoadPct] = useState(0);
   const [loadMsg, setLoadMsg] = useState("Đang khởi tạo...");
   const [errorMsg, setErrorMsg] = useState("");
@@ -294,107 +61,63 @@ export default function Translate() {
   const [outputText, setOutputText] = useState("");
   const [paused, setPaused] = useState(false);
 
-  // ── Xử lý kết quả từ worker ──────────────────────────────────────
-  const handleResult = useCallback((label, conf) => {
-    if (label !== "nothing" && conf >= CONF_THRESH) {
-      predictionRef.current = label;
-      setPrediction(label);
-      setConfidence(Math.round(conf * 100));
-
-      if (label === lastLabelRef.current) {
-        stableRef.current = Math.min(stableRef.current + 1, STABLE_FRAMES);
-      } else {
-        lastLabelRef.current = label;
-        stableRef.current = 1;
-      }
-
-      const pct = Math.round((stableRef.current / STABLE_FRAMES) * 100);
-      setStablePct(pct);
-
-      if (stableRef.current === STABLE_FRAMES) {
-        if (label === "space") setOutputText((t) => t + " ");
-        else if (label === "del") setOutputText((t) => t.slice(0, -1));
-        else setOutputText((t) => t + label);
-        stableRef.current = 0;
-        setStablePct(0);
-      }
-    } else {
-      stableRef.current = Math.max(0, stableRef.current - 1);
-      setStablePct(Math.round((stableRef.current / STABLE_FRAMES) * 100));
-      if (stableRef.current === 0) {
-        predictionRef.current = null;
-        setPrediction(null);
-        setConfidence(0);
-        lastLabelRef.current = null;
-      }
-    }
-  }, []);
-
-  const markReady = useCallback(() => {
-    if (camReadyRef.current && modelReadyRef.current) setPhase("ready");
-  }, []);
-
-  // ── Khởi tạo Worker + load model ─────────────────────────────────
+  // ── Bước 1: Tạo Worker, load model bên trong Worker ──
   useEffect(() => {
-    let cancelled = false;
-
-    const timeoutId = window.setTimeout(() => {
-      if (!modelReadyRef.current) {
-        workerRef.current?.terminate();
-        if (!cancelled) {
-          setPhase("error");
-          setErrorMsg("Quá thời gian tải model.");
-        }
-      }
-    }, MODEL_TIMEOUT_MS);
-
-    const worker = createWorker();
+    // Worker file nằm ở public/ → Vite serve tĩnh, worker có thể fetch model cùng origin
+    const worker = new Worker("/tfWorker.js");
     workerRef.current = worker;
 
     worker.onmessage = ({ data }) => {
-      if (cancelled) return;
       switch (data.type) {
         case "progress":
           setLoadPct(data.pct);
           setLoadMsg(data.msg);
           break;
+
         case "ready":
-          modelReadyRef.current = true;
-          window.clearTimeout(timeoutId);
-          setLoadPct(100);
-          markReady();
+          // Model xong trong worker → mở webcam ở main thread
+          setPhase("cam");
           break;
+
         case "result":
+          busyRef.current = false;
           handleResult(data.label, data.conf);
           break;
-        case "idle":
-          busyRef.current = false;
-          break;
-        case "predictError":
-          console.error("[Worker predict]", data.msg);
-          break;
+
         case "error":
           setPhase("error");
           setErrorMsg(data.msg);
           break;
+
+        case "cacheCleared":
+          alert("Đã xoá cache. Tải lại trang để load model mới.");
+          break;
+
+        default:
+          break;
       }
     };
 
+    worker.onerror = (e) => {
+      setPhase("error");
+      setErrorMsg("Worker lỗi: " + e.message);
+    };
+
+    // Gửi lệnh load model — URL tuyệt đối để worker fetch được
     worker.postMessage({
       type: "load",
-      modelUrl: new URL(MODEL_URL, window.location.origin).href,
+      url: window.location.origin + "/model/model.json",
     });
 
     return () => {
-      cancelled = true;
-      window.clearTimeout(timeoutId);
       worker.terminate();
+      cancelAnimationFrame(rafRef.current);
     };
-  }, [handleResult, markReady]);
+  }, []); // eslint-disable-line
 
-  // ── Khởi tạo webcam ──────────────────────────────────────────────
+  // ── Bước 2: Mở webcam sau khi model sẵn sàng ─────────
   useEffect(() => {
-    let cancelled = false;
+    if (phase !== "cam") return;
     let stream;
     (async () => {
       try {
@@ -402,103 +125,82 @@ export default function Translate() {
           video: { width: 640, height: 480, facingMode: "user" },
           audio: false,
         });
-        if (cancelled || !videoRef.current) return;
+        if (!videoRef.current) return;
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
-        camReadyRef.current = true;
-        markReady();
-      } catch (e) {
-        if (!cancelled) {
-          setPhase("error");
-          setErrorMsg("Không mở được camera: " + e.message);
-        }
+        setPhase("ready");
+      } catch (err) {
+        setPhase("error");
+        setErrorMsg("Webcam: " + err.message);
       }
     })();
     return () => {
-      cancelled = true;
-      stream?.getTracks().forEach((t) => t.stop());
+      if (stream) stream.getTracks().forEach((t) => t.stop());
     };
-  }, [markReady]);
+  }, [phase]);
 
-  // ── Vẽ ROI overlay ───────────────────────────────────────────────
-  const drawROI = useCallback(() => {
-    const oc = overlayRef.current;
-    if (!oc) return;
-    const ctx = oc.getContext("2d");
-    const W = oc.width,
-      H = oc.height;
-    ctx.clearRect(0, 0, W, H);
+  // ── Xử lý kết quả predict từ Worker ──────────────────
+  const handleResult = useCallback((label, conf) => {
+    if (conf >= CONF_THRESH && label !== "nothing") {
+      setPrediction(label);
+      setConfidence(Math.round(conf * 100));
 
-    const size = Math.floor(Math.min(W, H) * 0.72);
-    const x0 = Math.floor((W - size) / 2);
-    const y0 = Math.floor((H - size) / 2);
-    const color = predictionRef.current ? "#00e676" : "#2979ff";
+      if (label === lastLblRef.current) {
+        stableRef.current = Math.min(stableRef.current + 1, STABLE_FRAMES);
+        setStablePct(Math.round((stableRef.current / STABLE_FRAMES) * 100));
 
-    ctx.fillStyle = "rgba(0,0,0,0.45)";
-    ctx.fillRect(0, 0, W, y0);
-    ctx.fillRect(0, y0 + size, W, H - y0 - size);
-    ctx.fillRect(0, y0, x0, size);
-    ctx.fillRect(x0 + size, y0, W, size);
-
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2.5;
-    ctx.strokeRect(x0, y0, size, size);
-
-    // Góc nhấn mạnh
-    const c = 18;
-    ctx.lineWidth = 4;
-    [
-      [x0, y0],
-      [x0 + size, y0],
-      [x0, y0 + size],
-      [x0 + size, y0 + size],
-    ].forEach(([cx, cy]) => {
-      const dx = cx === x0 ? c : -c;
-      const dy = cy === y0 ? c : -c;
-      ctx.beginPath();
-      ctx.moveTo(cx + dx, cy);
-      ctx.lineTo(cx, cy);
-      ctx.lineTo(cx, cy + dy);
-      ctx.stroke();
-    });
+        if (stableRef.current === STABLE_FRAMES) {
+          if (label === "space") setOutputText((t) => t + " ");
+          else if (label === "del") setOutputText((t) => t.slice(0, -1));
+          else setOutputText((t) => t + label);
+          stableRef.current = 0;
+          setStablePct(0);
+        }
+      } else {
+        lastLblRef.current = label;
+        stableRef.current = 1;
+        setStablePct(0);
+      }
+    } else {
+      setPrediction(null);
+      setConfidence(0);
+      stableRef.current = 0;
+      lastLblRef.current = null;
+      setStablePct(0);
+    }
   }, []);
 
-  // ── Inference loop ────────────────────────────────────────────────
-  // FIX #3: KHÔNG có [prediction] trong dependency → loop ổn định
+  // ── Bước 3: RAF loop — capture frame, gửi Worker ─────
   const loop = useCallback(() => {
-    drawROI();
+    drawROI(); // vẽ overlay mỗi frame — luôn mượt
+
     const video = videoRef.current;
     const canvas = canvasRef.current;
 
-    if (
-      video?.readyState >= 2 &&
-      !busyRef.current &&
-      modelReadyRef.current &&
-      !pausedRef.current
-    ) {
+    if (video?.readyState >= 2 && !busyRef.current && workerRef.current) {
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-      // Mirror video (selfie)
+      // Vẽ mirror
       ctx.save();
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       ctx.restore();
 
-      const W = canvas.width,
-        H = canvas.height;
-      const size = Math.floor(Math.min(W, H) * 0.72);
-      const sx = Math.floor((W - size) / 2);
-      const sy = Math.floor((H - size) / 2);
+      // Crop ROI vuông chính giữa
+      const side = Math.min(canvas.width, canvas.height);
+      const sx = (canvas.width - side) / 2;
+      const sy = (canvas.height - side) / 2;
+      const { data } = ctx.getImageData(sx, sy, side, side);
 
-      const { data } = ctx.getImageData(sx, sy, size, size);
+      // Transferable → zero-copy, không block main thread
       busyRef.current = true;
-      workerRef.current?.postMessage(
+      workerRef.current.postMessage(
         {
           type: "predict",
           pixels: data.buffer,
-          width: size,
-          height: size,
+          width: side,
+          height: side,
           classes: CLASSES,
         },
         [data.buffer],
@@ -506,21 +208,72 @@ export default function Translate() {
     }
 
     rafRef.current = requestAnimationFrame(loop);
-  }, [drawROI]); // chỉ depend drawROI
+  }, []); // eslint-disable-line
 
-  // ── Bắt / dừng loop khi phase thay đổi ───────────────────────────
   useEffect(() => {
     if (phase !== "ready") return;
-    rafRef.current = requestAnimationFrame(loop);
+    if (!paused) rafRef.current = requestAnimationFrame(loop);
+    else cancelAnimationFrame(rafRef.current);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [phase, loop]);
+  }, [phase, paused, loop]);
 
-  // Sync pausedRef để loop đọc được mà không cần re-create
-  useEffect(() => {
-    pausedRef.current = paused;
-  }, [paused]);
+  // ── Vẽ ROI overlay ────────────────────────────────────
+  const drawROI = () => {
+    const oc = overlayRef.current;
+    if (!oc) return;
+    const ctx = oc.getContext("2d");
+    const W = oc.width,
+      H = oc.height;
+    ctx.clearRect(0, 0, W, H);
 
-  // ── Render ────────────────────────────────────────────────────────
+    const size = Math.min(W, H) * 0.72;
+    const x0 = (W - size) / 2;
+    const y0 = (H - size) / 2;
+    const color = prediction ? "#00e676" : "#2979ff";
+
+    // Làm tối vùng ngoài ROI
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    ctx.fillRect(0, 0, W, y0);
+    ctx.fillRect(0, y0 + size, W, H);
+    ctx.fillRect(0, y0, x0, size);
+    ctx.fillRect(x0 + size, y0, W, size);
+
+    // Viền glow
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 14;
+    ctx.strokeRect(x0, y0, size, size);
+
+    // Góc accent
+    const L = 24;
+    ctx.lineWidth = 4;
+    [
+      [x0, y0],
+      [x0 + size, y0],
+      [x0, y0 + size],
+      [x0 + size, y0 + size],
+    ].forEach(([cx, cy], i) => {
+      const dx = i % 2 === 0 ? L : -L,
+        dy = i < 2 ? L : -L;
+      ctx.beginPath();
+      ctx.moveTo(cx + dx, cy);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx, cy + dy);
+      ctx.stroke();
+    });
+  };
+
+  const clearCache = () =>
+    workerRef.current?.postMessage({ type: "clearCache" });
+
+  const phaseLabel = {
+    model: "Đang tải model...",
+    cam: "Đang mở webcam...",
+    ready: "Sẵn sàng",
+    error: "Lỗi",
+  };
+
   return (
     <>
       <Navbar />
@@ -533,51 +286,84 @@ export default function Translate() {
                 <span className="tl-icon">🤟</span>
                 <div>
                   <h1>VSL Translator</h1>
-                  <p>Nhận diện ngôn ngữ ký hiệu thời gian thực</p>
+                  <p>Nhận diện ngôn ngữ ký hiệu theo thời gian thực</p>
                 </div>
               </div>
               <div className="tl-header-right">
-                {/* FIX #4: class phải là ${phase} để khớp CSS .status-dot.loading / .ready / .error */}
                 <div className="tl-status">
-                  <span
-                    className={`status-dot ${phase === "ready" ? "ready" : phase === "error" ? "error" : "loading"}`}
-                  />
-                  <span>
-                    {phase === "ready"
-                      ? "Hệ thống sẵn sàng"
-                      : phase === "error"
-                        ? "Lỗi hệ thống"
-                        : loadMsg}
-                  </span>
+                  <span className={`status-dot s-${phase}`} />
+                  <span>{phase === "error" ? "Lỗi" : phaseLabel[phase]}</span>
                 </div>
+                <button
+                  className="btn-cache"
+                  onClick={clearCache}
+                  title="Xoá cache model (dùng khi update model)"
+                >
+                  🗑 Cache
+                </button>
               </div>
             </div>
 
-            {/* Body */}
             <div className="tl-body">
-              {/* Camera panel */}
+              {/* Camera */}
               <div className="cam-panel">
                 <div className="cam-viewport">
-                  {/* FIX #5: class đúng là "error" thay vì "is-error" để khớp .cam-loading.error */}
+                  {/* Loading overlay — chỉ che ô camera, UI còn lại vẫn dùng được */}
                   {phase !== "ready" && (
                     <div
-                      className={`cam-loading${phase === "error" ? " error" : ""}`}
+                      className={`cam-loading ${phase === "error" ? "is-error" : ""}`}
                     >
                       {phase === "error" ? (
                         <>
                           <span className="err-icon">⚠️</span>
                           <p className="err-msg">{errorMsg}</p>
                           <p className="err-hint">
-                            Kiểm tra quyền truy cập camera và thư mục
-                            /public/model/
+                            Kiểm tra: public/model/model.json có tồn tại không?
                           </p>
                         </>
                       ) : (
                         <>
-                          <div className="spinner load-ring" />
+                          <div className="load-ring">
+                            <svg viewBox="0 0 44 44" width="72" height="72">
+                              <circle
+                                cx="22"
+                                cy="22"
+                                r="18"
+                                fill="none"
+                                stroke="#1a2f50"
+                                strokeWidth="4"
+                              />
+                              <circle
+                                cx="22"
+                                cy="22"
+                                r="18"
+                                fill="none"
+                                stroke="#2979ff"
+                                strokeWidth="4"
+                                strokeDasharray={`${(loadPct / 100) * 113.1} 113.1`}
+                                strokeLinecap="round"
+                                transform="rotate(-90 22 22)"
+                                style={{
+                                  transition: "stroke-dasharray 0.4s ease",
+                                }}
+                              />
+                              <text
+                                x="22"
+                                y="27"
+                                textAnchor="middle"
+                                fill="white"
+                                fontSize="10"
+                                fontFamily="monospace"
+                              >
+                                {loadPct}%
+                              </text>
+                            </svg>
+                          </div>
                           <p className="load-msg">{loadMsg}</p>
-                          {loadPct > 0 && (
-                            <p className="load-hint">{loadPct}%</p>
+                          {loadPct > 0 && loadPct < 100 && (
+                            <p className="load-hint">
+                              ⚡ Lần sau load từ cache — gần như tức thì
+                            </p>
                           )}
                         </>
                       )}
@@ -591,14 +377,12 @@ export default function Translate() {
                     muted
                     style={{ transform: "scaleX(-1)" }}
                   />
-                  {/* Canvas ẩn để capture frame */}
                   <canvas
                     ref={canvasRef}
                     width={640}
                     height={480}
                     style={{ display: "none" }}
                   />
-                  {/* Overlay ROI */}
                   <canvas
                     ref={overlayRef}
                     className="cam-overlay"
@@ -606,25 +390,57 @@ export default function Translate() {
                     height={480}
                   />
 
-                  {/* Badge chữ nhận diện */}
                   {prediction && phase === "ready" && (
                     <div className="pred-badge">
                       <span className="pred-letter">{prediction}</span>
                     </div>
                   )}
 
-                  {/* Stable progress bar ở đáy viewport */}
-                  {stablePct > 0 && phase === "ready" && (
-                    <div className="stable-bar">
-                      <div
-                        className="stable-fill"
-                        style={{ width: stablePct + "%" }}
-                      />
+                  {phase === "ready" && (
+                    <div className="conf-arc">
+                      <svg viewBox="0 0 36 36" width="58" height="58">
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="15.9"
+                          fill="none"
+                          stroke="#ffffff12"
+                          strokeWidth="3"
+                        />
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="15.9"
+                          fill="none"
+                          stroke={confidence >= 80 ? "#00e676" : "#2979ff"}
+                          strokeWidth="3"
+                          strokeDasharray={`${confidence} 100`}
+                          strokeLinecap="round"
+                          transform="rotate(-90 18 18)"
+                          style={{ transition: "stroke-dasharray 0.15s" }}
+                        />
+                        <text
+                          x="18"
+                          y="21.5"
+                          textAnchor="middle"
+                          fill="white"
+                          fontSize="7"
+                          fontFamily="monospace"
+                        >
+                          {confidence}%
+                        </text>
+                      </svg>
                     </div>
                   )}
+
+                  <div className="stable-bar">
+                    <div
+                      className="stable-fill"
+                      style={{ width: `${stablePct}%` }}
+                    />
+                  </div>
                 </div>
 
-                {/* Controls */}
                 <div className="cam-controls">
                   <button
                     className={`btn-ctrl ${paused ? "btn-play" : "btn-pause"}`}
@@ -634,20 +450,16 @@ export default function Translate() {
                     {paused ? "▶ Tiếp tục" : "⏸ Tạm dừng"}
                   </button>
                   <div className="hint-row">
-                    <span className="hint">📐 Đặt tay vào khung vuông</span>
+                    <span className="hint">📍 Đặt tay vào khung sáng</span>
                     <span className="hint">
                       ⏱ Giữ {STABLE_FRAMES} frame để xác nhận
-                    </span>
-                    <span className="hint">
-                      🎯 Ngưỡng: {CONF_THRESH * 100}%
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Output panel */}
+              {/* Output */}
               <div className="output-panel">
-                {/* Ký hiệu hiện tại */}
                 <div className="current-sign">
                   <p className="section-label">Ký hiệu hiện tại</p>
                   <div className={`sign-display ${prediction ? "active" : ""}`}>
@@ -656,28 +468,25 @@ export default function Translate() {
                   <div className="conf-text">
                     {prediction
                       ? `Độ tin cậy: ${confidence}%`
-                      : "Chưa phát hiện ký hiệu"}
+                      : "Chưa phát hiện"}
                   </div>
                   {stablePct > 0 && (
-                    <div className="stable-label">
-                      Đang phân tích: {stablePct}%
-                    </div>
+                    <div className="stable-label">Xác nhận: {stablePct}%</div>
                   )}
                 </div>
 
-                {/* Văn bản đầu ra */}
                 <div className="text-output-block">
                   <div className="output-header">
-                    <p className="section-label">Văn bản dịch</p>
+                    <p className="section-label">Văn bản đầu ra</p>
                     <div className="output-actions">
                       <button
                         className="btn-sm"
-                        onClick={() => {
-                          if (outputText)
-                            navigator.clipboard?.writeText(outputText);
-                        }}
+                        onClick={() =>
+                          outputText &&
+                          navigator.clipboard.writeText(outputText)
+                        }
                       >
-                        📋 Copy
+                        📋 Sao chép
                       </button>
                       <button
                         className="btn-sm btn-danger"
@@ -690,35 +499,33 @@ export default function Translate() {
                   <div className="text-output">
                     {outputText || (
                       <span className="placeholder">
-                        Ký tự nhận diện sẽ xuất hiện tại đây...
+                        Các ký tự sẽ xuất hiện ở đây...
                       </span>
                     )}
                     <span className="cursor-blink">|</span>
                   </div>
                 </div>
 
-                {/* Legend */}
                 <div className="legend-block">
                   <p className="section-label">Ký hiệu đặc biệt</p>
                   <div className="legend-grid">
                     {[
-                      ["space", "Thêm khoảng trắng"],
-                      ["del", "Xoá ký tự cuối"],
-                      ["nothing", "Không có ký hiệu"],
-                    ].map(([badge, desc]) => (
-                      <div key={badge} className="legend-item">
-                        <span className="legend-badge">{badge}</span>
+                      { sign: "nothing", desc: "Không có ký hiệu — bỏ qua" },
+                      { sign: "space", desc: "Chèn khoảng trắng" },
+                      { sign: "del", desc: "Xoá ký tự cuối" },
+                    ].map(({ sign, desc }) => (
+                      <div key={sign} className="legend-item">
+                        <span className="legend-badge">{sign}</span>
                         <span className="legend-desc">{desc}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Alphabet grid */}
                 <div className="alphabet-block">
                   <p className="section-label">Bảng chữ cái</p>
                   <div className="alphabet-grid">
-                    {CLASSES.filter((c) => c.length === 1).map((c) => (
+                    {CLASSES.slice(0, 26).map((c) => (
                       <div
                         key={c}
                         className={`alpha-cell ${prediction === c ? "alpha-active" : ""}`}
@@ -735,4 +542,6 @@ export default function Translate() {
       </div>
     </>
   );
-}
+};
+
+export default Translate;
