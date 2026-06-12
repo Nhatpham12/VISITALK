@@ -15,6 +15,7 @@
             "class_name": "InputLayer",
             "config": {
               "batch_shape": [null, 128, 128, 3],
+              "batchInputShape": [null, 128, 128, 3],
               "dtype": "float32",
               "sparse": false,
               "ragged": false,
@@ -32,7 +33,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "scale": 0.00392156862745098,
@@ -63,7 +66,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "filters": 32,
@@ -78,7 +83,9 @@
               "kernel_initializer": {
                 "module": "keras.initializers",
                 "class_name": "GlorotUniform",
-                "config": { "seed": null },
+                "config": {
+                  "seed": null
+                },
                 "registered_name": null
               },
               "bias_initializer": {
@@ -118,7 +125,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "axis": -1,
@@ -169,24 +178,28 @@
                     }
                   }
                 ],
-                "kwargs": { "mask": null }
+                "kwargs": {
+                  "mask": null
+                }
               }
             ]
           },
           {
             "class_name": "Activation",
             "config": {
-              "name": "activation_3",
+              "name": "activation",
               "trainable": true,
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "activation": "relu"
             },
-            "name": "activation_3",
+            "name": "activation",
             "inbound_nodes": [
               {
                 "args": [
@@ -211,7 +224,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "pool_size": [2, 2],
@@ -228,7 +243,7 @@
                     "config": {
                       "shape": [null, 128, 128, 32],
                       "dtype": "float32",
-                      "keras_history": ["activation_3", 0, 0]
+                      "keras_history": ["activation", 0, 0]
                     }
                   }
                 ],
@@ -244,7 +259,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "filters": 64,
@@ -259,7 +276,9 @@
               "kernel_initializer": {
                 "module": "keras.initializers",
                 "class_name": "GlorotUniform",
-                "config": { "seed": null },
+                "config": {
+                  "seed": null
+                },
                 "registered_name": null
               },
               "bias_initializer": {
@@ -299,7 +318,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "axis": -1,
@@ -350,24 +371,28 @@
                     }
                   }
                 ],
-                "kwargs": { "mask": null }
+                "kwargs": {
+                  "mask": null
+                }
               }
             ]
           },
           {
             "class_name": "Activation",
             "config": {
-              "name": "activation_4",
+              "name": "activation_1",
               "trainable": true,
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "activation": "relu"
             },
-            "name": "activation_4",
+            "name": "activation_1",
             "inbound_nodes": [
               {
                 "args": [
@@ -392,7 +417,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "pool_size": [2, 2],
@@ -409,7 +436,7 @@
                     "config": {
                       "shape": [null, 64, 64, 64],
                       "dtype": "float32",
-                      "keras_history": ["activation_4", 0, 0]
+                      "keras_history": ["activation_1", 0, 0]
                     }
                   }
                 ],
@@ -425,7 +452,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "filters": 128,
@@ -440,7 +469,9 @@
               "kernel_initializer": {
                 "module": "keras.initializers",
                 "class_name": "GlorotUniform",
-                "config": { "seed": null },
+                "config": {
+                  "seed": null
+                },
                 "registered_name": null
               },
               "bias_initializer": {
@@ -480,7 +511,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "axis": -1,
@@ -531,24 +564,28 @@
                     }
                   }
                 ],
-                "kwargs": { "mask": null }
+                "kwargs": {
+                  "mask": null
+                }
               }
             ]
           },
           {
             "class_name": "Activation",
             "config": {
-              "name": "activation_5",
+              "name": "activation_2",
               "trainable": true,
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "activation": "relu"
             },
-            "name": "activation_5",
+            "name": "activation_2",
             "inbound_nodes": [
               {
                 "args": [
@@ -573,7 +610,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "pool_size": [2, 2],
@@ -590,7 +629,7 @@
                     "config": {
                       "shape": [null, 32, 32, 128],
                       "dtype": "float32",
-                      "keras_history": ["activation_5", 0, 0]
+                      "keras_history": ["activation_2", 0, 0]
                     }
                   }
                 ],
@@ -606,7 +645,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "data_format": "channels_last",
@@ -637,7 +678,9 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "units": 256,
@@ -646,7 +689,9 @@
               "kernel_initializer": {
                 "module": "keras.initializers",
                 "class_name": "GlorotUniform",
-                "config": { "seed": null },
+                "config": {
+                  "seed": null
+                },
                 "registered_name": null
               },
               "bias_initializer": {
@@ -681,19 +726,21 @@
           {
             "class_name": "Dropout",
             "config": {
-              "name": "dropout_1",
+              "name": "dropout",
               "trainable": true,
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
               "rate": 0.4,
               "seed": null,
               "noise_shape": null
             },
-            "name": "dropout_1",
+            "name": "dropout",
             "inbound_nodes": [
               {
                 "args": [
@@ -706,7 +753,9 @@
                     }
                   }
                 ],
-                "kwargs": { "training": false }
+                "kwargs": {
+                  "training": false
+                }
               }
             ]
           },
@@ -718,16 +767,20 @@
               "dtype": {
                 "module": "keras",
                 "class_name": "DTypePolicy",
-                "config": { "name": "float32" },
+                "config": {
+                  "name": "float32"
+                },
                 "registered_name": null
               },
-              "units": 2,
+              "units": 29,
               "activation": "softmax",
               "use_bias": true,
               "kernel_initializer": {
                 "module": "keras.initializers",
                 "class_name": "GlorotUniform",
-                "config": { "seed": null },
+                "config": {
+                  "seed": null
+                },
                 "registered_name": null
               },
               "bias_initializer": {
@@ -751,7 +804,7 @@
                     "config": {
                       "shape": [null, 256],
                       "dtype": "float32",
-                      "keras_history": ["dropout_1", 0, 0]
+                      "keras_history": ["dropout", 0, 0]
                     }
                   }
                 ],
@@ -760,12 +813,12 @@
             ]
           }
         ],
-        "input_layers": ["input", 0, 0],
-        "output_layers": ["output", 0, 0]
+        "input_layers": [["input", 0, 0]],
+        "output_layers": [["output", 0, 0]]
       }
     },
     "training_config": {
-      "loss": "categorical_crossentropy",
+      "loss": "sparse_categorical_crossentropy",
       "loss_weights": null,
       "metrics": ["accuracy"],
       "weighted_metrics": null,
@@ -822,8 +875,8 @@
         { "name": "conv3/bias", "shape": [128], "dtype": "float32" },
         { "name": "fc1/kernel", "shape": [128, 256], "dtype": "float32" },
         { "name": "fc1/bias", "shape": [256], "dtype": "float32" },
-        { "name": "output/kernel", "shape": [256, 2], "dtype": "float32" },
-        { "name": "output/bias", "shape": [2], "dtype": "float32" }
+        { "name": "output/kernel", "shape": [256, 29], "dtype": "float32" },
+        { "name": "output/bias", "shape": [29], "dtype": "float32" }
       ]
     }
   ]
