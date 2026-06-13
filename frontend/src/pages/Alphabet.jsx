@@ -69,8 +69,7 @@ const Alphabet = () => {
 
               <div className="alphabet-card__letter-box">
                 <span className="alphabet-card__letter">
-                  {lesson.meaning.replace("Chữ ", "")}
-                  {lesson.meaning.replace("Chữ ", "").toLowerCase()}
+                  {lesson.meaning.replace("Chữ ", "").toUpperCase()}
                 </span>
               </div>
 

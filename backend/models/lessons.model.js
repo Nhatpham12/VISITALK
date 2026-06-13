@@ -20,7 +20,7 @@ lessons.getById = (id, callback) => {
   const sqlString = `SELECT * FROM lessons WHERE les_id = ?`;
   db.query(sqlString, [id], (err, result) => {
     if (err) return callback(err, null);
-    callback(null, result);
+    callback(null, result[0] || null);
   });
 };
 

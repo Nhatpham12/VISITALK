@@ -32,33 +32,6 @@ const GREETING_ENTRIES = [
       "Hai bàn tay hơi khum, lòng bàn tay phải úp lên mu bàn tay trái, đưa hai tay về phía phải rồi từ từ kéo về đặt trước ngực. Sau đó nhấn tay nhẹ xuống dưới đồng thời cuối đầu xuống.",
     image: null,
   },
-  {
-    id: 4,
-    title: "Cảm ơn",
-    type: "Động từ",
-    region: "Toàn quốc",
-    description:
-      "Hai bàn tay hơi khum, lòng bàn tay phải úp lên mu bàn tay trái, đưa hai tay về phía phải rồi từ từ kéo về đặt trước ngực. Sau đó nhấn tay nhẹ xuống dưới đồng thời cuối đầu xuống.",
-    image: null,
-  },
-  {
-    id: 5,
-    title: "Cảm ơn",
-    type: "Động từ",
-    region: "Toàn quốc",
-    description:
-      "Hai bàn tay hơi khum, lòng bàn tay phải úp lên mu bàn tay trái, đưa hai tay về phía phải rồi từ từ kéo về đặt trước ngực. Sau đó nhấn tay nhẹ xuống dưới đồng thời cuối đầu xuống.",
-    image: null,
-  },
-  {
-    id: 6,
-    title: "Cảm ơn",
-    type: "Động từ",
-    region: "Toàn quốc",
-    description:
-      "Hai bàn tay hơi khum, lòng bàn tay phải úp lên mu bàn tay trái, đưa hai tay về phía phải rồi từ từ kéo về đặt trước ngực. Sau đó nhấn tay nhẹ xuống dưới đồng thời cuối đầu xuống.",
-    image: null,
-  },
 ];
 
 const Greeting = () => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { reportService } from "../services/api";
 import "../CSS/Report.css";
 
 const Report = () => {
@@ -18,13 +19,7 @@ const Report = () => {
   useEffect(() => {
     const fetchReportData = async () => {
       try {
-        const response = await fetch("http://localhost:5001/api/reports/stats");
-
-        if (!response.ok) {
-          throw new Error("Không thể tải dữ liệu report");
-        }
-
-        const data = await response.json();
+        const data = await reportService.getStats();
 
         setStats({
           totalUsers: data.totalUsers || 0,

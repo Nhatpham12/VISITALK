@@ -1,0 +1,68 @@
+-- VISITALK Database Initialization
+
+CREATE DATABASE IF NOT EXISTS visitalk_db;
+USE visitalk_db;
+
+CREATE TABLE IF NOT EXISTS users (
+    id                CHAR(36)      PRIMARY KEY NOT NULL DEFAULT (UUID()),
+    username          VARCHAR(50)   UNIQUE NOT NULL,
+    full_name         VARCHAR(100)  NOT NULL,
+    password_hash     VARCHAR(255)  NOT NULL,
+    email             VARCHAR(100)  UNIQUE NULL,
+    dob               DATE          NULL,
+    gender            ENUM('male','female','other') NULL,
+    avatar_url        VARCHAR(255)  NULL,
+    u_role            ENUM('user','admin') DEFAULT 'user',
+    u_status          ENUM('active','inactive') DEFAULT 'active',
+    last_login        DATETIME      NULL,
+    last_seen         DATETIME      NULL,
+    total_online_time INT           DEFAULT 0,
+    created_at        DATETIME      DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_email
+        CHECK (email IS NULL OR email REGEXP '^[^@]+@[^@]+\\.[^@]+$'),
+    CONSTRAINT chk_username
+        CHECK (username REGEXP '^[a-zA-Z0-9_]+$'),
+    CONSTRAINT chk_online_time
+        CHECK (total_online_time >= 0)
+);
+
+CREATE TABLE IF NOT EXISTS lessons (
+    les_id   CHAR(36)      PRIMARY KEY NOT NULL DEFAULT (UUID()),
+    title    VARCHAR(100)  NOT NULL,
+    img_url  VARCHAR(255)  NULL,
+    content  TEXT          NULL,
+    meaning  VARCHAR(255)  NULL,
+
+    CONSTRAINT chk_title CHECK (TRIM(title) != '')
+);
+
+CREATE TABLE IF NOT EXISTS access_to (
+    users_id    CHAR(36)  NOT NULL,
+    les_id      CHAR(36)  NOT NULL,
+    accessed_at DATETIME  DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (users_id, les_id),
+    FOREIGN KEY (users_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (les_id) REFERENCES lessons(les_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS users_sessions (
+    sessions_id CHAR(36)     PRIMARY KEY DEFAULT (UUID()),
+    users_id    CHAR(36)     NOT NULL,
+    login_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    logout_at   DATETIME     NULL,
+    duration    INT          DEFAULT 0,
+    ip_address  VARCHAR(45)  NULL,
+    device      VARCHAR(100) NULL,
+
+    FOREIGN KEY (users_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CONSTRAINT chk_logout_after_login
+        CHECK (logout_at IS NULL OR logout_at >= login_at),
+    CONSTRAINT chk_duration
+        CHECK (duration >= 0)
+);

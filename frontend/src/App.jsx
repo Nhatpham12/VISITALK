@@ -162,6 +162,20 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* 404 */}
+          <Route
+            path="*"
+            element={
+              <div className="main-content" style={{ textAlign: "center", padding: "80px 20px" }}>
+                <h1 style={{ fontSize: 72, color: "#1a2a4a" }}>404</h1>
+                <p style={{ fontSize: 20, color: "#374c72" }}>Trang không tồn tại</p>
+                <a href="/" style={{ display: "inline-block", marginTop: 20, padding: "10px 24px", background: "#1a2a4a", color: "#fff", borderRadius: 8, textDecoration: "none" }}>
+                  Về trang chủ
+                </a>
+              </div>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
