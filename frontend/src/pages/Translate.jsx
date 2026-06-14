@@ -7,57 +7,26 @@ import { useEffect, useRef, useState } from "react";
 import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import Navbar from "../components/Navbar";
 import "../CSS/Translate.css";
-import {
-  detectFingers,
-  classifyLetter,
-  classifyNumber,
-} from "../utils/fingerPose";
+import { predictService } from "../services/api";
 
-const STABLE_FRAMES = 10;
-
-// 29 lớp VSL chuẩn từ Dataset
-const CLASSES = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "W",
-  "X",
-  "Y",
-  "Z",
-  "space",
-  "del",
-  "nothing",
+const VSL_CLASSES = [
+  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+  "space", "del", "nothing",
 ];
+
+const STABLE_FRAMES = 3;
 
 export default function Translate() {
   // ── Refs ──
   const videoRef = useRef(null);
+  const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const runningRef = useRef(false);
   const rafRef = useRef(null);
   const pausedRef = useRef(false);
   const stableRef = useRef({ label: null, count: 0 });
   const confThreshRef = useRef(0.3);
-  const modeRef = useRef("letters");
 
   // ── States ──
   const [phase, setPhase] = useState("model"); // model | cam | ready | error
@@ -73,7 +42,6 @@ export default function Translate() {
 
   const [paused, setPaused] = useState(false);
   const [confThresh, setConfThresh] = useState(0.3);
-  const [mode, setMode] = useState("letters"); // "letters" | "numbers"
 
   useEffect(() => {
     pausedRef.current = paused;
@@ -81,12 +49,9 @@ export default function Translate() {
   useEffect(() => {
     confThreshRef.current = confThresh;
   }, [confThresh]);
-  useEffect(() => {
-    modeRef.current = mode;
-  }, [mode]);
 
   // ════════════════════════════════════════════════════════
-  // BƯỚC 1 — Tải HandLandmarker
+  // BƯỚC 1 — Tải HandLandmarker (dùng vsl_model.pkl qua backend API)
   // ════════════════════════════════════════════════════════
   useEffect(() => {
     let cancelled = false;
@@ -94,7 +59,7 @@ export default function Translate() {
     (async () => {
       try {
         setLoadMsg("Đang tải bộ phát hiện bàn tay MediaPipe...");
-        setLoadPct(40);
+        setLoadPct(30);
         const vision = await FilesetResolver.forVisionTasks(
           "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
         );
@@ -109,10 +74,10 @@ export default function Translate() {
           minTrackingConfidence: 0.5,
         });
         if (cancelled) return;
-
         window.__handLandmarker = handLandmarker;
-        setLoadPct(100);
+
         setLoadMsg("Sẵn sàng! Đang mở camera...");
+        setLoadPct(100);
         setPhase("cam");
       } catch (err) {
         if (!cancelled) {
@@ -195,7 +160,7 @@ export default function Translate() {
   }, []);
 
   // ════════════════════════════════════════════════════════
-  // BƯỚC 3 — Vòng lặp nhận diện (MediaPipe + fingerPose)
+  // BƯỚC 3 — Vòng lặp nhận diện (MediaPipe + backend API /vsl_model.pkl)
   // ════════════════════════════════════════════════════════
   useEffect(() => {
     if (phase !== "ready") return;
@@ -203,7 +168,7 @@ export default function Translate() {
     runningRef.current = true;
     let skipCounter = 0;
 
-    function loop() {
+    async function loop() {
       if (!runningRef.current) return;
 
       const video = videoRef.current;
@@ -221,7 +186,7 @@ export default function Translate() {
       }
 
       skipCounter++;
-      if (skipCounter % 12 !== 0) {
+      if (skipCounter % 6 !== 0) {
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
@@ -229,19 +194,31 @@ export default function Translate() {
       try {
         const result = handLandmarker.detectForVideo(video, performance.now());
         if (result.landmarks && result.landmarks.length > 0) {
-          const lm = result.landmarks[0];
-          const fingers = detectFingers(lm);
-          const pred =
-            modeRef.current === "numbers"
-              ? classifyNumber(fingers, lm)
-              : classifyLetter(fingers, lm);
+          const landmarks = result.landmarks[0]; // 21 landmarks
+
+          const wrist = landmarks[0];
+          const mcp = landmarks[9];
+          const handSize = Math.sqrt(
+            (mcp.x - wrist.x) ** 2 + (mcp.y - wrist.y) ** 2
+          ) || 1;
+          const features = [];
+          for (let i = 0; i < 21; i++) {
+            features.push(landmarks[i].x);
+            features.push(landmarks[i].y);
+          }
+          for (let i = 0; i < 21; i++) {
+            features.push((landmarks[i].x - wrist.x) / handSize);
+            features.push((landmarks[i].y - wrist.y) / handSize);
+          }
+
+          const pred = await predictService.sendLandmarks(features);
 
           setConfidence(Math.round(pred.confidence * 100));
           setPrediction(pred.label);
-          setDebugTop3(pred.top3.map((t) => ({ label: t[0], score: t[1] })));
+          setDebugTop3(pred.top3);
 
           const s = stableRef.current;
-          if (pred.confidence >= confThreshRef.current && pred.label !== "?") {
+          if (pred.confidence >= confThreshRef.current && pred.label !== "nothing" && pred.label !== "?") {
             if (pred.label === s.label) {
               s.count++;
               setStablePct(Math.round((s.count / STABLE_FRAMES) * 100));
@@ -404,6 +381,7 @@ export default function Translate() {
                         transform: "scaleX(-1)",
                       }}
                     />
+                    <canvas ref={canvasRef} style={{ display: "none" }} />
 
                     {phase === "cam" && (
                       <div
@@ -557,58 +535,17 @@ export default function Translate() {
 
                       <div
                         style={{
-                          display: "flex",
-                          gap: 8,
+                          padding: "8px 0",
+                          borderRadius: 8,
+                          background: "rgba(41,121,255,0.15)",
+                          border: "2px solid #2979ff",
+                          color: "#2979ff",
+                          fontWeight: 700,
+                          fontSize: "0.85rem",
+                          textAlign: "center",
                         }}
                       >
-                        <button
-                          className={`btn-mode ${mode === "letters" ? "active" : ""}`}
-                          onClick={() => setMode("letters")}
-                          style={{
-                            flex: 1,
-                            padding: "8px 0",
-                            borderRadius: 8,
-                            border:
-                              mode === "letters"
-                                ? "2px solid #2979ff"
-                                : "2px solid transparent",
-                            background:
-                              mode === "letters"
-                                ? "rgba(41,121,255,0.15)"
-                                : "rgba(255,255,255,0.05)",
-                            color: mode === "letters" ? "#2979ff" : "#7a9acc",
-                            fontWeight: 700,
-                            fontSize: "0.85rem",
-                            cursor: "pointer",
-                            transition: "all 0.15s",
-                          }}
-                        >
-                          🔤 Chữ
-                        </button>
-                        <button
-                          className={`btn-mode ${mode === "numbers" ? "active" : ""}`}
-                          onClick={() => setMode("numbers")}
-                          style={{
-                            flex: 1,
-                            padding: "8px 0",
-                            borderRadius: 8,
-                            border:
-                              mode === "numbers"
-                                ? "2px solid #ff7043"
-                                : "2px solid transparent",
-                            background:
-                              mode === "numbers"
-                                ? "rgba(255,112,67,0.15)"
-                                : "rgba(255,255,255,0.05)",
-                            color: mode === "numbers" ? "#ff7043" : "#7a9acc",
-                            fontWeight: 700,
-                            fontSize: "0.85rem",
-                            cursor: "pointer",
-                            transition: "all 0.15s",
-                          }}
-                        >
-                          #️⃣ Số
-                        </button>
+                        🔤 Chữ
                       </div>
                     </div>
                   </div>
@@ -755,27 +692,10 @@ export default function Translate() {
 
                   <div className="alphabet-block">
                     <p className="section-label">
-                      {mode === "numbers"
-                        ? "Danh sách số hỗ trợ"
-                        : "Danh sách ký tự VSL hỗ trợ"}
+                      Danh sách ký tự VSL hỗ trợ
                     </p>
                     <div className="alphabet-grid">
-                      {(mode === "numbers"
-                        ? [
-                            "0",
-                            "1",
-                            "2",
-                            "3",
-                            "4",
-                            "5",
-                            "6",
-                            "7",
-                            "8",
-                            "9",
-                            "10",
-                          ]
-                        : CLASSES.slice(0, 26)
-                      ).map((c) => (
+                      {VSL_CLASSES.filter((c) => c.length === 1).map((c) => (
                         <div
                           key={c}
                           className={`alpha-cell ${prediction === c ? "alpha-active" : ""}`}

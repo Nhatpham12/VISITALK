@@ -64,6 +64,22 @@ export const userService = {
 export const reportService = {
   getStats: () => apiCall("/reports/stats"),
 };
+// ─── Predict ─────────────────────────────────────────────────────────────────
+export const predictService = {
+  sendLandmarks: async (features) => {
+    const response = await fetch(`${API_BASE}/predict`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ features }),
+    });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `Lỗi ${response.status}`);
+    }
+    return response.json();
+  },
+};
+
 // ─── Lessons ─────────────────────────────────────────────────────────────────
 export const lessonService = {
   getAll: () => apiCall("/lessons"),

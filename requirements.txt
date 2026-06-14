@@ -5,3 +5,5 @@ google-generativeai
 tensorflow
 tf-keras
 flask
+scikit-learn
+xgboost

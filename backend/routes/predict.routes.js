@@ -1,118 +1,133 @@
 /**
  * routes/predict.routes.js
  *
- * Endpoint nhận diện ngôn ngữ ký hiệu Việt Nam.
- * Nhận frame webcam (multipart/form-data), gọi Python predict.py,
- * trả về kết quả JSON.
+ * Sử dụng vsl_model.joblib (MLPClassifier + StandardScaler).
+ * Python process chạy nền (predict_server.py), load model 1 lần.
  *
- * Được mount trong index.js:
- *   app.use("/api/predict", predictLimiter, predictRoutes);
+ * POST /api/predict  — { "features": [84 số] }
  */
 
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
-// ── Multer: lưu frame tạm vào memory ──────────────────────────
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
-  fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Chỉ chấp nhận file ảnh"), false);
-    }
-    cb(null, true);
-  },
-});
-
-// Đường dẫn tới Python script và model
-// __dirname = .../server/routes/ → lên 2 cấp → gốc project → model/
-const PREDICT_SCRIPT = path.resolve(__dirname, "../predict.py");
+// ── Đường dẫn ────────────────────────────────────────────────
+const PREDICT_SERVER = path.resolve(__dirname, "../predict_server.py");
 const MODEL_PATH = path.resolve(
-  __dirname,
-  `../Model/vietnamese_sign_language_model.keras`,
+  __dirname, "../..", "frontend/public/model/vsl_model.joblib",
 );
 
-// ── POST /api/predict ──────────────────────────────────────────
-router.post("/", upload.single("image"), async (req, res, next) => {
-  if (!req.file) {
-    return res
-      .status(400)
-      .json({ message: "Thiếu trường 'image' trong form-data" });
+function getPythonCmd() {
+  if (process.env.PYTHON_PATH) return [process.env.PYTHON_PATH];
+  if (process.platform === "win32") return ["py", "-3"];
+  return ["python3"];
+}
+
+// ── Python process nền ───────────────────────────────────────
+const pythonCmd = getPythonCmd();
+let pythonProc = null;
+let requestQueue = [];
+let isProcessing = false;
+let buffer = "";
+
+function startPython() {
+  if (pythonProc) {
+    try { pythonProc.kill(); } catch (_) {}
   }
 
-  // Kiểm tra model tồn tại (báo lỗi rõ ràng thay vì crash)
-  if (!fs.existsSync(MODEL_PATH)) {
-    return res.status(503).json({
-      message: "Model chưa được cấu hình",
-      detail: `Không tìm thấy: ${MODEL_PATH}`,
-    });
-  }
-
-  // Ghi buffer ra file tạm để Python đọc
-  const tmpPath = path.join(
-    require("os").tmpdir(),
-    `vsl_frame_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`,
-  );
-
-  try {
-    fs.writeFileSync(tmpPath, req.file.buffer);
-  } catch (e) {
-    return next(new Error("Không thể ghi file tạm: " + e.message));
-  }
-
-  // Gọi Python
-  const python = spawn("python3", [PREDICT_SCRIPT, tmpPath, MODEL_PATH]);
-
-  let stdout = "";
-  let stderr = "";
-
-  python.stdout.on("data", (d) => {
-    stdout += d.toString();
-  });
-  python.stderr.on("data", (d) => {
-    stderr += d.toString();
+  pythonProc = spawn(pythonCmd[0], [...pythonCmd.slice(1), PREDICT_SERVER, MODEL_PATH], {
+    stdio: ["pipe", "pipe", "pipe"],
   });
 
-  python.on("close", (code) => {
-    // Dọn file tạm
-    try {
-      fs.unlinkSync(tmpPath);
-    } catch (_) {}
-
-    if (code !== 0) {
-      console.error("[predict] Python exit", code, stderr.slice(0, 300));
-      return res.status(500).json({
-        message: "Lỗi khi chạy mô hình",
-        detail: stderr.slice(0, 300),
-      });
+  pythonProc.stdout.on("data", (chunk) => {
+    buffer += chunk.toString();
+    const lines = buffer.split("\n");
+    buffer = lines.pop();
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      try {
+        const result = JSON.parse(trimmed);
+        if (requestQueue.length > 0) {
+          const { resolve } = requestQueue.shift();
+          resolve(result);
+        }
+      } catch (_) {
+        console.error("[predict] Invalid JSON from Python:", trimmed.slice(0, 200));
+      }
     }
+    isProcessing = false;
+    processQueue();
+  });
 
-    try {
-      const result = JSON.parse(stdout.trim());
+  pythonProc.stderr.on("data", (chunk) => {
+    console.error("[predict] Python stderr:", chunk.toString().slice(0, 200));
+  });
+
+  pythonProc.on("close", (code) => {
+    console.warn(`[predict] Python process exited (code ${code}), restarting...`);
+    pythonProc = null;
+    isProcessing = false;
+    startPython();
+  });
+
+  pythonProc.on("error", (err) => {
+    console.error("[predict] Python process error:", err.message);
+    pythonProc = null;
+    isProcessing = false;
+  });
+}
+
+function processQueue() {
+  if (!pythonProc || isProcessing || requestQueue.length === 0) return;
+  isProcessing = true;
+  const { features, resolve } = requestQueue[0];
+  pythonProc.stdin.write(JSON.stringify({ features }) + "\n");
+}
+
+// ── Khởi động Python server ──────────────────────────────────
+if (fs.existsSync(MODEL_PATH)) {
+  startPython();
+} else {
+  console.warn(`[predict] Model not found at ${MODEL_PATH}, predict API will be unavailable.`);
+}
+
+// ── POST /api/predict ─────────────────────────────────────────
+router.post("/", express.json(), (req, res) => {
+  const { features } = req.body;
+
+  if (!features || !Array.isArray(features)) {
+    return res.status(400).json({ error: "Thiếu trường 'features' (mảng 84 số)" });
+  }
+
+  if (!pythonProc || !fs.existsSync(MODEL_PATH)) {
+    return res.status(503).json({ error: "Predict service unavailable" });
+  }
+
+  requestQueue.push({
+    features,
+    resolve: (result) => {
+      if (result.error) return res.status(400).json(result);
       return res.json(result);
-    } catch (_) {
-      return res.status(500).json({
-        message: "Không parse được kết quả từ Python",
-        raw: stdout.slice(0, 200),
-      });
-    }
+    },
   });
 
-  python.on("error", (err) => {
-    try {
-      fs.unlinkSync(tmpPath);
-    } catch (_) {}
-    if (err.code === "ENOENT") {
-      return res.status(500).json({
-        message: "Không tìm thấy python3. Hãy cài Python 3.9+ và tensorflow.",
-      });
-    }
-    next(err);
-  });
+  processQueue();
+});
+
+// Dọn dẹp khi server shutdown
+process.on("exit", () => {
+  if (pythonProc) pythonProc.kill();
+});
+process.on("SIGINT", () => {
+  if (pythonProc) pythonProc.kill();
+  process.exit();
+});
+process.on("SIGTERM", () => {
+  if (pythonProc) pythonProc.kill();
+  process.exit();
 });
 
 module.exports = router;

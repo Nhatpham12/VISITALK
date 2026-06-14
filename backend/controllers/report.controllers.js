@@ -7,7 +7,8 @@ const getReportStats = async (req, res) => {
         (SELECT COUNT(*) FROM users) AS totalUsers,
         (SELECT COUNT(*) FROM users WHERE u_status = 'active') AS activeUsers,
         (SELECT COUNT(*) FROM access_to) AS totalVisits,
-        (SELECT COUNT(*) FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)) AS newUsers
+        (SELECT COUNT(*) FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)) AS newUsers,
+        DATEDIFF(NOW(),(SELECT MIN(created_at) FROM users)) AS daysSinceFirstUser
     `;
 
     db.query(combinedQuery, (err, results) => {
@@ -22,12 +23,15 @@ const getReportStats = async (req, res) => {
       // Kiểm tra nếu có kết quả, nếu không gán object rỗng để tránh crash bài toán
       const data = results && results[0] ? results[0] : {};
       const totalVisits = data.totalVisits || 0;
+      const daysSinceFirstUser = data.daysSinceFirstUser || 30;
 
       return res.status(200).json({
         totalUsers: data.totalUsers || 0,
         activeUsers: data.activeUsers || 0,
         totalVisits: totalVisits,
-        avgDailyVisits: Math.round(totalVisits / 30),
+        avgDailyVisits: Math.round(
+          totalVisits / Math.max(1, daysSinceFirstUser),
+        ),
         newUsers: data.newUsers || 0,
       });
     });
