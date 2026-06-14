@@ -38,7 +38,10 @@
 }
 
 /* Body */
-.table-
+.table-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
 
 .table-body .col {
   padding: 18px 16px;
@@ -117,4 +120,144 @@
 .az-grid span:hover {
   color: #5a3e99;
   font-weight: 700;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 20px;
+  max-width: 420px;
+  width: 100%;
+  padding: 32px 28px 28px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+  animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #666;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: #1a2a4a;
+}
+
+.modal-image-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.modal-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #f0f3f8;
+}
+
+.modal-letter {
+  font-size: 64px;
+  font-weight: 800;
+  color: #1a2a4a;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.modal-description {
+  font-size: 14px;
+  color: #4a5a7a;
+  line-height: 1.7;
+  text-align: left;
+  margin: 0;
+}
+
+/* ── Modal cho số ── */
+.modal-content--wide {
+  max-width: 600px;
+}
+
+.modal-range-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a2a4a;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.number-card {
+  background: #f0f3f8;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.number-card__digit {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a2a4a;
+}
+
+.number-card__img {
+  max-width: 80px;
+  max-height: 80px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.number-card__desc {
+  font-size: 11px;
+  color: #5a6a87;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.number-card__empty {
+  font-size: 11px;
+  color: #999;
+  margin: 0;
+  font-style: italic;
 }

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import Navbar from "../components/Navbar";
 import "../CSS/Translate.css";
-import { detectFingers, classifyLetter } from "../utils/fingerPose";
+import { detectFingers, classifyLetter, classifyNumber } from "../utils/fingerPose";
 
 const STABLE_FRAMES = 10;
 
@@ -27,6 +27,7 @@ export default function Translate() {
   const pausedRef = useRef(false);
   const stableRef = useRef({ label: null, count: 0 });
   const confThreshRef = useRef(0.30);
+  const modeRef = useRef("letters");
 
   // ── States ──
   const [phase, setPhase] = useState("model"); // model | cam | ready | error
@@ -42,9 +43,11 @@ export default function Translate() {
 
   const [paused, setPaused] = useState(false);
   const [confThresh, setConfThresh] = useState(0.30);
+  const [mode, setMode] = useState("letters"); // "letters" | "numbers"
 
   useEffect(() => { pausedRef.current = paused; }, [paused]);
   useEffect(() => { confThreshRef.current = confThresh; }, [confThresh]);
+  useEffect(() => { modeRef.current = mode; }, [mode]);
 
   // ════════════════════════════════════════════════════════
   // BƯỚC 1 — Tải HandLandmarker
@@ -186,7 +189,7 @@ export default function Translate() {
         if (result.landmarks && result.landmarks.length > 0) {
           const lm = result.landmarks[0];
           const fingers = detectFingers(lm);
-          const pred = classifyLetter(fingers, lm);
+          const pred = modeRef.current === "numbers" ? classifyNumber(fingers, lm) : classifyLetter(fingers, lm);
 
           setConfidence(Math.round(pred.confidence * 100));
           setPrediction(pred.label);
@@ -506,6 +509,49 @@ export default function Translate() {
                         />
                       </div>
 
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: 8,
+                        }}
+                      >
+                        <button
+                          className={`btn-mode ${mode === "letters" ? "active" : ""}`}
+                          onClick={() => setMode("letters")}
+                          style={{
+                            flex: 1,
+                            padding: "8px 0",
+                            borderRadius: 8,
+                            border: mode === "letters" ? "2px solid #2979ff" : "2px solid transparent",
+                            background: mode === "letters" ? "rgba(41,121,255,0.15)" : "rgba(255,255,255,0.05)",
+                            color: mode === "letters" ? "#2979ff" : "#7a9acc",
+                            fontWeight: 700,
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                          }}
+                        >
+                          🔤 Chữ
+                        </button>
+                        <button
+                          className={`btn-mode ${mode === "numbers" ? "active" : ""}`}
+                          onClick={() => setMode("numbers")}
+                          style={{
+                            flex: 1,
+                            padding: "8px 0",
+                            borderRadius: 8,
+                            border: mode === "numbers" ? "2px solid #ff7043" : "2px solid transparent",
+                            background: mode === "numbers" ? "rgba(255,112,67,0.15)" : "rgba(255,255,255,0.05)",
+                            color: mode === "numbers" ? "#ff7043" : "#7a9acc",
+                            fontWeight: 700,
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                          }}
+                        >
+                          #️⃣ Số
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -650,9 +696,16 @@ export default function Translate() {
                   </div>
 
                   <div className="alphabet-block">
-                    <p className="section-label">Danh sách ký tự VSL hỗ trợ</p>
+                    <p className="section-label">
+                      {mode === "numbers"
+                        ? "Danh sách số hỗ trợ"
+                        : "Danh sách ký tự VSL hỗ trợ"}
+                    </p>
                     <div className="alphabet-grid">
-                      {CLASSES.slice(0, 26).map((c) => (
+                      {(mode === "numbers"
+                        ? ["0","1","2","3","4","5","6","7","8","9","10"]
+                        : CLASSES.slice(0, 26)
+                      ).map((c) => (
                         <div
                           key={c}
                           className={`alpha-cell ${prediction === c ? "alpha-active" : ""}`}

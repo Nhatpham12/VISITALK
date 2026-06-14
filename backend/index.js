@@ -5,6 +5,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const seedAdmin = require("./seeders/seedAdmin");
+const seedLessons = require("./seeders/seedLessons");
 
 const app = express();
 
@@ -65,6 +66,7 @@ const authLimiter = rateLimit({
 });
 
 seedAdmin().catch((err) => console.error("seedAdmin error:", err));
+seedLessons().catch((err) => console.error("seedLessons error:", err));
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/users.routes");

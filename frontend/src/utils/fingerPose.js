@@ -178,3 +178,60 @@ export function classifyLetter(fingers, lm) {
   if (thumbVisible) return { label: "E", confidence: 0.5, top3: [["E", 0.5], ["A", 0.3], ["S", 0.2]] };
   return { label: "A", confidence: 0.4, top3: [["A", 0.4], ["S", 0.3], ["E", 0.3]] };
 }
+
+export function classifyNumber(fingers, lm) {
+  const [thumb, index, middle, ring, pinky] = fingers;
+  const count = fingers.filter(Boolean).length;
+
+  if (count === 0) {
+    const thumbTip = lm[4];
+    const thumbIp = lm[3];
+    const thumbOver = thumbTip.y > lm[5].y && thumbTip.y > lm[9].y;
+    if (thumbOver) return { label: "0", confidence: 0.5, top3: [["0", 0.5], ["A", 0.3], ["S", 0.2]] };
+    return { label: "0", confidence: 0.4, top3: [["0", 0.4], ["A", 0.3], ["S", 0.3]] };
+  }
+
+  if (count === 1) {
+    if (index) return { label: "1", confidence: 0.85, top3: [["1", 0.85], ["D", 0.1], ["?", 0.05]] };
+    if (pinky) return { label: "1", confidence: 0.4, top3: [["1", 0.4], ["I", 0.3], ["?", 0.3]] };
+    if (thumb) {
+      const tipY = lm[4].y;
+      const ipY = lm[3].y;
+      if (tipY < ipY) return { label: "6", confidence: 0.5, top3: [["6", 0.5], ["?", 0.3], ["L", 0.2]] };
+      return { label: "6", confidence: 0.4, top3: [["6", 0.4], ["?", 0.3], ["T", 0.3]] };
+    }
+  }
+
+  if (count === 2) {
+    if (index && middle && !thumb && !ring && !pinky) return { label: "2", confidence: 0.85, top3: [["2", 0.85], ["V", 0.1], ["U", 0.05]] };
+    if (thumb && pinky && !index && !middle && !ring) return { label: "6", confidence: 0.85, top3: [["6", 0.85], ["Y", 0.1], ["?", 0.05]] };
+    if (thumb && index && !middle && !ring && !pinky) {
+      const d = dist3(lm[4], lm[8]);
+      if (d > 0.06) return { label: "8", confidence: 0.6, top3: [["8", 0.6], ["L", 0.25], ["?", 0.15]] };
+      return { label: "8", confidence: 0.4, top3: [["8", 0.4], ["?", 0.3], ["L", 0.3]] };
+    }
+  }
+
+  if (count === 3) {
+    if (thumb && index && middle && !ring && !pinky) return { label: "3", confidence: 0.7, top3: [["3", 0.7], ["K", 0.2], ["?", 0.1]] };
+    if (index && middle && ring && !thumb && !pinky) return { label: "3", confidence: 0.55, top3: [["3", 0.55], ["W", 0.25], ["?", 0.2]] };
+  }
+
+  if (count === 4) {
+    if (!thumb && index && middle && ring && pinky) return { label: "4", confidence: 0.85, top3: [["4", 0.85], ["B", 0.1], ["?", 0.05]] };
+    if (thumb && index && middle && ring && !pinky) {
+      const d = dist3(lm[4], lm[16]);
+      if (d < 0.06) return { label: "7", confidence: 0.45, top3: [["7", 0.45], ["?", 0.3], ["W", 0.25]] };
+    }
+  }
+
+  if (count === 5) {
+    if (thumb && index && middle && ring && pinky) {
+      const ti = dist3(lm[4], lm[8]);
+      if (ti < 0.06) return { label: "10", confidence: 0.4, top3: [["10", 0.4], ["O", 0.3], ["C", 0.3]] };
+      return { label: "5", confidence: 0.85, top3: [["5", 0.85], ["B", 0.1], ["O", 0.05]] };
+    }
+  }
+
+  return { label: "?", confidence: 0.3, top3: [["?", 0.3], ["1", 0.15], ["2", 0.15]] };
+}
