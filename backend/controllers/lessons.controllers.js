@@ -13,7 +13,7 @@ const getById = (req, res) => {
   const { id } = req.params;
   lessons.getById(id, (err, lesson) => {
     if (err) return res.status(500).json({ message: "Lỗi server" });
-    if (!lesson)
+    if (!lesson || lesson.length === 0)
       return res.status(404).json({ message: "Không tìm thấy bài học" });
     res.status(200).json(lesson);
   });
@@ -51,7 +51,7 @@ const update = (req, res) => {
 };
 
 // Xóa bài học — chỉ admin
-const deletelesson = (req, res) => {
+const deleteLesson = (req, res) => {
   const { id } = req.params;
 
   lessons.getById(id, (err, lesson) => {
@@ -66,4 +66,4 @@ const deletelesson = (req, res) => {
   });
 };
 
-module.exports = { getAll, getById, insert, update, deletelesson };
+module.exports = { getAll, getById, insert, update, deleteLesson };

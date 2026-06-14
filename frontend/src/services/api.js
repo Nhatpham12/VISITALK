@@ -8,10 +8,12 @@ const apiCall = async (endpoint, options = {}) => {
   const token = getToken();
 
   const headers = {
-    "Content-Type": "application/json",
     ...options.headers,
   };
 
+  if (options.body) {
+    headers["Content-Type"] = "application/json";
+  }
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
@@ -58,7 +60,10 @@ export const userService = {
     }),
   delete: (id) => apiCall(`/users/${id}`, { method: "DELETE" }),
 };
-
+//_____ reports___________________________________
+export const reportService = {
+  getStats: () => apiCall("/reports/stats"),
+};
 // ─── Lessons ─────────────────────────────────────────────────────────────────
 export const lessonService = {
   getAll: () => apiCall("/lessons"),

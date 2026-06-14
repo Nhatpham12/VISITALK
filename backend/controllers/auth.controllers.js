@@ -72,8 +72,12 @@ const login = (req, res) => {
           device: req.headers["user-agent"] || null,
         };
 
-        users_sessions.insert(sessionData, (err) => {
+        users_sessions.insert(sessionData, (err, session_id) => {
           if (err) return res.status(500).json({ message: "Lỗi tạo phiên" });
+          if (!session_id)
+            return res
+              .status(500)
+              .json({ message: "Không lấy được session_id" });
 
           users_sessions.getActiveSession(user.id, (err, session) => {
             if (err) return res.status(500).json({ message: "Lỗi lấy phiên" });

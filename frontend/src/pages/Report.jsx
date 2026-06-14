@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../CSS/Report.css";
+import { reportService } from "../services/api";
 
 const Report = () => {
   const [stats, setStats] = useState({
@@ -24,7 +25,7 @@ const Report = () => {
           throw new Error("Không thể tải dữ liệu report");
         }
 
-        const data = await response.json();
+        const data = await reportService.getStats();
 
         setStats({
           totalUsers: data.totalUsers || 0,

@@ -1,8 +1,11 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/authContext";
 import "./Navbar.css";
 
 const Navbar = () => {
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return (
@@ -22,30 +25,42 @@ const Navbar = () => {
       <Link to="/introduce">
         <button className="Introduce">GIỚI THIỆU CHUNG</button>
       </Link>
-      <Link to="/translate">
-        <button className="Translate">DỊCH THUẬT</button>
-      </Link>
-      <Link to="/learning">
-        <button className="Learning">TỪ ĐIỂN</button>
-      </Link>
-      <Link to="/asking">
-        <button className="Asking">GIẢI ĐÁP</button>
-      </Link>
-
-      <Link to="/personal">
-        <img
-          src="/Assets/Images/Personal.png"
-          className="Personal"
-          alt="Personal"
-        />
-      </Link>
-      <Link to="/setting">
-        <img
-          src="/Assets/Images/Setting.png"
-          className="setting"
-          alt="Setting"
-        />
-      </Link>
+      {user && (
+        <>
+          <Link to="/translate">
+            <button className="Translate">DỊCH THUẬT</button>
+          </Link>
+          <Link to="/learning">
+            <button className="Learning">TỪ ĐIỂN</button>
+          </Link>
+        </>
+      )}
+      {!user && (
+        <Link to="/login">
+          <button>ĐĂNG NHẬP</button>
+        </Link>
+      )}
+      {user && (
+        <>
+          <Link to="/asking">
+            <button className="Asking">GIẢI ĐÁP</button>
+          </Link>
+          <Link to="/personal">
+            <img
+              src="/Assets/Images/Personal.png"
+              className="Personal"
+              alt="Personal"
+            />
+          </Link>
+          <Link to="/setting">
+            <img
+              src="/Assets/Images/Setting.png"
+              className="setting"
+              alt="Setting"
+            />
+          </Link>
+        </>
+      )}
     </div>
   );
 };

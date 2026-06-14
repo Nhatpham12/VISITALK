@@ -68,7 +68,7 @@ users_sessions.insert = (data, callback) => {
   db.query(sqlString, values, (err, result) => {
     if (err) return callback(err, null);
     // FIX: bảng dùng UUID tự sinh nên insertId = 0, kiểm tra affectedRows
-    callback(null, result.affectedRows > 0);
+    callback(null, result.insertId || result.affectedRows > 0);
   });
 };
 

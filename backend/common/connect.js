@@ -9,5 +9,6 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   timezone: "+07:00",
 });
+pool.on("error", (err) => console.log("DB pool error: " + err));
 
 module.exports = pool;
