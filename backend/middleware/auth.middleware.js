@@ -10,7 +10,7 @@ const verifyToken = (req, res, next) => {
 
   const token = authHeader.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET || "visitalk_secret", (err, decoded) => {
     if (err) {
       if (err.name === "TokenExpiredError") {
         return res.status(401).json({ message: "Token đã hết hạn" });

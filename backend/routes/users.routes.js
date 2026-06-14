@@ -17,7 +17,7 @@ router.get("/:id", verifyToken, (req, res) => {
   const { id } = req.params;
 
   if (String(req.user.id) !== String(id) && req.user.u_role !== "admin") {
-    return res.status(403).json({ message: "Không có quyền chỉnh sửa" });
+    return res.status(403).json({ message: "Không có quyền xem thông tin" });
   }
 
   users.getById(id, (err, user) => {

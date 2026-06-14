@@ -5,6 +5,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const seedAdmin = require("./seeders/seedAdmin");
+const seedLessons = require("./seeders/seedLessons");
 
 const app = express();
 
@@ -24,9 +25,11 @@ const allowedOrigins = [
   // Live Server
   "http://localhost:5500",
   "http://127.0.0.1:5500",
-];
 
-seedAdmin();
+  // Docker (Nginx)
+  "http://localhost",
+  "http://localhost:80",
+];
 
 app.use(
   cors({
@@ -62,17 +65,22 @@ const authLimiter = rateLimit({
   message: { message: "Quá nhiều lần thử đăng nhập, vui lòng chờ 5 phút" },
 });
 
+seedAdmin().catch((err) => console.error("seedAdmin error:", err));
+seedLessons().catch((err) => console.error("seedLessons error:", err));
+
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/users.routes");
 const lessonsRoutes = require("./routes/lessons.routes");
 const userSessionRoutes = require("./routes/userSessions.routes");
 const reportRoutes = require("./routes/report.routes");
+const predictRoutes = require("./routes/predict.routes");
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/lessons", lessonsRoutes);
 app.use("/api/user-sessions", userSessionRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/predict", predictRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });

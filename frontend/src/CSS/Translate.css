@@ -1,17 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #1a2a4a;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
 .translate-page .main-content {
   flex: 1;
   display: flex;
@@ -116,12 +102,7 @@ body {
 }
 
 /* Body layout */
-.tl-body {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
-  align-items: start;
-}
+.tl-
 
 /* Cam panel */
 .cam-panel {
@@ -471,9 +452,7 @@ body {
 }
 
 @media (max-width: 900px) {
-  .tl-body {
-    grid-template-columns: 1fr;
-  }
+  .tl-
   .translate-page .content-wrapper {
     padding: 16px;
   }

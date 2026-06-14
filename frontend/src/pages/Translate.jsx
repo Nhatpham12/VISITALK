@@ -4,100 +4,32 @@
 // ============================================================
 
 import { useEffect, useRef, useState } from "react";
-import * as tf from "@tensorflow/tfjs";
+import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import Navbar from "../components/Navbar";
 import "../CSS/Translate.css";
+import { detectFingers, classifyLetter, classifyNumber } from "../utils/fingerPose";
 
-// ─── Cấu hình ─────────────────────────────────────────────
-const MODEL_PATH = "/model/model.json";
-const WEIGHTS_PATH = "/model/group1-shard1of1.bin";
-const STABLE_FRAMES = 10; // số frame liên tiếp giống nhau để ghi chữ
+const STABLE_FRAMES = 10;
 
 // 29 lớp VSL chuẩn từ Dataset
 const CLASSES = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "W",
-  "X",
-  "Y",
-  "Z",
-  "space",
-  "del",
-  "nothing",
+  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+  "space", "del", "nothing",
 ];
 
-// ─── Vá lỗi tương thích định dạng Keras v3 ──────────────────
-function patchModelJson(json) {
-  const layers = json?.modelTopology?.model_config?.config?.layers;
-  if (!layers) return json;
-  layers.forEach((layer) => {
-    const cfg = layer.config;
-    if (
-      layer.class_name === "InputLayer" &&
-      cfg?.batch_shape &&
-      !cfg?.batchInputShape
-    ) {
-      cfg.batchInputShape = cfg.batch_shape;
-    }
-    if (
-      layer.inbound_nodes?.length > 0 &&
-      !Array.isArray(layer.inbound_nodes[0]) &&
-      typeof layer.inbound_nodes[0] === "object"
-    ) {
-      layer.inbound_nodes = layer.inbound_nodes.map((node) => {
-        const result = [];
-        if (node.args && Array.isArray(node.args)) {
-          node.args.forEach((arg) => {
-            if (
-              arg.class_name === "__keras_tensor__" &&
-              arg.config?.keras_history
-            ) {
-              const h = arg.config.keras_history;
-              result.push([h[0], h[1], h[2], node.kwargs || {}]);
-            }
-          });
-        }
-        return result;
-      });
-    }
-  });
-  return json;
-}
-
 export default function Translate() {
-  // ── Refs kiểm soát (Tránh kích hoạt re-render không cần thiết) ──
+  // ── Refs ──
   const videoRef = useRef(null);
-  const roiCanvasRef = useRef(null);
-  const modelRef = useRef(null);
   const streamRef = useRef(null);
   const runningRef = useRef(false);
   const rafRef = useRef(null);
   const pausedRef = useRef(false);
   const stableRef = useRef({ label: null, count: 0 });
-  const confThreshRef = useRef(0.55);
-  const swapRef = useRef(false);
+  const confThreshRef = useRef(0.30);
+  const modeRef = useRef("letters");
 
-  // ── States quản lý giao diện UI ──
+  // ── States ──
   const [phase, setPhase] = useState("model"); // model | cam | ready | error
   const [loadPct, setLoadPct] = useState(0);
   const [loadMsg, setLoadMsg] = useState("Đang khởi tạo...");
@@ -110,96 +42,56 @@ export default function Translate() {
   const [debugTop3, setDebugTop3] = useState([]);
 
   const [paused, setPaused] = useState(false);
-  const [confThresh, setConfThresh] = useState(0.55);
-  const [swapChannels, setSwapChannels] = useState(false);
+  const [confThresh, setConfThresh] = useState(0.30);
+  const [mode, setMode] = useState("letters"); // "letters" | "numbers"
 
-  // Đồng bộ thời gian thực các State điều khiển vào Refs để Vòng lặp AI luôn nhận dữ liệu mới nhất
-  useEffect(() => {
-    pausedRef.current = paused;
-  }, [paused]);
-  useEffect(() => {
-    confThreshRef.current = confThresh;
-  }, [confThresh]);
-  useEffect(() => {
-    swapRef.current = swapChannels;
-  }, [swapChannels]);
+  useEffect(() => { pausedRef.current = paused; }, [paused]);
+  useEffect(() => { confThreshRef.current = confThresh; }, [confThresh]);
+  useEffect(() => { modeRef.current = mode; }, [mode]);
 
   // ════════════════════════════════════════════════════════
-  // BƯỚC 1 — Tải & Cấu hình môi trường TensorFlow.js
+  // BƯỚC 1 — Tải HandLandmarker
   // ════════════════════════════════════════════════════════
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       try {
-        setLoadMsg("Đang thiết lập WebGL Backend...");
-        await tf.setBackend("webgl");
-        await tf.ready();
-
-        // 1a. Tải tệp cấu trúc mạng model.json
-        setLoadMsg("Đang tải tệp kiến trúc mạng...");
-        setLoadPct(10);
-        const res = await fetch(MODEL_PATH);
-        if (!res.ok)
-          throw new Error(`HTTP ${res.status} khi đọc cấu trúc model`);
-        let modelJson = patchModelJson(await res.json());
-
-        // 1b. Tải tệp nhị phân trọng số weights
-        setLoadMsg("Đang liên kết dữ liệu trọng số...");
-        setLoadPct(35);
-        const wRes = await fetch(WEIGHTS_PATH);
-        if (!wRes.ok)
-          throw new Error(`HTTP ${wRes.status} khi đọc file weights`);
-        const weightData = await wRes.arrayBuffer();
-
+        setLoadMsg("Đang tải bộ phát hiện bàn tay MediaPipe...");
+        setLoadPct(40);
+        const vision = await FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+        );
+        const handLandmarker = await HandLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath:
+              "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
+          },
+          runningMode: "VIDEO",
+          numHands: 1,
+          minHandDetectionConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+        });
         if (cancelled) return;
 
-        // 1c. Biên dịch mô hình trong bộ nhớ WebGL
-        setLoadMsg("Đang biên dịch mô hình...");
-        setLoadPct(65);
-        const model = await tf.loadLayersModel(
-          tf.io.fromMemory({
-            modelTopology: modelJson.modelTopology,
-            weightSpecs: modelJson.weightsManifest[0].weights,
-            weightData: weightData,
-          }),
-        );
-
-        if (cancelled) {
-          model.dispose();
-          return;
-        }
-
-        // 1d. Chạy kích hoạt giả lập (Warm-up) để tăng tốc cho lần chạy đầu tiên
-        setLoadMsg("Đang tối ưu hóa GPU (Warm-up)...");
-        setLoadPct(90);
-        const dummy = tf.zeros([1, 128, 128, 3]);
-        const warmOut = model.predict(dummy);
-        await warmOut.data();
-        dummy.dispose();
-        warmOut.dispose();
-
-        modelRef.current = model;
-
-        if (!cancelled) {
-          setLoadPct(100);
-          setLoadMsg("Mô hình sẵn sàng!");
-          setPhase("cam");
-        }
+        window.__handLandmarker = handLandmarker;
+        setLoadPct(100);
+        setLoadMsg("Sẵn sàng! Đang mở camera...");
+        setPhase("cam");
       } catch (err) {
         if (!cancelled) {
-          console.error("Lỗi khởi tạo mô hình:", err);
+          console.error("Lỗi khởi tạo:", err);
           setPhase("error");
-          setErrorMsg(`Không thể tải mô hình AI: ${err.message}`);
+          setErrorMsg(`Không thể tải AI: ${err.message}`);
         }
       }
     })();
 
     return () => {
       cancelled = true;
-      if (modelRef.current) {
-        modelRef.current.dispose();
-        modelRef.current = null;
+      if (window.__handLandmarker) {
+        window.__handLandmarker.close();
+        window.__handLandmarker = null;
       }
     };
   }, []);
@@ -267,146 +159,81 @@ export default function Translate() {
   }, []);
 
   // ════════════════════════════════════════════════════════
-  // BƯỚC 3 — Vòng lặp nhận diện thực tế (Flat Loop Queue)
+  // BƯỚC 3 — Vòng lặp nhận diện (MediaPipe + fingerPose)
   // ════════════════════════════════════════════════════════
   useEffect(() => {
     if (phase !== "ready") return;
 
     runningRef.current = true;
+    let skipCounter = 0;
 
-    // Tạo canvas xử lý ảnh tạm ẩn
-    const tmpCanvas = document.createElement("canvas");
-    tmpCanvas.width = 128;
-    tmpCanvas.height = 128;
-    const tmpCtx = tmpCanvas.getContext("2d");
-
-    async function loop() {
+    function loop() {
       if (!runningRef.current) return;
 
       const video = videoRef.current;
-      const model = modelRef.current;
+      const handLandmarker = window.__handLandmarker;
 
-      if (
-        !video ||
-        !model ||
-        pausedRef.current ||
-        video.readyState < 2 ||
-        video.videoWidth === 0
-      ) {
+      if (!video || !handLandmarker || pausedRef.current || video.readyState < 2 || video.videoWidth === 0) {
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
 
-      let scoreArray = null;
+      skipCounter++;
+      if (skipCounter % 12 !== 0) {
+        rafRef.current = requestAnimationFrame(loop);
+        return;
+      }
 
       try {
-        const vw = video.videoWidth;
-        const vh = video.videoHeight;
-        const size = Math.min(vw, vh) * 0.7;
-        const sx = (vw - size) / 2;
-        const sy = (vh - size) / 2;
+        const result = handLandmarker.detectForVideo(video, performance.now());
+        if (result.landmarks && result.landmarks.length > 0) {
+          const lm = result.landmarks[0];
+          const fingers = detectFingers(lm);
+          const pred = modeRef.current === "numbers" ? classifyNumber(fingers, lm) : classifyLetter(fingers, lm);
 
-        // 🟢 SỬA LỖI LẬT ẢNH (Mirror View): Đồng bộ hướng ảnh thực với CSS của video
-        tmpCtx.clearRect(0, 0, 128, 128);
-        tmpCtx.save();
-        tmpCtx.translate(128, 0);
-        tmpCtx.scale(-1, 1); // Lật ngang canvas để khớp góc nhìn tay của bạn khi chụp
-        tmpCtx.drawImage(video, sx, sy, size, size, 0, 0, 128, 128);
-        tmpCtx.restore();
+          setConfidence(Math.round(pred.confidence * 100));
+          setPrediction(pred.label);
+          setDebugTop3(pred.top3.map(t => ({ label: t[0], score: t[1] })));
 
-        // Đẩy ảnh đã sửa lật lên khung preview nhỏ trên màn hình
-        if (roiCanvasRef.current) {
-          const roiCtx = roiCanvasRef.current.getContext("2d");
-          if (roiCtx) {
-            roiCtx.clearRect(0, 0, 128, 128);
-            roiCtx.drawImage(tmpCanvas, 0, 0, 128, 128);
-          }
-        }
-
-        // 🟢 XỬ LÝ TENSOR ĐỒNG BỘ: Tách khối async hoàn toàn khỏi tf.tidy
-        const outputTensor = tf.tidy(() => {
-          let t = tf.browser.fromPixels(tmpCanvas).asType("float32");
-
-          // SỬA LỖI ĐẢO KÊNH MÀU: Dùng hàm hệ thống .reverse(2) thay vì split/concat lỗi
-          if (swapRef.current) {
-            t = t.reverse(2);
-          }
-
-          const input = t.expandDims(0); // Chuẩn hóa Shape đầu vào thành [1, 128, 128, 3]
-          return model.predict(input); // Trả ra Tensor kết quả dạng Softmax [1, 29]
-        });
-
-        // Chuyển dữ liệu mảng số từ GPU sang CPU một cách an toàn nhất
-        const rawData = await outputTensor.data();
-        scoreArray = Array.from(rawData);
-
-        // Giải phóng ngay lập tức vùng nhớ trên bộ nhớ đồ họa WebGL
-        outputTensor.dispose();
-      } catch (err) {
-        console.error("Lỗi trong chu kỳ Inference:", err);
-      }
-
-      // Xử lý dữ liệu số trả về và cập nhật đồng bộ trực tiếp lên UI
-      if (scoreArray && scoreArray.length > 0 && !isNaN(scoreArray[0])) {
-        let maxIdx = 0;
-        for (let i = 1; i < scoreArray.length; i++) {
-          if (scoreArray[i] > scoreArray[maxIdx]) maxIdx = i;
-        }
-
-        const label = CLASSES[maxIdx] ?? `cls_${maxIdx}`;
-        const conf = scoreArray[maxIdx];
-
-        // Lọc cấu trúc Top 3 hiển thị bảng tần suất
-        const top3 = scoreArray
-          .map((s, i) => ({
-            label: CLASSES[i] ?? `cls_${i}`,
-            score: isNaN(s) ? 0 : s,
-          }))
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 3);
-        setDebugTop3(top3);
-
-        setConfidence(Math.round(conf * 100));
-        setPrediction(label === "nothing" ? null : label);
-
-        // Logic tích lũy nhận diện chuỗi ký tự (Debounce Frames)
-        const s = stableRef.current;
-        if (conf >= confThreshRef.current && label !== "nothing") {
-          if (label === s.label) {
-            s.count++;
-            setStablePct(Math.round((s.count / STABLE_FRAMES) * 100));
-
-            if (s.count >= STABLE_FRAMES) {
-              if (label === "space") {
-                setOutputText((prev) => prev + " ");
-              } else if (label === "del") {
-                setOutputText((prev) => prev.slice(0, -1));
-              } else {
-                setOutputText((prev) => prev + label);
+          const s = stableRef.current;
+          if (pred.confidence >= confThreshRef.current && pred.label !== "?") {
+            if (pred.label === s.label) {
+              s.count++;
+              setStablePct(Math.round((s.count / STABLE_FRAMES) * 100));
+              if (s.count >= STABLE_FRAMES) {
+                if (pred.label === "space") setOutputText((prev) => prev + " ");
+                else if (pred.label === "del") setOutputText((prev) => prev.slice(0, -1));
+                else setOutputText((prev) => prev + pred.label);
+                s.label = null;
+                s.count = 0;
+                setStablePct(0);
               }
-              s.label = null;
-              s.count = 0;
-              setStablePct(0);
+            } else {
+              s.label = pred.label;
+              s.count = 1;
+              setStablePct(Math.round((1 / STABLE_FRAMES) * 100));
             }
           } else {
-            s.label = label;
-            s.count = 1;
-            setStablePct(Math.round((1 / STABLE_FRAMES) * 100));
+            s.label = null;
+            s.count = 0;
+            setStablePct(0);
           }
         } else {
-          s.label = null;
-          s.count = 0;
+          setPrediction(null);
+          setConfidence(0);
+          setDebugTop3([]);
+          stableRef.current = { label: null, count: 0 };
           setStablePct(0);
         }
+      } catch (err) {
+        console.error("Lỗi inference:", err);
       }
 
-      // 🟢 VÒNG LẶP PHẲNG: Chỉ xếp hàng yêu cầu frame tiếp theo khi frame hiện tại đã dọn dẹp sạch vùng nhớ
       if (runningRef.current) {
         rafRef.current = requestAnimationFrame(loop);
       }
     }
 
-    // Kích hoạt chu kỳ chạy đầu tiên
     rafRef.current = requestAnimationFrame(loop);
 
     return () => {
@@ -655,7 +482,7 @@ export default function Translate() {
                         <div
                           style={{
                             display: "flex",
-                            justifycontent: "space-between",
+                            justifyContent: "space-between",
                             fontSize: "0.8rem",
                             color: "#7a9acc",
                           }}
@@ -682,71 +509,51 @@ export default function Translate() {
                         />
                       </div>
 
-                      <label
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                          cursor: "pointer",
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={swapChannels}
-                          onChange={(e) => setSwapChannels(e.target.checked)}
-                          style={{
-                            width: 16,
-                            height: 16,
-                            cursor: "pointer",
-                            accentColor: "#2979ff",
-                          }}
-                        />
-                        <span style={{ fontSize: "0.79rem", color: "#7a9acc" }}>
-                          Đảo định dạng màu RGB ↔ BGR (Dùng khi train bằng
-                          OpenCV)
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {phase === "ready" && (
-                    <div
-                      style={{
-                        background: "rgba(0,0,0,0.5)",
-                        border: "1px solid rgba(41,121,255,0.3)",
-                        borderRadius: 10,
-                        padding: "10px 14px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
                       <div
                         style={{
-                          color: "#3a5a8a",
-                          fontSize: "0.68rem",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.5px",
-                          width: "100%",
+                          display: "flex",
+                          gap: 8,
                         }}
                       >
-                        Vùng trích xuất gửi sang AI (128×128)
+                        <button
+                          className={`btn-mode ${mode === "letters" ? "active" : ""}`}
+                          onClick={() => setMode("letters")}
+                          style={{
+                            flex: 1,
+                            padding: "8px 0",
+                            borderRadius: 8,
+                            border: mode === "letters" ? "2px solid #2979ff" : "2px solid transparent",
+                            background: mode === "letters" ? "rgba(41,121,255,0.15)" : "rgba(255,255,255,0.05)",
+                            color: mode === "letters" ? "#2979ff" : "#7a9acc",
+                            fontWeight: 700,
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                          }}
+                        >
+                          🔤 Chữ
+                        </button>
+                        <button
+                          className={`btn-mode ${mode === "numbers" ? "active" : ""}`}
+                          onClick={() => setMode("numbers")}
+                          style={{
+                            flex: 1,
+                            padding: "8px 0",
+                            borderRadius: 8,
+                            border: mode === "numbers" ? "2px solid #ff7043" : "2px solid transparent",
+                            background: mode === "numbers" ? "rgba(255,112,67,0.15)" : "rgba(255,255,255,0.05)",
+                            color: mode === "numbers" ? "#ff7043" : "#7a9acc",
+                            fontWeight: 700,
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                          }}
+                        >
+                          #️⃣ Số
+                        </button>
                       </div>
-                      <canvas
-                        ref={roiCanvasRef}
-                        width={128}
-                        height={128}
-                        style={{
-                          width: 128,
-                          height: 128,
-                          border: "2px solid rgba(41,121,255,0.35)",
-                          borderRadius: 8,
-                          background: "#000",
-                        }}
-                      />
                     </div>
-                  )}
+                  </div>
 
                   {phase === "ready" && debugTop3.length > 0 && (
                     <div
@@ -889,9 +696,16 @@ export default function Translate() {
                   </div>
 
                   <div className="alphabet-block">
-                    <p className="section-label">Danh sách ký tự VSL hỗ trợ</p>
+                    <p className="section-label">
+                      {mode === "numbers"
+                        ? "Danh sách số hỗ trợ"
+                        : "Danh sách ký tự VSL hỗ trợ"}
+                    </p>
                     <div className="alphabet-grid">
-                      {CLASSES.slice(0, 26).map((c) => (
+                      {(mode === "numbers"
+                        ? ["0","1","2","3","4","5","6","7","8","9","10"]
+                        : CLASSES.slice(0, 26)
+                      ).map((c) => (
                         <div
                           key={c}
                           className={`alpha-cell ${prediction === c ? "alpha-active" : ""}`}

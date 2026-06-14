@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { AuthContext } from "../context/authContext";
 import "../CSS/Numbers.css";
 
 const NUMBER_ENTRIES = [

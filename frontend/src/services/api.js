@@ -21,6 +21,12 @@ const apiCall = async (endpoint, options = {}) => {
     headers,
   });
 
+  if (response.status === 401) {
+    localStorage.removeItem("access_token");
+    window.location.href = "/login";
+    throw new Error("Phiên đăng nhập đã hết hạn");
+  }
+
   if (!response.ok) {
     const errData = await response.json().catch(() => ({}));
     throw new Error(errData.message || `Lỗi ${response.status}`);
@@ -57,6 +63,11 @@ export const userService = {
       body: JSON.stringify({ u_status: status }),
     }),
   delete: (id) => apiCall(`/users/${id}`, { method: "DELETE" }),
+};
+
+// ─── Reports ─────────────────────────────────────────────────────────────────
+export const reportService = {
+  getStats: () => apiCall("/reports/stats"),
 };
 
 // ─── Lessons ─────────────────────────────────────────────────────────────────

@@ -1,17 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
 /* ── Page title ── */
 .alphabet-title {
   text-align: center;

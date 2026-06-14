@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../CSS/Termofser.css";
+
 const Termofser = () => {
   return (
     <>
@@ -13,25 +14,30 @@ const Termofser = () => {
           </div>
           <div className="Para">
             <p id="p1">
-              Ngôn ngữ ký hiệu hay ngôn ngữ dấu hiệu, thủ ngữ là ngôn ngữ dùng
-              những biểu hiện của bàn tay thay cho âm thanh của tiếng nói. Ngôn
-              ngữ ký hiệu do người điếc tạo ra nhằm giúp họ có thể giao tiếp với
-              nhau trong cộng đồng của mình và tiếp thu tri thức của xã hội.
+              Khi sử dụng dịch vụ VISITALK, bạn đồng ý với các điều khoản sau
+              đây. Nếu bạn không đồng ý với bất kỳ điều khoản nào, vui lòng
+              ngừng sử dụng dịch vụ ngay lập tức.
             </p>
             <p id="p2">
-              Cũng như ngôn ngữ nói, ngôn ngữ ký hiệu của từng quốc gia, thậm
-              chí là từng khu vực trong một quốc gia rất khác nhau. Điều đó là
-              do mỗi quốc gia, khu vực có lịch sử, văn hóa, tập quán khác nhau
-              nên ký hiệu để biểu thị sự vật hiện tượng cũng khác nhau. Tuy
-              nhiên, ký hiệu tất cả mọi nơi trên thế giới đều có những điểm
-              tương đồng nhất định.
+              <strong>1. Tài khoản người dùng:</strong> Bạn chịu trách nhiệm bảo
+              mật thông tin tài khoản và mật khẩu. Mọi hoạt động diễn ra trong
+              tài khoản của bạn đều do bạn chịu trách nhiệm.
             </p>
-
             <p id="p3">
-              Do ngôn ngữ ký hiệu phát triển hơn trong cộng đồng người khiếm
-              thính, nên những người thuộc cộng đồng này của hai nước khác nhau
-              có thể giao tiếp với nhau tốt hơn hai người bình thường nhưng mà
-              không biết ngoại ngữ.
+              <strong>2. Sử dụng dịch vụ:</strong> VISITALK cung cấp công cụ dịch
+              thuật ngôn ngữ ký hiệu cho mục đích học tập và giao tiếp. Không
+              được sử dụng dịch vụ cho các mục đích vi phạm pháp luật.
+            </p>
+            <p id="p4">
+              <strong>3. Nội dung người dùng:</strong> Chúng tôi tôn trọng quyền
+              sở hữu trí tuệ của người dùng. Bạn giữ quyền sở hữu đối với mọi
+              nội dung bạn tạo ra khi sử dụng dịch vụ.
+            </p>
+            <p id="p5">
+              <strong>4. Giới hạn trách nhiệm:</strong> VISITALK không chịu trách
+              nhiệm cho bất kỳ thiệt hại nào phát sinh từ việc sử dụng hoặc không
+              thể sử dụng dịch vụ, bao gồm nhưng không giới hạn ở thiệt hại do
+              dịch thuật sai hoặc mất dữ liệu.
             </p>
           </div>
         </div>
