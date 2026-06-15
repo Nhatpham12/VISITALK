@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { lessonService } from "../services/api";
+import { lessonService, accessService } from "../services/api";
 import "../CSS/Numbers.css";
 
 const ITEMS_PER_PAGE = 9;
@@ -61,7 +61,11 @@ const Numbers = () => {
 
           <div className="numbers-container">
             {currentEntries.map((lesson) => (
-              <div className="numbers-card" key={lesson.les_id}>
+              <div
+                className="numbers-card"
+                key={lesson.les_id}
+                onClick={() => accessService.recordAccess(lesson.les_id)}
+              >
                 <div className="numbers-card__top">
                   <h3 className="numbers-card__title">{lesson.meaning}</h3>
 

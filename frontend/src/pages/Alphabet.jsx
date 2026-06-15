@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { lessonService } from "../services/api";
+import { lessonService, accessService } from "../services/api";
 import "../CSS/Alphabet.css";
 
 const Alphabet = () => {
@@ -49,11 +49,13 @@ const Alphabet = () => {
             <div
               className={`alphabet-card ${selectedId === lesson.les_id ? "alphabet-card--selected" : ""}`}
               key={lesson.les_id}
-              onClick={() =>
+              onClick={() => {
                 setSelectedId(
                   selectedId === lesson.les_id ? null : lesson.les_id,
-                )
-              }
+                );
+                if (selectedId !== lesson.les_id)
+                  accessService.recordAccess(lesson.les_id);
+              }}
             >
               <div className="alphabet-card__tags">
                 <span className="tag tag--type">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { lessonService } from "../services/api";
+import { lessonService, accessService } from "../services/api";
 import "../CSS/Subjects.css";
 
 const Subjects = () => {
@@ -50,7 +50,11 @@ const Subjects = () => {
 
           <div className="subjects-container">
             {lessons.map((lesson) => (
-              <div className="subjects-card" key={lesson.les_id}>
+              <div
+                className="subjects-card"
+                key={lesson.les_id}
+                onClick={() => accessService.recordAccess(lesson.les_id)}
+              >
                 <div className="subjects-card__top">
                   <h3 className="subjects-card__title">
                     {lesson.meaning || lesson.title}
