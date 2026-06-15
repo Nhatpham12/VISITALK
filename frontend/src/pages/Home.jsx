@@ -23,7 +23,6 @@ const Home = () => {
                   các biểu cảm khuôn mặt để truyền đạt thông tin thay vì âm
                   thanh.
                 </p>
-                <button>Xem thêm</button>
               </div>
               <div className="right">
                 <img src="/Assets/Images/Logo.png" alt="Logo" />

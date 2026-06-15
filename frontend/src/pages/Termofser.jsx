@@ -13,25 +13,48 @@ const Termofser = () => {
           </div>
           <div className="Para">
             <p id="p1">
-              Ngôn ngữ ký hiệu hay ngôn ngữ dấu hiệu, thủ ngữ là ngôn ngữ dùng
-              những biểu hiện của bàn tay thay cho âm thanh của tiếng nói. Ngôn
-              ngữ ký hiệu do người điếc tạo ra nhằm giúp họ có thể giao tiếp với
-              nhau trong cộng đồng của mình và tiếp thu tri thức của xã hội.
+              Khi sử dụng nền tảng học và dịch ngôn ngữ ký hiệu, người dùng cam
+              kết cung cấp thông tin đăng ký chính xác, trung thực và chịu hoàn
+              toàn trách nhiệm về mọi hoạt động diễn ra dưới tài khoản của mình.
+              Người dùng được phép sử dụng các tài nguyên học tập — bao gồm
+              video bài giảng, bộ từ điển ngôn ngữ ký hiệu và công cụ dịch — cho
+              mục đích cá nhân, phi thương mại. Nghiêm cấm mọi hành vi sao chép,
+              phân phối lại, chỉnh sửa hoặc khai thác nội dung của nền tảng vì
+              mục đích thương mại mà không có sự cho phép bằng văn bản từ phía
+              chúng tôi. Ngoài ra, người dùng không được thực hiện các hành vi
+              gây ảnh hưởng tiêu cực đến hệ thống như tấn công mạng, phát tán mã
+              độc hoặc cố tình làm gián đoạn hoạt động của dịch vụ.
             </p>
             <p id="p2">
-              Cũng như ngôn ngữ nói, ngôn ngữ ký hiệu của từng quốc gia, thậm
-              chí là từng khu vực trong một quốc gia rất khác nhau. Điều đó là
-              do mỗi quốc gia, khu vực có lịch sử, văn hóa, tập quán khác nhau
-              nên ký hiệu để biểu thị sự vật hiện tượng cũng khác nhau. Tuy
-              nhiên, ký hiệu tất cả mọi nơi trên thế giới đều có những điểm
-              tương đồng nhất định.
+              Nền tảng cung cấp công cụ dịch ngôn ngữ ký hiệu dựa trên trí tuệ
+              nhân tạo và cơ sở dữ liệu liên tục được cập nhật; tuy nhiên, chúng
+              tôi không đảm bảo tính chính xác tuyệt đối của mọi kết quả dịch
+              thuật trong mọi ngữ cảnh và phương ngữ ký hiệu khác nhau. Người
+              dùng nên xem các kết quả dịch như một công cụ hỗ trợ tham khảo,
+              đặc biệt trong các tình huống quan trọng như y tế, pháp lý hay
+              giáo dục, thay vì coi đó là bản dịch chính thức duy nhất. Chúng
+              tôi không chịu trách nhiệm đối với bất kỳ tổn thất hay thiệt hại
+              nào phát sinh từ việc người dùng hoàn toàn phụ thuộc vào kết quả
+              dịch thuật tự động mà không có sự kiểm chứng từ chuyên gia ngôn
+              ngữ ký hiệu. Dịch vụ cũng có thể tạm thời gián đoạn do bảo trì hệ
+              thống hoặc các sự cố kỹ thuật ngoài tầm kiểm soát, và chúng tôi sẽ
+              nỗ lực thông báo trước đến người dùng trong những trường hợp như
+              vậy.
             </p>
 
             <p id="p3">
-              Do ngôn ngữ ký hiệu phát triển hơn trong cộng đồng người khiếm
-              thính, nên những người thuộc cộng đồng này của hai nước khác nhau
-              có thể giao tiếp với nhau tốt hơn hai người bình thường nhưng mà
-              không biết ngoại ngữ.
+              Chúng tôi có quyền cập nhật, sửa đổi hoặc bổ sung các điều khoản
+              sử dụng này vào bất kỳ thời điểm nào nhằm phản ánh những thay đổi
+              về mặt pháp lý, công nghệ hoặc định hướng phát triển của nền tảng.
+              Mọi thay đổi quan trọng sẽ được thông báo đến người dùng qua email
+              đã đăng ký hoặc thông qua thông báo nổi bật trên giao diện trang
+              web ít nhất 15 ngày trước khi có hiệu lực. Việc người dùng tiếp
+              tục sử dụng dịch vụ sau thời điểm thay đổi có hiệu lực đồng nghĩa
+              với việc chấp thuận các điều khoản mới. Trong trường hợp người
+              dùng vi phạm các điều khoản sử dụng, chúng tôi có quyền tạm khóa
+              hoặc chấm dứt tài khoản mà không cần thông báo trước, đồng thời
+              người dùng có thể tự nguyện xóa tài khoản bất kỳ lúc nào nếu không
+              còn có nhu cầu sử dụng dịch vụ.
             </p>
           </div>
         </div>

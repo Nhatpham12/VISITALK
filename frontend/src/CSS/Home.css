@@ -39,24 +39,6 @@ body {
 .f1 {
   border-bottom: 2px solid black;
 }
-.f1 .left button {
-  padding: 10px 50px;
-  border: 2.5px solid #1a2a4a;
-  border-radius: 25px;
-  background-color: #fff;
-  color: #1a2a4a;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    color 0.2s;
-}
-
-.f1 .left button:hover {
-  background-color: #1a2a4a;
-  color: #fff;
-}
 
 .home-page .content-wrapper .f1 {
   display: flex;
