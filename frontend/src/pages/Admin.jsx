@@ -83,7 +83,7 @@ const Admin = () => {
                     users.map((u) => (
                       <tr className="user-row" key={u.id}>
                         <td>{u.full_name}</td>
-                        <td>{u.dob}</td>
+                        <td>{u.dob ? new Date(u.dob).toLocaleDateString("vi-VN") : "-"}</td>
                         <td>{u.gender}</td>
                         <td>{u.email}</td>
                         <td>{u.username}</td>

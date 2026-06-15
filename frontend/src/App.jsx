@@ -26,6 +26,8 @@ import Welcome from "./pages/Welcome";
 import Greeting from "./pages/Greeting";
 import Alphabet from "./pages/Alphabet";
 import Numbers from "./pages/Numbers";
+import Subjects from "./pages/Subjects";
+import Update from "./pages/Update";
 
 // Guard ngược: đã login thì không vào /login /signup /welcome được nữa
 function PublicOnlyRoute({ children }) {
@@ -97,6 +99,14 @@ function App() {
             }
           />
           <Route
+            path="/update"
+            element={
+              <ProtectedRoute>
+                <Update />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/asking"
             element={
               <ProtectedRoute>
@@ -149,6 +159,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Numbers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning/subjects"
+            element={
+              <ProtectedRoute>
+                <Subjects />
               </ProtectedRoute>
             }
           />

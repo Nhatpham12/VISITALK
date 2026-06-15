@@ -4,16 +4,16 @@ const { verifyToken } = require("../middleware/auth.middleware");
 const { requireRole } = require("../middleware/role.middleware");
 const lessons = require("../models/lessons.model");
 
-// GET /api/lessons — tất cả user đã đăng nhập đều xem được
-router.get("/", verifyToken, (req, res) => {
+// GET /api/lessons — ai cũng xem được
+router.get("/", (req, res) => {
   lessons.getAll((err, result) => {
     if (err) return res.status(500).json({ message: "Lỗi server" });
     res.status(200).json(result);
   });
 });
 
-// GET /api/lessons/:id
-router.get("/:id", verifyToken, (req, res) => {
+// GET /api/lessons/:id — ai cũng xem được
+router.get("/:id", (req, res) => {
   lessons.getById(req.params.id, (err, lesson) => {
     if (err) return res.status(500).json({ message: "Lỗi server" });
     if (!lesson)

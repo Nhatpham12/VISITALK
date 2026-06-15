@@ -1,43 +1,14 @@
 // frontend/src/pages/Personal.jsx
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { AuthContext } from "../context/authContext";
-import { userService } from "../services/api";
 import "../CSS/Personal.css";
 
 const Personal = () => {
-  const { user, logout, updateUser } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    full_name: user?.full_name || "",
-    dob: user?.dob || "",
-    gender: user?.gender || "",
-    email: user?.email || "",
-    username: user?.username || "",
-  });
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.id]: e.target.value });
-  };
-
-  const handleUpdate = async () => {
-    setLoading(true);
-    setMessage("");
-    try {
-      const updated = await userService.update(user.id, form);
-      if (typeof updateUser === "function") updateUser(updated);
-      setMessage("Cập nhật thành công!");
-    } catch (err) {
-      setMessage(err.message || "Cập nhật thất bại.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = async () => {
     await logout();
@@ -53,35 +24,24 @@ const Personal = () => {
             <h1>THÔNG TIN CÁ NHÂN</h1>
             <div className="form-group">
               {[
-                { id: "full_name", label: "Họ và tên" },
-                { id: "dob", label: "Ngày tháng năm sinh" },
-                { id: "gender", label: "Giới tính" },
-                { id: "email", label: "Email" },
-                { id: "username", label: "Tên đăng nhập" },
-              ].map(({ id, label }) => (
+                { id: "full_name", label: "Họ và tên", value: user?.full_name },
+                { id: "dob", label: "Ngày tháng năm sinh", value: user?.dob?.split('T')[0] },
+                { id: "gender", label: "Giới tính", value: user?.gender },
+                { id: "email", label: "Email", value: user?.email },
+                { id: "username", label: "Tên đăng nhập", value: user?.username },
+              ].map(({ id, label, value }) => (
                 <div className="field" key={id}>
                   <label htmlFor={id}>{label}</label>
                   <div className="input-wrapper">
                     <input
                       type="text"
                       id={id}
-                      value={form[id]}
-                      onChange={handleChange}
-                      readOnly={id === "username"} // username không cho sửa
+                      value={value || ""}
+                      readOnly
                     />
                   </div>
                 </div>
               ))}
-              {message && (
-                <p
-                  style={{
-                    fontSize: "13px",
-                    color: message.includes("thành công") ? "green" : "red",
-                  }}
-                >
-                  {message}
-                </p>
-              )}
             </div>
           </div>
 
@@ -92,8 +52,8 @@ const Personal = () => {
               <button id="del-avt">Xóa ảnh đại diện</button>
             </div>
             <div className="change-inf">
-              <button id="change" onClick={handleUpdate} disabled={loading}>
-                {loading ? "Đang lưu..." : "Thay đổi thông tin cá nhân"}
+              <button id="change" onClick={() => navigate("/update")}>
+                Thay đổi thông tin cá nhân
               </button>
             </div>
           </div>

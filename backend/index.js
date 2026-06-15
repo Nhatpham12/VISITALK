@@ -54,6 +54,14 @@ const globalLimiter = rateLimit({
 });
 app.use(globalLimiter);
 
+const predictLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Quá nhiều request, vui lòng thử lại sau" },
+});
+
 const authLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
   max: 100,
@@ -68,13 +76,15 @@ const lessonsRoutes = require("./routes/lessons.routes");
 const userSessionRoutes = require("./routes/userSessions.routes");
 const reportRoutes = require("./routes/report.routes");
 const predictRoutes = require("./routes/predict.routes");
+const accessToRoutes = require("./routes/accessTo.routes");
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/lessons", lessonsRoutes);
 app.use("/api/user-sessions", userSessionRoutes);
 app.use("/api/reports", reportRoutes);
-app.use("/api/predict", predictRoutes);
+app.use("/api/predict", predictLimiter, predictRoutes);
+app.use("/api/access", accessToRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });

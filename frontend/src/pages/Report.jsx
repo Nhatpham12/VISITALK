@@ -11,6 +11,7 @@ const Report = () => {
     totalVisits: 0,
     avgDailyVisits: 0,
     newUsers: 0,
+    dailyVisits: [],
   });
 
   const [loading, setLoading] = useState(true);
@@ -19,12 +20,6 @@ const Report = () => {
   useEffect(() => {
     const fetchReportData = async () => {
       try {
-        const response = await fetch("http://localhost:5001/api/reports/stats");
-
-        if (!response.ok) {
-          throw new Error("Không thể tải dữ liệu report");
-        }
-
         const data = await reportService.getStats();
 
         setStats({
@@ -33,6 +28,7 @@ const Report = () => {
           totalVisits: data.totalVisits || 0,
           avgDailyVisits: data.avgDailyVisits || 0,
           newUsers: data.newUsers || 0,
+          dailyVisits: data.dailyVisits || [],
         });
       } catch (err) {
         console.error("REPORT ERROR:", err);
@@ -116,30 +112,39 @@ const Report = () => {
           </div>
         </div>
 
-        {/* Section thông tin */}
+        {/* Biểu đồ cột lượt truy cập 7 ngày */}
         <div className="chart-section">
           <div className="chart-header">
-            <h2 className="chart-title">THÔNG TIN HỆ THỐNG</h2>
+            <h2 className="chart-title">LƯỢT TRUY CẬP 7 NGÀY QUA</h2>
           </div>
 
           <div className="chart-wrapper">
-            <div className="report-info">
-              <p>
-                <strong>Tổng người dùng:</strong> {stats.totalUsers}
+            {stats.dailyVisits.length > 0 ? (
+              <div className="bar-chart">
+                {(() => {
+                  const maxVisits = Math.max(...stats.dailyVisits.map((d) => d.visits), 1);
+                  const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+                  return stats.dailyVisits.map((d) => (
+                    <div className="bar-group" key={d.date}>
+                      <div className="bar-value">{d.visits}</div>
+                      <div className="bar-column">
+                        <div
+                          className="bar-fill"
+                          style={{ height: `${(d.visits / maxVisits) * 100}%` }}
+                        />
+                      </div>
+                      <div className="bar-label">
+                        {dayNames[new Date(d.date).getDay()]}
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
+            ) : (
+              <p style={{ textAlign: "center", color: "#5a6a8a", marginTop: 80 }}>
+                Chưa có dữ liệu
               </p>
-
-              <p>
-                <strong>Người dùng hoạt động:</strong> {stats.activeUsers}
-              </p>
-
-              <p>
-                <strong>Tổng lượt truy cập:</strong> {stats.totalVisits}
-              </p>
-
-              <p>
-                <strong>Người dùng mới:</strong> {stats.newUsers}
-              </p>
-            </div>
+            )}
           </div>
         </div>
 

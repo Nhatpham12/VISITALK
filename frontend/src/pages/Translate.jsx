@@ -15,7 +15,7 @@ const VSL_CLASSES = [
   "space", "del", "nothing",
 ];
 
-const STABLE_FRAMES = 3;
+const STABLE_FRAMES = 12;
 
 export default function Translate() {
   // ── Refs ──
@@ -26,7 +26,7 @@ export default function Translate() {
   const rafRef = useRef(null);
   const pausedRef = useRef(false);
   const stableRef = useRef({ label: null, count: 0 });
-  const confThreshRef = useRef(0.3);
+
 
   // ── States ──
   const [phase, setPhase] = useState("model"); // model | cam | ready | error
@@ -41,14 +41,10 @@ export default function Translate() {
   const [debugTop3, setDebugTop3] = useState([]);
 
   const [paused, setPaused] = useState(false);
-  const [confThresh, setConfThresh] = useState(0.3);
 
   useEffect(() => {
     pausedRef.current = paused;
   }, [paused]);
-  useEffect(() => {
-    confThreshRef.current = confThresh;
-  }, [confThresh]);
 
   // ════════════════════════════════════════════════════════
   // BƯỚC 1 — Tải HandLandmarker (dùng vsl_model.pkl qua backend API)
@@ -186,7 +182,7 @@ export default function Translate() {
       }
 
       skipCounter++;
-      if (skipCounter % 6 !== 0) {
+      if (skipCounter % 30 !== 0) {
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
@@ -218,7 +214,7 @@ export default function Translate() {
           setDebugTop3(pred.top3);
 
           const s = stableRef.current;
-          if (pred.confidence >= confThreshRef.current && pred.label !== "nothing" && pred.label !== "?") {
+          if (pred.label !== "nothing" && pred.label !== "?") {
             if (pred.label === s.label) {
               s.count++;
               setStablePct(Math.round((s.count / STABLE_FRAMES) * 100));
@@ -487,66 +483,17 @@ export default function Translate() {
 
                     <div
                       style={{
-                        background: "rgba(255,255,255,0.03)",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        borderRadius: 10,
-                        padding: "12px 14px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 14,
+                        padding: "8px 0",
+                        borderRadius: 8,
+                        background: "rgba(41,121,255,0.15)",
+                        border: "2px solid #2979ff",
+                        color: "#2979ff",
+                        fontWeight: 700,
+                        fontSize: "0.85rem",
+                        textAlign: "center",
                       }}
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 6,
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            fontSize: "0.8rem",
-                            color: "#7a9acc",
-                          }}
-                        >
-                          <span>Độ tin cậy tối thiểu</span>
-                          <span style={{ color: "#00e676", fontWeight: 700 }}>
-                            {Math.round(confThresh * 100)}%
-                          </span>
-                        </div>
-                        <input
-                          type="range"
-                          min="0.30"
-                          max="0.95"
-                          step="0.05"
-                          value={confThresh}
-                          onChange={(e) =>
-                            setConfThresh(parseFloat(e.target.value))
-                          }
-                          style={{
-                            cursor: "pointer",
-                            accentColor: "#2979ff",
-                            width: "100%",
-                          }}
-                        />
-                      </div>
-
-                      <div
-                        style={{
-                          padding: "8px 0",
-                          borderRadius: 8,
-                          background: "rgba(41,121,255,0.15)",
-                          border: "2px solid #2979ff",
-                          color: "#2979ff",
-                          fontWeight: 700,
-                          fontSize: "0.85rem",
-                          textAlign: "center",
-                        }}
-                      >
-                        🔤 Chữ
-                      </div>
+                      🔤 Chữ
                     </div>
                   </div>
 
@@ -638,20 +585,7 @@ export default function Translate() {
                       }}
                     >
                       <span>
-                        Độ tin cậy:{" "}
-                        <b
-                          style={{
-                            color:
-                              confidence >= Math.round(confThresh * 100)
-                                ? "#00e676"
-                                : "#2979ff",
-                          }}
-                        >
-                          {isNaN(confidence) ? 0 : confidence}%
-                        </b>
-                      </span>
-                      <span>
-                        Giữ tay ổn định:{" "}
+                        Ổn định:{" "}
                         <b style={{ color: "#2979ff" }}>{stablePct}%</b>
                       </span>
                     </div>

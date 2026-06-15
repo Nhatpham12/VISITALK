@@ -112,8 +112,11 @@ body {
 
 /* ── Image ── */
 .alphabet-card__img-box {
-  display: flex;
+  display: none;
   justify-content: center;
+}
+.alphabet-card:hover .alphabet-card__img-box {
+  display: flex;
 }
 
 .alphabet-card__img {

@@ -36,16 +36,19 @@ router.put("/:id", verifyToken, (req, res) => {
     return res.status(403).json({ message: "Không có quyền chỉnh sửa" });
   }
 
-  const { full_name, dob, gender, email, avatar_url } = req.body;
+  const { full_name, dob, gender, email, avatar_url, username } = req.body;
   if (!full_name) {
     return res.status(400).json({ message: "full_name không được để trống" });
   }
 
   users.update(
     id,
-    { full_name, dob, gender, email, avatar_url },
+    { full_name, dob, gender, email, avatar_url, username },
     (err, updated) => {
       if (err) return res.status(500).json({ message: "Lỗi server" });
+      users.getById(id, (err, user) => {
+        if (err) return res.status(500).json({ message: "Lỗi server" });
+      });
       if (!updated)
         return res.status(404).json({ message: "Không tìm thấy người dùng" });
       res.status(200).json({ message: "Cập nhật thành công" });

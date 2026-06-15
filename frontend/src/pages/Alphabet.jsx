@@ -8,6 +8,7 @@ const Alphabet = () => {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     lessonService
@@ -45,7 +46,15 @@ const Alphabet = () => {
       {!loading && !error && (
         <div className="alphabet-container">
           {lessons.map((lesson) => (
-            <div className="alphabet-card" key={lesson.les_id}>
+            <div
+              className={`alphabet-card ${selectedId === lesson.les_id ? "alphabet-card--selected" : ""}`}
+              key={lesson.les_id}
+              onClick={() =>
+                setSelectedId(
+                  selectedId === lesson.les_id ? null : lesson.les_id,
+                )
+              }
+            >
               <div className="alphabet-card__tags">
                 <span className="tag tag--type">
                   <img src="/Assets/Images/icon-type.png" alt="" />
@@ -57,7 +66,7 @@ const Alphabet = () => {
                 </span>
               </div>
 
-              {lesson.img_url && (
+              {selectedId === lesson.les_id && lesson.img_url && (
                 <div className="alphabet-card__img-box">
                   <img
                     src={lesson.img_url}

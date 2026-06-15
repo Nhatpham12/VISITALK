@@ -60,6 +60,11 @@ export const userService = {
     }),
   delete: (id) => apiCall(`/users/${id}`, { method: "DELETE" }),
 };
+// ─── Access To ────────────────────────────────────────────────────────────────
+export const accessService = {
+  recordAccess: (les_id) =>
+    apiCall("/access", { method: "POST", body: JSON.stringify({ les_id }) }),
+};
 //_____ reports___________________________________
 export const reportService = {
   getStats: () => apiCall("/reports/stats"),

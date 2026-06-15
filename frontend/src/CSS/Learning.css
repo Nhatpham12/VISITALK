@@ -113,6 +113,29 @@ body {
 }
 
 /* Cột A-Z */
+.sbj-col {
+  padding: 18px 12px;
+}
+
+.sbj-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 8px;
+}
+
+.sbj-grid span {
+  font-size: 14px;
+  font-weight: 600;
+  color: black;
+  cursor: pointer;
+  text-align: center;
+}
+
+.sbj-grid span:hover {
+  color: #5a3e99;
+  font-weight: 700;
+}
+
 .az-col {
   padding: 18px 12px;
 }

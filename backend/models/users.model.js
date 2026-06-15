@@ -68,7 +68,7 @@ users.insert = (data, callback) => {
 users.update = (id, data, callback) => {
   const sqlString = `
     UPDATE users
-    SET full_name = ?, dob = ?, gender = ?, email = ?, avatar_url = ?
+    SET full_name = ?, dob = ?, gender = ?, email = ?, avatar_url = ?, username = ?
     WHERE id = ?`;
   const values = [
     data.full_name,
@@ -76,6 +76,7 @@ users.update = (id, data, callback) => {
     data.gender,
     data.email,
     data.avatar_url,
+    data.username,
     id,
   ];
   db.query(sqlString, values, (err, result) => {

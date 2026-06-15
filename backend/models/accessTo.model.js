@@ -63,3 +63,5 @@ access_to.delete = (users_id, les_id, callback) => {
     callback(null, result.affectedRows > 0);
   });
 };
+
+module.exports = access_to;
