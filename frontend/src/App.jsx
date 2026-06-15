@@ -23,7 +23,6 @@ import Signup from "./pages/Signup";
 import Termofser from "./pages/Termofser";
 import Translate from "./pages/Translate";
 import Welcome from "./pages/Welcome";
-import Greeting from "./pages/Greeting";
 import Alphabet from "./pages/Alphabet";
 import Numbers from "./pages/Numbers";
 import Subjects from "./pages/Subjects";
@@ -135,14 +134,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <Learning />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/learning/greeting"
-            element={
-              <ProtectedRoute>
-                <Greeting />
               </ProtectedRoute>
             }
           />

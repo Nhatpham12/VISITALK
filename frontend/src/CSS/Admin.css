@@ -59,7 +59,7 @@ body {
   border: 2.5px solid #1a2a4a;
   border-radius: 20px;
   margin: 0 auto 50px auto;
-  min-height: 1200px;
+  min-height: auto;
 }
 
 .admin-page .table-wrapper {
@@ -70,7 +70,7 @@ body {
   overflow-y: auto;
   overflow-x: auto;
   padding-top: 10px;
-  min-height: 1200px;
+  min-height: auto;
 }
 
 .admin-page .table-wrapper::-webkit-scrollbar {
@@ -101,7 +101,7 @@ body {
   border-collapse: separate;
   border-spacing: 6px 0;
   min-width: 900px;
-  min-height: 1200px;
+  min-height: auto;
 }
 
 .admin-page .user-table thead {
@@ -158,6 +158,7 @@ body {
 
 .admin-toolbar {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   max-width: 1200px;
   width: 100%;
@@ -177,6 +178,23 @@ body {
 }
 
 .add-user-btn img {
+  width: 200px;
+  height: auto;
+}
+
+.update-user-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s;
+}
+
+.update-user-btn:hover {
+  transform: scale(1.08);
+}
+
+.update-user-btn img {
   width: 200px;
   height: auto;
 }

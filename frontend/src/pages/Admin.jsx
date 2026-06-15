@@ -21,6 +21,18 @@ const Admin = () => {
   const [modalError, setModalError] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
 
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [updateForm, setUpdateForm] = useState({
+    full_name: "",
+    dob: "",
+    gender: "",
+    email: "",
+    username: "",
+  });
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState("");
+
   const fetchUsers = () => {
     setLoading(true);
     userService
@@ -95,6 +107,50 @@ const Admin = () => {
     }
   };
 
+  const handleSelectUser = (userId) => {
+    setSelectedUserId(userId);
+    const user = users.find((u) => u.id === userId);
+    if (user) {
+      setUpdateForm({
+        full_name: user.full_name || "",
+        dob: user.dob ? user.dob.split("T")[0] : "",
+        gender: user.gender || "",
+        email: user.email || "",
+        username: user.username || "",
+      });
+    }
+  };
+
+  const openUpdateModal = () => {
+    setSelectedUserId("");
+    setUpdateForm({ full_name: "", dob: "", gender: "", email: "", username: "" });
+    setUpdateError("");
+    setShowUpdateModal(true);
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedUserId) {
+      setUpdateError("Vui lòng chọn người dùng.");
+      return;
+    }
+    if (!updateForm.full_name) {
+      setUpdateError("Họ và tên không được để trống.");
+      return;
+    }
+    setUpdateLoading(true);
+    setUpdateError("");
+    try {
+      await userService.update(selectedUserId, updateForm);
+      setShowUpdateModal(false);
+      fetchUsers();
+    } catch (err) {
+      setUpdateError(err.message);
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -115,6 +171,15 @@ const Admin = () => {
                 onClick={() => setShowModal(true)}
               >
                 <img src="/Assets/Images/Adduser.png" alt="Thêm người dùng" />
+              </button>
+              <button
+                className="update-user-btn"
+                onClick={openUpdateModal}
+              >
+                <img
+                  src="/Assets/Images/updateUser.png"
+                  alt="Thêm người dùng"
+                />
               </button>
             </div>
           </div>
@@ -193,6 +258,88 @@ const Admin = () => {
                     type="button"
                     onClick={() => setShowModal(false)}
                     disabled={modalLoading}
+                  >
+                    Hủy
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showUpdateModal && (
+          <div className="modal-overlay" onClick={() => setShowUpdateModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h2>Cập nhật thông tin người dùng</h2>
+              <form onSubmit={handleUpdateSubmit}>
+                <label>Chọn người dùng *</label>
+                <select
+                  value={selectedUserId}
+                  onChange={(e) => handleSelectUser(e.target.value)}
+                  disabled={updateLoading}
+                >
+                  <option value="">-- Chọn người dùng --</option>
+                  {users.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.full_name} ({u.username})
+                    </option>
+                  ))}
+                </select>
+
+                <label>Họ và tên *</label>
+                <input
+                  type="text"
+                  value={updateForm.full_name}
+                  onChange={(e) => setUpdateForm({ ...updateForm, full_name: e.target.value })}
+                  disabled={updateLoading}
+                />
+
+                <label>Ngày sinh</label>
+                <input
+                  type="date"
+                  value={updateForm.dob}
+                  onChange={(e) => setUpdateForm({ ...updateForm, dob: e.target.value })}
+                  disabled={updateLoading}
+                />
+
+                <label>Giới tính</label>
+                <select
+                  value={updateForm.gender}
+                  onChange={(e) => setUpdateForm({ ...updateForm, gender: e.target.value })}
+                  disabled={updateLoading}
+                >
+                  <option value="">-- Chọn --</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                  <option value="other">Khác</option>
+                </select>
+
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={updateForm.email}
+                  onChange={(e) => setUpdateForm({ ...updateForm, email: e.target.value })}
+                  disabled={updateLoading}
+                />
+
+                <label>Tên đăng nhập</label>
+                <input
+                  type="text"
+                  value={updateForm.username}
+                  onChange={(e) => setUpdateForm({ ...updateForm, username: e.target.value })}
+                  disabled={updateLoading}
+                />
+
+                {updateError && <p className="modal-error">{updateError}</p>}
+
+                <div className="modal-actions">
+                  <button type="submit" disabled={updateLoading}>
+                    {updateLoading ? "Đang cập nhật..." : "Cập nhật"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowUpdateModal(false)}
+                    disabled={updateLoading}
                   >
                     Hủy
                   </button>
