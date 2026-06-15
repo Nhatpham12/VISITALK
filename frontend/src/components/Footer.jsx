@@ -13,8 +13,8 @@ const Footer = () => {
         <div className="in4">
           <p>Địa chỉ: 97 Man Thiện, Hiệp Phú, Thủ Đức, Thành phố Hồ Chí Minh</p>
           <p>Hotline: 0123456789</p>
-          <p>Email: kjdnvgkjskhduhskvn@gmail.com</p>
-          <p>Facebook: kjdnvgkjskhduhskvn</p>
+          <p>Email: nhat88672@gmail.com</p>
+          <p>Facebook: Nhật Phạm</p>
         </div>
       </div>
       <div className="foot2">
@@ -22,9 +22,6 @@ const Footer = () => {
         <div className="in4">
           <p>
             <Link to="/asking">Giải đáp</Link>
-          </p>
-          <p>
-            <Link to="/">Các câu hỏi thường gặp</Link>
           </p>
           <p>
             <Link to="/securitypolicy">Chính sách bảo mật</Link>

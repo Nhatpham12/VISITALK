@@ -58,7 +58,7 @@ body {
   max-width: 1200px;
   border: 2.5px solid #1a2a4a;
   border-radius: 20px;
-  margin: -15px auto 50px auto;
+  margin: 0 auto 50px auto;
   min-height: 1200px;
 }
 
@@ -154,6 +154,122 @@ body {
   color: #aab5c8;
   font-style: italic;
   font-size: 15px;
+}
+
+.admin-toolbar {
+  display: flex;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto 10px;
+}
+
+.add-user-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s;
+}
+
+.add-user-btn:hover {
+  transform: scale(1.08);
+}
+
+.add-user-btn img {
+  width: 200px;
+  height: auto;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  width: 420px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  font-size: 22px;
+  color: #1a2a4a;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-content label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2a4a;
+  margin: 12px 0 4px;
+}
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #d0d8e8;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+  border-color: #1a2a4a;
+}
+
+.modal-error {
+  color: red;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.modal-actions button[type="submit"] {
+  background: #1a2a4a;
+  color: #fff;
+}
+
+.modal-actions button[type="button"] {
+  background: #e0e8f5;
+  color: #1a2a4a;
+}
+
+.modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .admin-page .footer {
