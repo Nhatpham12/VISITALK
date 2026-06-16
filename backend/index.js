@@ -1,46 +1,12 @@
 require("dotenv").config();
 
 const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const seedAdmin = require("./seeders/seedAdmin");
 
 const app = express();
 
-app.use(helmet());
-
-// Cho phép cả file:// (origin: null) lẫn localhost khi dev
-const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:3000",
-
-  // React Vite
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-
-  // React CRA
-  "http://localhost:3000",
-
-  // Live Server
-  "http://localhost:5500",
-  "http://127.0.0.1:5500",
-];
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Cho phép nếu không có origin (Postman) hoặc nằm trong danh sách
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS: origin không được phép"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  }),
-);
+app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

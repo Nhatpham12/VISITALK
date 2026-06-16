@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import { useContext } from "react";
 import { AuthProvider, AuthContext } from "./context/authContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/protectedRoute";
 import Home from "./pages/Home";
 import Learning from "./pages/Learning";
 import Login from "./pages/Login";
@@ -124,7 +124,7 @@ function App() {
           <Route
             path="/report"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Report />
               </ProtectedRoute>
             }

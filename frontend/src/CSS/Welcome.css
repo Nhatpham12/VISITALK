@@ -9,7 +9,7 @@ body {
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  font-family: "Segoe UI", sans-serif;
+  font-family: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif;
 }
 
 .welcome-page {

@@ -11,31 +11,58 @@ const register = (req, res) => {
     req.body;
 
   if (!username || !full_name || !password || !dob || !gender) {
+    console.log(`[REGISTER] Thiếu thông tin bắt buộc: username=${!!username}, full_name=${!!full_name}, password=${!!password}, dob=${!!dob}, gender=${!!gender}`);
     return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
   }
 
-  users.getByUsername(username, (err, existingUser) => {
-    if (err) return res.status(500).json({ message: "Lỗi server" });
-    if (existingUser)
-      return res.status(400).json({ message: "Username đã tồn tại" });
+  if (password.length < 8) {
+    console.log(`[REGISTER] Mật khẩu quá ngắn (${password.length} ký tự): username=${username}`);
+    return res.status(400).json({ message: "Mật khẩu phải có ít nhất 8 ký tự" });
+  }
 
+  const doInsert = () => {
     bcrypt.hash(password, SALT_ROUNDS, (err, password_hash) => {
-      if (err) return res.status(500).json({ message: "Lỗi mã hóa password" });
-
-      const data = {
-        username,
-        dob,
-        gender,
-        full_name,
-        password_hash,
-        email,
-        avatar_url,
-      };
+      if (err) {
+        console.error(`[REGISTER] Lỗi mã hóa password:`, err.message);
+        return res.status(500).json({ message: "Lỗi mã hóa password" });
+      }
+      const data = { username, dob, gender, full_name, password_hash, email, avatar_url };
       users.insert(data, (err, insertId) => {
-        if (err) return res.status(500).json({ message: "Lỗi tạo tài khoản" });
+        if (err) {
+          console.error(`[REGISTER] Lỗi insert user: ${err.message}, username=${username}`);
+          return res.status(500).json({ message: "Lỗi tạo tài khoản" });
+        }
+        console.log(`[REGISTER] Đăng ký thành công: username=${username}, id=${insertId}`);
         res.status(201).json({ message: "Đăng ký thành công" });
       });
     });
+  };
+
+  users.getByUsername(username, (err, existingUser) => {
+    if (err) {
+      console.error(`[REGISTER] Lỗi query username:`, err.message);
+      return res.status(500).json({ message: "Lỗi server" });
+    }
+    if (existingUser) {
+      console.log(`[REGISTER] Username đã tồn tại: ${username}`);
+      return res.status(400).json({ message: "Username đã tồn tại" });
+    }
+
+    if (email) {
+      users.getByEmail(email, (err, existingEmail) => {
+        if (err) {
+          console.error(`[REGISTER] Lỗi query email:`, err.message);
+          return res.status(500).json({ message: "Lỗi server" });
+        }
+        if (existingEmail) {
+          console.log(`[REGISTER] Email đã tồn tại: ${email}`);
+          return res.status(400).json({ message: "Email đã được sử dụng" });
+        }
+        doInsert();
+      });
+    } else {
+      doInsert();
+    }
   });
 };
 
@@ -44,24 +71,36 @@ const login = (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
+    console.log(`[LOGIN] Thiếu thông tin: username=${!!username}, password=${!!password}`);
     return res
       .status(400)
       .json({ message: "Vui lòng nhập username và password" });
   }
 
   users.getByUsername(username, (err, user) => {
-    if (err) return res.status(500).json({ message: "Lỗi server" });
-    if (!user)
+    if (err) {
+      console.error(`[LOGIN] Lỗi query user:`, err.message);
+      return res.status(500).json({ message: "Lỗi server" });
+    }
+    if (!user) {
+      console.log(`[LOGIN] Tài khoản không tồn tại: ${username}`);
       return res.status(404).json({ message: "Tài khoản không tồn tại" });
-
+    }
     if (user.u_status === "inactive") {
+      console.log(`[LOGIN] Tài khoản đã bị khóa: ${username}`);
       return res.status(403).json({ message: "Tài khoản đã bị khóa" });
     }
 
     bcrypt.compare(password, user.password_hash, (err, isMatch) => {
-      if (err) return res.status(500).json({ message: "Lỗi server" });
-      if (!isMatch) return res.status(401).json({ message: "Sai mật khẩu" });
-
+      if (err) {
+        console.error(`[LOGIN] Lỗi bcrypt compare:`, err.message);
+        return res.status(500).json({ message: "Lỗi server" });
+      }
+      if (!isMatch) {
+        console.log(`[LOGIN] Sai mật khẩu: ${username}`);
+        return res.status(401).json({ message: "Sai mật khẩu" });
+      }
+      console.log(`[LOGIN] Đăng nhập thành công: ${username}`);
       users.updateLastLogin(user.id, (err) => {
         if (err)
           return res.status(500).json({ message: "Lỗi cập nhật đăng nhập" });

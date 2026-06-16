@@ -15,9 +15,11 @@ const fs = require("fs");
 
 // ── Đường dẫn ────────────────────────────────────────────────
 const PREDICT_SERVER = path.resolve(__dirname, "../predict_server.py");
-const MODEL_PATH = path.resolve(
-  __dirname, "../..", "frontend/public/model/vsl_model.joblib",
-);
+const MODEL_PATH =
+  process.env.MODEL_PATH ||
+  (fs.existsSync(path.resolve(__dirname, "../model/vsl_model.joblib"))
+    ? path.resolve(__dirname, "../model/vsl_model.joblib")
+    : path.resolve(__dirname, "../../frontend/public/model/vsl_model.joblib"));
 
 function getPythonCmd() {
   if (process.env.PYTHON_PATH) return [process.env.PYTHON_PATH];
@@ -31,8 +33,14 @@ let pythonProc = null;
 let requestQueue = [];
 let isProcessing = false;
 let buffer = "";
+let restartCount = 0;
+let restartTimer = null;
+const MAX_RESTARTS = 5;
+const BASE_DELAY_MS = 1000;
 
 function startPython() {
+  if (restartTimer) return;
+
   if (pythonProc) {
     try { pythonProc.kill(); } catch (_) {}
   }
@@ -67,16 +75,36 @@ function startPython() {
   });
 
   pythonProc.on("close", (code) => {
-    console.warn(`[predict] Python process exited (code ${code}), restarting...`);
     pythonProc = null;
     isProcessing = false;
-    startPython();
+    restartCount++;
+
+    if (restartCount >= MAX_RESTARTS) {
+      console.error(`[predict] Python crashed ${MAX_RESTARTS} times in a row, giving up.`);
+      return;
+    }
+
+    const delay = BASE_DELAY_MS * Math.pow(2, restartCount - 1);
+    console.warn(`[predict] Python exited (code ${code}), restarting in ${delay}ms (attempt ${restartCount}/${MAX_RESTARTS})...`);
+    restartTimer = setTimeout(() => {
+      restartTimer = null;
+      startPython();
+    }, delay);
   });
 
   pythonProc.on("error", (err) => {
     console.error("[predict] Python process error:", err.message);
     pythonProc = null;
     isProcessing = false;
+  });
+
+  // Reset restart counter after Python runs successfully for 10s
+  pythonProc.once("spawn", () => {
+    setTimeout(() => {
+      if (pythonProc && !pythonProc.killed) {
+        restartCount = 0;
+      }
+    }, 10000);
   });
 }
 
@@ -118,16 +146,12 @@ router.post("/", express.json(), (req, res) => {
 });
 
 // Dọn dẹp khi server shutdown
-process.on("exit", () => {
+function cleanup() {
+  if (restartTimer) { clearTimeout(restartTimer); restartTimer = null; }
   if (pythonProc) pythonProc.kill();
-});
-process.on("SIGINT", () => {
-  if (pythonProc) pythonProc.kill();
-  process.exit();
-});
-process.on("SIGTERM", () => {
-  if (pythonProc) pythonProc.kill();
-  process.exit();
-});
+}
+process.on("exit", cleanup);
+process.on("SIGINT", () => { cleanup(); process.exit(); });
+process.on("SIGTERM", () => { cleanup(); process.exit(); });
 
 module.exports = router;

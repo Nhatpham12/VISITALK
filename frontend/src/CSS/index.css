@@ -6,8 +6,7 @@
 }
 
 body {
-  font-family:
-    "Segoe UI", sans-serif; /* Bạn có thể đổi sang font chữ dự án của bạn */
+  font-family: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif;
   background-color: #fff;
   overflow-x: hidden;
 }
