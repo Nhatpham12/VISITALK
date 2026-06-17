@@ -97,7 +97,7 @@ jobs:
             ${{ secrets.ENV_FILE_PROD }}
             ENVEOF
             echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> /opt/visitalk/.env.prod
-            echo "=== .env.prod written ==="
+            echo "=== .env.prod on server ==="
             cat /opt/visitalk/.env.prod
 
       - name: Copy deploy files to server
@@ -106,7 +106,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "docker-compose.prod.yml,init.sql"
+          source: "docker-compose.prod.yml,init.sql,nginx-host.conf"
           target: /opt/visitalk
 
       - name: Deploy containers
