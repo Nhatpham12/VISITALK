@@ -170,3 +170,38 @@ body {
 .al-account a:hover {
   text-decoration: underline;
 }
+
+/* Signup Alert */
+.signup-alert {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.signup-alert__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.signup-alert__content strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.signup-alert__content p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.signup-alert--error {
+  background-color: rgba(248, 215, 218, 0.15);
+  border: 1px solid rgba(248, 215, 218, 0.4);
+  color: #f8d7da;
+}

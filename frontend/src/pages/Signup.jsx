@@ -45,6 +45,14 @@ const Signup = () => {
       setError("Mật khẩu nhập lại không khớp.");
       return;
     }
+    if (/[ăâđêôơưàáảãạằắẳẵặèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i.test(username)) {
+      setError("Tên đăng nhập không được chứa ký tự tiếng Việt có dấu.");
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      setError("Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới.");
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -150,9 +158,13 @@ const Signup = () => {
           ))}
 
           {error && (
-            <p className="error-msg" style={{ color: "red", fontSize: "13px" }}>
-              {error}
-            </p>
+            <div className="signup-alert signup-alert--error">
+              <span className="signup-alert__icon">⚠️</span>
+              <div className="signup-alert__content">
+                <strong>Đăng ký thất bại</strong>
+                <p>{error}</p>
+              </div>
+            </div>
           )}
 
           <div className="sign-up-but">

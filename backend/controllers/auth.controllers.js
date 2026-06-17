@@ -20,6 +20,11 @@ const register = (req, res) => {
     return res.status(400).json({ message: "Mật khẩu phải có ít nhất 8 ký tự" });
   }
 
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    console.log(`[REGISTER] Username không hợp lệ: ${username}`);
+    return res.status(400).json({ message: "Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới" });
+  }
+
   const doInsert = () => {
     bcrypt.hash(password, SALT_ROUNDS, (err, password_hash) => {
       if (err) {
