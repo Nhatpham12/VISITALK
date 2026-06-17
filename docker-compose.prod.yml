@@ -1,35 +1,4 @@
 services:
-  # ── Reverse Proxy (Auto SSL) ─────────────────────
-  nginx-proxy:
-    image: nginxproxy/nginx-proxy
-    container_name: nginx-proxy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - certs:/etc/nginx/certs
-      - html:/usr/share/nginx/html
-      - vhost:/etc/nginx/vhost.d
-    networks:
-      - visitalk-net
-
-  # ── Auto SSL Certificate (Let's Encrypt) ────────
-  acme-companion:
-    image: nginxproxy/acme-companion
-    container_name: acme-companion
-    restart: unless-stopped
-    depends_on:
-      - nginx-proxy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - certs:/etc/nginx/certs
-      - acme:/etc/acme.sh
-      - vhost:/etc/nginx/vhost.d
-    environment:
-      - DEFAULT_EMAIL=${ADMIN_EMAIL}
-
   # ── MySQL Database ──────────────────────────────
   db:
     image: mysql:8.0
@@ -38,7 +7,7 @@ services:
     env_file:
       - .env.prod
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -69,7 +38,7 @@ services:
     env_file:
       - .env.prod
     ports:
-      - "5001:5001"
+      - "127.0.0.1:5001:5001"
     depends_on:
       db:
         condition: service_healthy
@@ -81,11 +50,8 @@ services:
     image: ghcr.io/nhatpham12/visitalk-frontend:latest
     container_name: visitalk-frontend
     restart: unless-stopped
-    expose:
-      - "80"
-    labels:
-      - "VIRTUAL_HOST=${DOMAIN_NAME}"
-      - "LETSENCRYPT_HOST=${DOMAIN_NAME}"
+    ports:
+      - "127.0.0.1:3080:80"
     depends_on:
       - backend
     networks:
@@ -97,7 +63,3 @@ networks:
 
 volumes:
   db_data:
-  certs:
-  html:
-  vhost:
-  acme:
