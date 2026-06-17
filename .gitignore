@@ -38,3 +38,8 @@ yarn-error.log
 # File rác của Windows
 Thumbs.db
 model/*.keras
+DEPLOY_HOST.txt
+DEPLOY_USER.txt
+DEPLOY_SSH_KEY.txt
+ENV_FILE_PROD.txt
+.env.prod

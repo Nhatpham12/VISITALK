@@ -5,7 +5,7 @@ import { AuthContext } from "../context/authContext";
 import "../CSS/Login.css";
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
+  const { login, error: contextError } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -93,9 +93,9 @@ const Login = () => {
             </div>
           </div>
 
-          {error && (
+          {(error || contextError) && (
             <p className="error-msg" style={{ color: "red", fontSize: "13px" }}>
-              {error}
+              {error || contextError}
             </p>
           )}
 
