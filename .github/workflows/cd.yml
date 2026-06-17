@@ -118,25 +118,29 @@ jobs:
               sudo apt install -y nginx certbot python3-certbot-nginx
             fi
 
-            # Copy nginx config
+            # Stop nginx for standalone cert
+            sudo systemctl stop nginx 2>/dev/null || true
+
+            # Get SSL cert if not exists (standalone mode, no nginx needed)
+            if [ ! -d /etc/letsencrypt/live/${{ secrets.DOMAIN_NAME }} ]; then
+              sudo certbot certonly --standalone \
+                -d ${{ secrets.DOMAIN_NAME }} \
+                --non-interactive --agree-tos \
+                --email nhat88672@gmail.com
+            else
+              sudo certbot renew --quiet
+            fi
+
+            # Now copy SSL nginx config (cert exists)
             sudo cp /opt/visitalk/nginx-host.conf /etc/nginx/sites-available/visitalk
             sudo ln -sf /etc/nginx/sites-available/visitalk /etc/nginx/sites-enabled/visitalk
             sudo rm -f /etc/nginx/sites-enabled/default
 
-            # Test nginx config
+            # Test + start nginx
             sudo nginx -t
-
-            # Start nginx (HTTP only first, for certbot challenge)
             sudo systemctl enable nginx
             sudo systemctl restart nginx
-
-            # Get SSL cert if not exists
-            if [ ! -d /etc/letsencrypt/live/${{ secrets.DOMAIN_NAME }} ]; then
-              sudo certbot --nginx -d ${{ secrets.DOMAIN_NAME }} --non-interactive --agree-tos --email nhat88672@gmail.com --redirect
-            else
-              sudo certbot renew --quiet
-              sudo systemctl reload nginx
-            fi
+            sudo systemctl reload nginx
 
       - name: Deploy containers
         uses: appleboy/ssh-action@v1
