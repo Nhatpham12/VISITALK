@@ -45,7 +45,7 @@ services:
     networks:
       - visitalk-net
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:5001"]
+      test: ["CMD", "curl", "-s", "http://localhost:5001"]
       interval: 15s
       timeout: 5s
       retries: 5
