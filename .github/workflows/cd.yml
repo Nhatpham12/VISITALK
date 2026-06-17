@@ -82,6 +82,8 @@ jobs:
     name: Deploy to Server
     needs: [push-backend, push-frontend]
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: docker-compose.prod.yml
     steps:
       - uses: actions/checkout@v4
 
@@ -94,6 +96,7 @@ jobs:
           script: |
             mkdir -p /opt/visitalk
             printf '%s' "${{ secrets.ENV_FILE_PROD }}" > /opt/visitalk/.env.prod
+            echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> /opt/visitalk/.env.prod
 
       - name: Copy deploy files to server
         uses: appleboy/scp-action@v0.1.7
@@ -117,10 +120,10 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
             # Pull images
-            docker compose -f docker-compose.prod.yml pull
+            docker compose --env-file .env.prod -f docker-compose.prod.yml pull
 
             # Restart services
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --remove-orphans
 
             # Cleanup old images
             docker image prune -f
@@ -136,7 +139,8 @@ jobs:
             sleep 15
 
             echo "=== Container Status ==="
-            docker compose -f /opt/visitalk/docker-compose.prod.yml ps
+            cd /opt/visitalk
+            docker compose --env-file .env.prod -f docker-compose.prod.yml ps
 
             echo "=== Checking MySQL (port 3307) ==="
             for i in $(seq 1 30); do
@@ -158,9 +162,9 @@ jobs:
               sleep 5
             done
 
-            echo "=== Checking Frontend (port 80) ==="
+            echo "=== Checking Frontend via nginx-proxy (port 80) ==="
             for i in $(seq 1 10); do
-              if curl -sf http://localhost:80 > /dev/null 2>&1; then
+              if curl -sf -H "Host: ${{ secrets.DOMAIN_NAME }}" http://localhost:80 > /dev/null 2>&1; then
                 echo "Frontend is ready"
                 break
               fi
@@ -168,5 +172,16 @@ jobs:
               sleep 3
             done
 
+            echo "=== Checking SSL Certificate ==="
+            for i in $(seq 1 20); do
+              if curl -sfk https://${{ secrets.DOMAIN_NAME }} > /dev/null 2>&1; then
+                echo "SSL is ready"
+                break
+              fi
+              echo "Waiting for SSL... ($i/20)"
+              sleep 10
+            done
+
             echo "=== Final Status ==="
-            docker compose -f /opt/visitalk/docker-compose.prod.yml ps
+            cd /opt/visitalk
+            docker compose --env-file .env.prod -f docker-compose.prod.yml ps
