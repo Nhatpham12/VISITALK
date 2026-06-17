@@ -1,4 +1,7 @@
-CREATE DATABASE visitalk_db;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
+CREATE DATABASE visitalk_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE visitalk_db;
 
 CREATE TABLE users (
@@ -35,7 +38,7 @@ CREATE TABLE lessons (
     meaning  VARCHAR(255)  NULL,
 
     CONSTRAINT chk_title CHECK (TRIM(title) != '')
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE access_to (
     users_id    CHAR(36)  NOT NULL,
