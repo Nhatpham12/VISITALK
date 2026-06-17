@@ -95,7 +95,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             mkdir -p /opt/visitalk
-            printf '%s' "${{ secrets.ENV_FILE_PROD }}" > /opt/visitalk/.env.prod
+            printf '%s\n' "${{ secrets.ENV_FILE_PROD }}" > /opt/visitalk/.env.prod
             echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> /opt/visitalk/.env.prod
 
       - name: Copy deploy files to server
@@ -185,3 +185,18 @@ jobs:
             echo "=== Final Status ==="
             cd /opt/visitalk
             docker compose --env-file .env.prod -f docker-compose.prod.yml ps
+
+            echo "=== MySQL Logs ==="
+            docker logs visitalk-db --tail 30 2>&1
+
+            echo "=== Backend Logs ==="
+            docker logs visitalk-backend --tail 30 2>&1
+
+            echo "=== Frontend Logs ==="
+            docker logs visitalk-frontend --tail 30 2>&1
+
+            echo "=== nginx-proxy Logs ==="
+            docker logs nginx-proxy --tail 20 2>&1
+
+            echo "=== .env.prod Content ==="
+            cat /opt/visitalk/.env.prod
