@@ -93,8 +93,12 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             mkdir -p /opt/visitalk
-            printf '%s\n' "${{ secrets.ENV_FILE_PROD }}" > /opt/visitalk/.env.prod
+            cat <<'ENVEOF' > /opt/visitalk/.env.prod
+            ${{ secrets.ENV_FILE_PROD }}
+            ENVEOF
             echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> /opt/visitalk/.env.prod
+            echo "=== .env.prod written ==="
+            cat /opt/visitalk/.env.prod
 
       - name: Copy deploy files to server
         uses: appleboy/scp-action@v0.1.7
@@ -102,56 +106,8 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "docker-compose.prod.yml,init.sql,nginx-host.conf,nginx-http.conf"
+          source: "docker-compose.prod.yml,init.sql"
           target: /opt/visitalk
-
-      - name: Setup nginx + SSL on server
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            # Install nginx + certbot if not present
-            if ! command -v nginx &> /dev/null; then
-              sudo apt update
-              sudo apt install -y nginx certbot python3-certbot-nginx
-            fi
-
-            # Stop nginx for standalone cert
-            sudo systemctl stop nginx 2>/dev/null || true
-
-            # Get SSL cert if not exists
-            SSL_READY=false
-            if [ ! -d /etc/letsencrypt/live/${{ secrets.DOMAIN_NAME }} ]; then
-              if sudo certbot certonly --standalone \
-                -d ${{ secrets.DOMAIN_NAME }} \
-                --non-interactive --agree-tos \
-                --email nhat88672@gmail.com; then
-                SSL_READY=true
-              else
-                echo "Certbot failed, will use HTTP-only config"
-              fi
-            else
-              sudo certbot renew --quiet
-              SSL_READY=true
-            fi
-
-            # Copy nginx config based on SSL status
-            sudo rm -f /etc/nginx/sites-enabled/default
-            if [ "$SSL_READY" = true ]; then
-              sudo cp /opt/visitalk/nginx-host.conf /etc/nginx/sites-available/visitalk
-              echo "Using SSL config"
-            else
-              sudo cp /opt/visitalk/nginx-http.conf /etc/nginx/sites-available/visitalk
-              echo "Using HTTP-only config (no SSL)"
-            fi
-            sudo ln -sf /etc/nginx/sites-available/visitalk /etc/nginx/sites-enabled/visitalk
-
-            # Test + start nginx
-            sudo nginx -t
-            sudo systemctl enable nginx
-            sudo systemctl restart nginx
 
       - name: Deploy containers
         uses: appleboy/ssh-action@v1
@@ -165,56 +121,55 @@ jobs:
             # Login GHCR
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+            # Stop old containers
+            docker compose --env-file .env.prod -f docker-compose.prod.yml down 2>/dev/null || true
+
             # Pull images
             docker compose --env-file .env.prod -f docker-compose.prod.yml pull
 
-            # Stop old containers
-            docker compose --env-file .env.prod -f docker-compose.prod.yml down
-
-            # Start new containers
+            # Start containers
             docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
 
-            # Cleanup old images
+            # Cleanup
             docker image prune -f
 
-      - name: Health check
+      - name: Health check + Debug
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            echo "=== Waiting for containers to start ==="
-            sleep 15
+            echo "=== Waiting 20s for containers ==="
+            sleep 20
 
             echo "=== .env.prod on server ==="
             cat /opt/visitalk/.env.prod
 
             echo "=== Container Status ==="
             cd /opt/visitalk
-            docker compose --env-file .env.prod -f docker-compose.prod.yml ps
+            docker compose --env-file .env.prod -f docker-compose.prod.yml ps -a
 
-            echo "=== Checking MySQL ==="
-            for i in $(seq 1 30); do
-              if docker exec visitalk-db mysqladmin ping -h localhost -u root -p$(grep MYSQL_ROOT_PASSWORD /opt/visitalk/.env.prod | cut -d= -f2) --silent 2>/dev/null; then
-                echo "MySQL is ready"
-                break
-              fi
-              echo "Waiting for MySQL... ($i/30)"
-              sleep 5
-            done
+            echo "=== MySQL Logs ==="
+            docker logs visitalk-db --tail 30 2>&1
 
-            echo "=== Checking Backend ==="
-            for i in $(seq 1 20); do
+            echo "=== Backend Logs ==="
+            docker logs visitalk-backend --tail 30 2>&1
+
+            echo "=== Frontend Logs ==="
+            docker logs visitalk-frontend --tail 20 2>&1
+
+            echo "=== Checking Backend (port 5001) ==="
+            for i in $(seq 1 10); do
               if curl -sf http://127.0.0.1:5001 > /dev/null 2>&1; then
                 echo "Backend is ready"
                 break
               fi
-              echo "Waiting for Backend... ($i/20)"
+              echo "Waiting for Backend... ($i/10)"
               sleep 5
             done
 
-            echo "=== Checking Frontend ==="
+            echo "=== Checking Frontend (port 3080) ==="
             for i in $(seq 1 10); do
               if curl -sf http://127.0.0.1:3080 > /dev/null 2>&1; then
                 echo "Frontend is ready"
@@ -223,35 +178,3 @@ jobs:
               echo "Waiting for Frontend... ($i/10)"
               sleep 3
             done
-
-            echo "=== Checking SSL ==="
-            if [ -d /etc/letsencrypt/live/${{ secrets.DOMAIN_NAME }} ]; then
-              for i in $(seq 1 20); do
-                if curl -sfk https://${{ secrets.DOMAIN_NAME }} > /dev/null 2>&1; then
-                  echo "SSL is ready"
-                  break
-                fi
-                echo "Waiting for SSL... ($i/20)"
-                sleep 10
-              done
-            else
-              echo "No SSL cert found, checking HTTP..."
-              for i in $(seq 1 10); do
-                if curl -sf http://${{ secrets.DOMAIN_NAME }} > /dev/null 2>&1; then
-                  echo "HTTP is ready (no SSL)"
-                  break
-                fi
-                echo "Waiting for HTTP... ($i/10)"
-                sleep 3
-              done
-            fi
-
-            echo "=== Final Status ==="
-            cd /opt/visitalk
-            docker compose --env-file .env.prod -f docker-compose.prod.yml ps
-
-            echo "=== Backend Logs ==="
-            docker logs visitalk-backend --tail 30 2>&1
-
-            echo "=== MySQL Logs ==="
-            docker logs visitalk-db --tail 15 2>&1
