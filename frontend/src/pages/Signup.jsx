@@ -57,7 +57,7 @@ const Signup = () => {
         username,
         password,
       });
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       setError(err.message || "Đăng ký thất bại. Vui lòng thử lại.");
     } finally {

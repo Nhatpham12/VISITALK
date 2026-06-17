@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Quá nhiều request, vui lòng thử lại sau" },
@@ -24,16 +24,26 @@ app.use(globalLimiter);
 
 const predictLimiter = rateLimit({
   windowMs: 1 * 60 * 1000,
-  max: 300,
+  max: 60,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Quá nhiều request, vui lòng thử lại sau" },
 });
 
-const authLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  max: 100,
-  message: { message: "Quá nhiều lần thử đăng nhập, vui lòng chờ 5 phút" },
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Quá nhiều lần thử đăng nhập, vui lòng chờ 15 phút" },
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Quá nhiều yêu cầu đăng ký, vui lòng thử lại sau" },
 });
 
 seedAdmin().catch((err) => console.error("seedAdmin error: ", err));
@@ -46,7 +56,9 @@ const reportRoutes = require("./routes/report.routes");
 const predictRoutes = require("./routes/predict.routes");
 const accessToRoutes = require("./routes/accessTo.routes");
 
-app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/auth/login", loginLimiter);
+app.use("/api/auth/register", registerLimiter);
 app.use("/api/users", userRoutes);
 app.use("/api/lessons", lessonsRoutes);
 app.use("/api/user-sessions", userSessionRoutes);

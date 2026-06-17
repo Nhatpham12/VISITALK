@@ -47,7 +47,12 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      return await authService.register(formData);
+      const data = await authService.register(formData);
+      if (data.token) {
+        localStorage.setItem("access_token", data.token);
+        setUser(data.user || null);
+      }
+      return data;
     } catch (err) {
       setError(err.message);
       throw err;

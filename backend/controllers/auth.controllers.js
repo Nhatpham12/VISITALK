@@ -33,7 +33,67 @@ const register = (req, res) => {
           return res.status(500).json({ message: "Lỗi tạo tài khoản" });
         }
         console.log(`[REGISTER] Đăng ký thành công: username=${username}, id=${insertId}`);
-        res.status(201).json({ message: "Đăng ký thành công" });
+
+        // Auto-login: tạo session và trả token
+        users.getByUsername(username, (err, newUser) => {
+          if (err) {
+            console.log(`[REGISTER] Đăng ký thành công nhưng auto-login thất bại`);
+            return res.status(201).json({ message: "Đăng ký thành công" });
+          }
+
+          users.updateLastLogin(newUser.id, (err) => {
+            if (err) {
+              console.log(`[REGISTER] Đăng ký thành công nhưng auto-login thất bại`);
+              return res.status(201).json({ message: "Đăng ký thành công" });
+            }
+
+            const sessionData = {
+              users_id: newUser.id,
+              ip_address: req.ip,
+              device: req.headers["user-agent"] || null,
+            };
+
+            users_sessions.insert(sessionData, (err, session_id) => {
+              if (err) {
+                console.log(`[REGISTER] Đăng ký thành công nhưng auto-login thất bại`);
+                return res.status(201).json({ message: "Đăng ký thành công" });
+              }
+
+              users_sessions.getActiveSession(newUser.id, (err, session) => {
+                if (err || !session) {
+                  console.log(`[REGISTER] Đăng ký thành công nhưng auto-login thất bại`);
+                  return res.status(201).json({ message: "Đăng ký thành công" });
+                }
+
+                const token = jwt.sign(
+                  {
+                    id: newUser.id,
+                    username: newUser.username,
+                    u_role: newUser.u_role,
+                    sessions_id: session.sessions_id,
+                  },
+                  process.env.JWT_SECRET || "visitalk_secret",
+                  { expiresIn: "7d" },
+                );
+
+                res.status(201).json({
+                  message: "Đăng ký thành công",
+                  token,
+                  user: {
+                    id: newUser.id,
+                    username: newUser.username,
+                    full_name: newUser.full_name,
+                    email: newUser.email,
+                    u_role: newUser.u_role,
+                    avatar_url: newUser.avatar_url,
+                    dob: newUser.dob,
+                    gender: newUser.gender,
+                  },
+                });
+              });
+            });
+          });
+        });
       });
     });
   };

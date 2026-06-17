@@ -24,6 +24,9 @@ const apiCall = async (endpoint, options = {}) => {
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      localStorage.removeItem("access_token");
+    }
     const errData = await response.json().catch(() => ({}));
     throw new Error(errData.message || `Lỗi ${response.status}`);
   }
