@@ -140,8 +140,8 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            echo "=== Waiting 20s for containers ==="
-            sleep 20
+            echo "=== Waiting 30s for containers ==="
+            sleep 30
 
             echo "=== .env.prod on server ==="
             cat /opt/visitalk/.env.prod
@@ -161,7 +161,7 @@ jobs:
 
             echo "=== Checking Backend (port 5001) ==="
             for i in $(seq 1 10); do
-              if curl -sf http://127.0.0.1:5001 > /dev/null 2>&1; then
+              if curl -s http://127.0.0.1:5001 > /dev/null 2>&1; then
                 echo "Backend is ready"
                 break
               fi
@@ -171,7 +171,7 @@ jobs:
 
             echo "=== Checking Frontend (port 3080) ==="
             for i in $(seq 1 10); do
-              if curl -sf http://127.0.0.1:3080 > /dev/null 2>&1; then
+              if curl -s http://127.0.0.1:3080 > /dev/null 2>&1; then
                 echo "Frontend is ready"
                 break
               fi
@@ -181,7 +181,7 @@ jobs:
 
             echo "=== Checking nginx host (port 80) ==="
             for i in $(seq 1 10); do
-              if curl -sf -H "Host: ${{ secrets.DOMAIN_NAME }}" http://127.0.0.1:80 > /dev/null 2>&1; then
+              if curl -s -H "Host: ${{ secrets.DOMAIN_NAME }}" http://127.0.0.1:80 > /dev/null 2>&1; then
                 echo "nginx is ready"
                 break
               fi
