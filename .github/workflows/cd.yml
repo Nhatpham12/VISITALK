@@ -8,7 +8,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository }}
 
 jobs:
   push-backend:
@@ -39,8 +38,8 @@ jobs:
           target: backend
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/visitalk-backend:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/visitalk-backend:${{ github.sha }}
+            ${{ env.REGISTRY }}/nhatpham12/visitalk-backend:latest
+            ${{ env.REGISTRY }}/nhatpham12/visitalk-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -72,8 +71,8 @@ jobs:
           target: frontend
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/visitalk-frontend:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/visitalk-frontend:${{ github.sha }}
+            ${{ env.REGISTRY }}/nhatpham12/visitalk-frontend:latest
+            ${{ env.REGISTRY }}/nhatpham12/visitalk-frontend:${{ github.sha }}
           build-args: |
             VITE_API_URL=${{ vars.VITE_API_URL || '/api' }}
           cache-from: type=gha
