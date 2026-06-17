@@ -102,7 +102,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "docker-compose.prod.yml,init.sql,nginx-host.conf"
+          source: "docker-compose.prod.yml,init.sql,nginx-host.conf,nginx-http.conf"
           target: /opt/visitalk
 
       - name: Setup nginx + SSL on server
@@ -121,26 +121,37 @@ jobs:
             # Stop nginx for standalone cert
             sudo systemctl stop nginx 2>/dev/null || true
 
-            # Get SSL cert if not exists (standalone mode, no nginx needed)
+            # Get SSL cert if not exists
+            SSL_READY=false
             if [ ! -d /etc/letsencrypt/live/${{ secrets.DOMAIN_NAME }} ]; then
-              sudo certbot certonly --standalone \
+              if sudo certbot certonly --standalone \
                 -d ${{ secrets.DOMAIN_NAME }} \
                 --non-interactive --agree-tos \
-                --email nhat88672@gmail.com
+                --email nhat88672@gmail.com; then
+                SSL_READY=true
+              else
+                echo "Certbot failed, will use HTTP-only config"
+              fi
             else
               sudo certbot renew --quiet
+              SSL_READY=true
             fi
 
-            # Now copy SSL nginx config (cert exists)
-            sudo cp /opt/visitalk/nginx-host.conf /etc/nginx/sites-available/visitalk
-            sudo ln -sf /etc/nginx/sites-available/visitalk /etc/nginx/sites-enabled/visitalk
+            # Copy nginx config based on SSL status
             sudo rm -f /etc/nginx/sites-enabled/default
+            if [ "$SSL_READY" = true ]; then
+              sudo cp /opt/visitalk/nginx-host.conf /etc/nginx/sites-available/visitalk
+              echo "Using SSL config"
+            else
+              sudo cp /opt/visitalk/nginx-http.conf /etc/nginx/sites-available/visitalk
+              echo "Using HTTP-only config (no SSL)"
+            fi
+            sudo ln -sf /etc/nginx/sites-available/visitalk /etc/nginx/sites-enabled/visitalk
 
             # Test + start nginx
             sudo nginx -t
             sudo systemctl enable nginx
             sudo systemctl restart nginx
-            sudo systemctl reload nginx
 
       - name: Deploy containers
         uses: appleboy/ssh-action@v1
@@ -214,14 +225,26 @@ jobs:
             done
 
             echo "=== Checking SSL ==="
-            for i in $(seq 1 20); do
-              if curl -sfk https://${{ secrets.DOMAIN_NAME }} > /dev/null 2>&1; then
-                echo "SSL is ready"
-                break
-              fi
-              echo "Waiting for SSL... ($i/20)"
-              sleep 10
-            done
+            if [ -d /etc/letsencrypt/live/${{ secrets.DOMAIN_NAME }} ]; then
+              for i in $(seq 1 20); do
+                if curl -sfk https://${{ secrets.DOMAIN_NAME }} > /dev/null 2>&1; then
+                  echo "SSL is ready"
+                  break
+                fi
+                echo "Waiting for SSL... ($i/20)"
+                sleep 10
+              done
+            else
+              echo "No SSL cert found, checking HTTP..."
+              for i in $(seq 1 10); do
+                if curl -sf http://${{ secrets.DOMAIN_NAME }} > /dev/null 2>&1; then
+                  echo "HTTP is ready (no SSL)"
+                  break
+                fi
+                echo "Waiting for HTTP... ($i/10)"
+                sleep 3
+              done
+            fi
 
             echo "=== Final Status ==="
             cd /opt/visitalk
