@@ -178,3 +178,16 @@ jobs:
               echo "Waiting for Frontend... ($i/10)"
               sleep 3
             done
+
+            echo "=== Checking nginx host (port 80) ==="
+            for i in $(seq 1 10); do
+              if curl -sf -H "Host: ${{ secrets.DOMAIN_NAME }}" http://127.0.0.1:80 > /dev/null 2>&1; then
+                echo "nginx is ready"
+                break
+              fi
+              echo "Waiting for nginx... ($i/10)"
+              sleep 3
+            done
+
+            echo "=== nginx status ==="
+            sudo systemctl status nginx --no-pager -l 2>&1 || true

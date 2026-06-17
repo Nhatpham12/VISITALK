@@ -44,6 +44,12 @@ services:
         condition: service_healthy
     networks:
       - visitalk-net
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:5001"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # ── Frontend (Nginx) ───────────────────────────
   frontend:
@@ -53,9 +59,16 @@ services:
     ports:
       - "127.0.0.1:3080:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - visitalk-net
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:80"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 networks:
   visitalk-net:
