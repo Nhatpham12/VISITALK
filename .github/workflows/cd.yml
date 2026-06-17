@@ -124,3 +124,49 @@ jobs:
 
             # Cleanup old images
             docker image prune -f
+
+      - name: Health check containers
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            echo "=== Waiting for containers to start ==="
+            sleep 15
+
+            echo "=== Container Status ==="
+            docker compose -f /opt/visitalk/docker-compose.prod.yml ps
+
+            echo "=== Checking MySQL (port 3307) ==="
+            for i in $(seq 1 30); do
+              if docker exec visitalk-db mysqladmin ping -h localhost -u root -p$(grep MYSQL_ROOT_PASSWORD /opt/visitalk/.env.prod | cut -d= -f2) --silent 2>/dev/null; then
+                echo "MySQL is ready"
+                break
+              fi
+              echo "Waiting for MySQL... ($i/30)"
+              sleep 5
+            done
+
+            echo "=== Checking Backend (port 5001) ==="
+            for i in $(seq 1 20); do
+              if curl -sf http://localhost:5001 > /dev/null 2>&1; then
+                echo "Backend is ready"
+                break
+              fi
+              echo "Waiting for Backend... ($i/20)"
+              sleep 5
+            done
+
+            echo "=== Checking Frontend (port 80) ==="
+            for i in $(seq 1 10); do
+              if curl -sf http://localhost:80 > /dev/null 2>&1; then
+                echo "Frontend is ready"
+                break
+              fi
+              echo "Waiting for Frontend... ($i/10)"
+              sleep 3
+            done
+
+            echo "=== Final Status ==="
+            docker compose -f /opt/visitalk/docker-compose.prod.yml ps
