@@ -94,9 +94,21 @@ const Login = () => {
           </div>
 
           {(error || contextError) && (
-            <p className="error-msg" style={{ color: "red", fontSize: "13px" }}>
-              {error || contextError}
-            </p>
+            <div className={`login-alert ${(error || contextError).includes("khóa") ? "login-alert--banned" : "login-alert--error"}`}>
+              <span className="login-alert__icon">
+                {(error || contextError).includes("khóa") ? "⛔" : "⚠️"}
+              </span>
+              <div className="login-alert__content">
+                <strong>
+                  {(error || contextError).includes("khóa")
+                    ? "Tài khoản đã bị khóa"
+                    : "Đăng nhập thất bại"}
+                </strong>
+                <p>{(error || contextError).includes("khóa")
+                  ? "Vui lòng liên hệ quản trị viên để được hỗ trợ."
+                  : (error || contextError)}</p>
+              </div>
+            </div>
           )}
 
           <div className="login-but">

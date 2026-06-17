@@ -177,3 +177,44 @@ body {
 .no-account a:hover {
   text-decoration: underline;
 }
+
+/* Login Alert */
+.login-alert {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.login-alert__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.login-alert__content strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.login-alert__content p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.login-alert--error {
+  background-color: rgba(248, 215, 218, 0.15);
+  border: 1px solid rgba(248, 215, 218, 0.4);
+  color: #f8d7da;
+}
+
+.login-alert--banned {
+  background-color: rgba(255, 193, 7, 0.15);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  color: #fff3cd;
+}
