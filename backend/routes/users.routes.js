@@ -61,6 +61,10 @@ router.patch("/:id/status", verifyToken, requireRole("admin"), (req, res) => {
   const { id } = req.params;
   const { u_status } = req.body;
 
+  if (String(req.user.id) === String(id)) {
+    return res.status(400).json({ message: "Không thể thay đổi trạng thái của chính mình" });
+  }
+
   if (!["active", "inactive"].includes(u_status)) {
     return res.status(400).json({ message: "Trạng thái không hợp lệ" });
   }
@@ -78,6 +82,10 @@ router.patch("/:id/status", verifyToken, requireRole("admin"), (req, res) => {
 // DELETE /api/users/:id — chỉ admin
 router.delete("/:id", verifyToken, requireRole("admin"), (req, res) => {
   const { id } = req.params;
+
+  if (String(req.user.id) === String(id)) {
+    return res.status(400).json({ message: "Không thể xóa chính mình" });
+  }
 
   users.delete(id, (err, deleted) => {
     if (err) return res.status(500).json({ message: "Lỗi server" });
