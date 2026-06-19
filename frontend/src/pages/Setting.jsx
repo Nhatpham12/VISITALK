@@ -7,7 +7,7 @@ import { AuthContext } from "../context/authContext";
 import "../CSS/Setting.css";
 
 const Setting = () => {
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const initialBrightness = () => {
@@ -85,33 +85,35 @@ const Setting = () => {
           </div>
 
           <div className="card-footer">
-            <div className="card-footer-icons">
-              <Link to="/admin">
-                <img
-                  src="/Assets/Images/UserControl.png"
-                  className="card-icon"
-                  alt="Admin"
-                />
-              </Link>
-              <div className="card-footer-report">
-                <Link to="/report">
+            {user?.u_role === "admin" && (
+              <div className="card-footer-icons">
+                <Link to="/admin">
                   <img
-                    src="/Assets/Images/Report.png"
-                    className="report-bg"
-                    alt=""
+                    src="/Assets/Images/UserControl.png"
+                    className="card-icon"
+                    alt="Admin"
                   />
                 </Link>
+                <div className="card-footer-report">
+                  <Link to="/report">
+                    <img
+                      src="/Assets/Images/Report.png"
+                      className="report-bg"
+                      alt=""
+                    />
+                  </Link>
+                </div>
+                <div className="card-footer-report">
+                  <Link to="/lessonscontrol">
+                    <img
+                      src="/Assets/Images/LesControl.png"
+                      className="report-bg"
+                      alt=""
+                    />
+                  </Link>
+                </div>
               </div>
-              <div className="card-footer-report">
-                <Link to="/lessonscontrol">
-                  <img
-                    src="/Assets/Images/LesControl.png"
-                    className="report-bg"
-                    alt=""
-                  />
-                </Link>
-              </div>
-            </div>
+            )}
             <div className="card-footer-logo">
               <img
                 src="/Assets/Images/Brand.png"

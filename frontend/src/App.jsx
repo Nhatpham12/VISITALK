@@ -54,7 +54,6 @@ function App() {
           <Route path="/introduce" element={<Introduce />} />
           <Route path="/securitypolicy" element={<Securitypolicy />} />
           <Route path="/termofser" element={<Termofser />} />
-          <Route path="/lessonscontrol" element={<LessonsControl />} />
 
           {/* Chỉ khi CHƯA đăng nhập */}
           <Route
@@ -170,6 +169,14 @@ function App() {
             element={
               <ProtectedRoute requiredRole="admin">
                 <Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lessonscontrol"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <LessonsControl />
               </ProtectedRoute>
             }
           />

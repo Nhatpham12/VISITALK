@@ -27,7 +27,10 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
   }
 
   if (requiredRole && user.u_role !== requiredRole) {
-    return <Navigate to="/" replace />;
+    console.warn(
+      `[ACCESS DENIED] User "${user.username}" (role: ${user.u_role}) tried to access "${location.pathname}" (requires: ${requiredRole})`
+    );
+    return <Navigate to="/setting" replace />;
   }
 
   return children;
