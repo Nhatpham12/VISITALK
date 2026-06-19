@@ -149,11 +149,11 @@ const LessonsControl = () => {
                 className="add-user-btn"
                 onClick={() => setShowModal(true)}
               >
-                <img src="/Assets/Images/Adduser.png" alt="Thêm bài học" />
+                <img src="/Assets/Images/Addlessons.png" alt="Thêm bài học" />
               </button>
               <button className="update-user-btn" onClick={openUpdateModal}>
                 <img
-                  src="/Assets/Images/updateUser.png"
+                  src="/Assets/Images/UpdateLessons.png"
                   alt="Cập nhật bài học"
                 />
               </button>
