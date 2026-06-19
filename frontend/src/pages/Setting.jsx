@@ -88,7 +88,7 @@ const Setting = () => {
             <div className="card-footer-icons">
               <Link to="/admin">
                 <img
-                  src="/Assets/Images/Personal.png"
+                  src="/Assets/Images/UserControl.png"
                   className="card-icon"
                   alt="Admin"
                 />
@@ -96,14 +96,18 @@ const Setting = () => {
               <div className="card-footer-report">
                 <Link to="/report">
                   <img
-                    src="/Assets/Images/btn_background.png"
+                    src="/Assets/Images/Report.png"
                     className="report-bg"
                     alt=""
                   />
+                </Link>
+              </div>
+              <div className="card-footer-report">
+                <Link to="/lessonscontrol">
                   <img
-                    src="/Assets/Images/Report.png"
-                    className="report-btn"
-                    alt="Report"
+                    src="/Assets/Images/LesControl.png"
+                    className="report-bg"
+                    alt=""
                   />
                 </Link>
               </div>

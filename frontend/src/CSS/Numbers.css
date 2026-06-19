@@ -96,6 +96,11 @@ body {
   box-shadow: 0 8px 24px rgba(26, 39, 68, 0.15);
 }
 
+.numbers-card--selected {
+  background: #b8d0ea;
+  box-shadow: 0 8px 24px rgba(26, 39, 68, 0.2);
+}
+
 /* ── Card top section ── */
 .numbers-card__top {
   display: flex;

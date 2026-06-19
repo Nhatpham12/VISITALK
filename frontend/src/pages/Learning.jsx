@@ -1,87 +1,109 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../CSS/Learning.css";
 import { Link } from "react-router-dom";
+import { lessonService } from "../services/api";
 
 const Learning = () => {
+  const [lessons, setLessons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    lessonService
+      .getAll()
+      .then((data) => {
+        setLessons(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  const subjects = lessons.filter(
+    (l) =>
+      !l.title.toLowerCase().includes("chữ") &&
+      !l.title.toLowerCase().includes("số"),
+  );
+
+  const alphabet = lessons
+    .filter((l) => l.title.toLowerCase().includes("chữ"))
+    .sort((a, b) => a.meaning.localeCompare(b.meaning));
+
+  const numbers = lessons
+    .filter((l) => l.title.toLowerCase().includes("số"))
+    .sort((a, b) => {
+      const numA = parseInt(a.meaning.replace(/\D/g, ""), 10);
+      const numB = parseInt(b.meaning.replace(/\D/g, ""), 10);
+      return numA - numB;
+    });
+
   return (
     <>
       <Navbar />
 
       <h1 className="learning-title">TỪ ĐIỂN</h1>
-      <div className="dictionary-table">
-        <div className="table-header">
-          <div className="col">Chủ đề</div>
-          <div className="col">
-            <Link to="/learning/alphabet">A-Z</Link>
-          </div>
-          <div className="col">
-            <Link to="/learning/numbers">Số tự nhiên</Link>
-          </div>
-        </div>
 
-        <div className="table-body">
-          <div className="col sbj-col">
-            <div className="sbj-grid">
-              <Link to="/learning/subjects"><span>Xin chào</span></Link>
-              <Link to="/learning/subjects"><span>Tạm biệt</span></Link>
-              <Link to="/learning/subjects"><span>Cảm ơn</span></Link>
-              <Link to="/learning/subjects"><span>Xin lỗi</span></Link>
-              <Link to="/learning/subjects"><span>Khỏe không?</span></Link>
-              <Link to="/learning/subjects"><span>Cha / Bố</span></Link>
-              <Link to="/learning/subjects"><span>Mẹ</span></Link>
-              <Link to="/learning/subjects"><span>Ông</span></Link>
-              <Link to="/learning/subjects"><span>Bà</span></Link>
-              <Link to="/learning/subjects"><span>Anh em / Chị em</span></Link>
-              <Link to="/learning/subjects"><span>Xe máy</span></Link>
-              <Link to="/learning/subjects"><span>Ô tô</span></Link>
-              <Link to="/learning/subjects"><span>Xe đạp</span></Link>
-              <Link to="/learning/subjects"><span>Đi bộ</span></Link>
-              <Link to="/learning/subjects"><span>Dừng lại</span></Link>
+      {loading && (
+        <div style={{ textAlign: "center", padding: "40px", color: "#374c72" }}>
+          Đang tải dữ liệu...
+        </div>
+      )}
+
+      {error && (
+        <div style={{ textAlign: "center", padding: "40px", color: "#c0392b" }}>
+          Lỗi: {error}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <div className="dictionary-table">
+          <div className="table-header">
+            <div className="col">Chủ đề</div>
+            <div className="col">
+              <Link to="/learning/alphabet">A-Z</Link>
+            </div>
+            <div className="col">
+              <Link to="/learning/numbers">Số tự nhiên</Link>
             </div>
           </div>
-          <div className="col az-col">
-            <div className="az-grid">
-              <Link to="/learning/alphabet"><span>A</span></Link>
-              <Link to="/learning/alphabet"><span>B</span></Link>
-              <Link to="/learning/alphabet"><span>C</span></Link>
-              <Link to="/learning/alphabet"><span>D</span></Link>
-              <Link to="/learning/alphabet"><span>E</span></Link>
-              <Link to="/learning/alphabet"><span>F</span></Link>
-              <Link to="/learning/alphabet"><span>G</span></Link>
-              <Link to="/learning/alphabet"><span>H</span></Link>
-              <Link to="/learning/alphabet"><span>I</span></Link>
-              <Link to="/learning/alphabet"><span>J</span></Link>
-              <Link to="/learning/alphabet"><span>K</span></Link>
-              <Link to="/learning/alphabet"><span>L</span></Link>
-              <Link to="/learning/alphabet"><span>M</span></Link>
-              <Link to="/learning/alphabet"><span>N</span></Link>
-              <Link to="/learning/alphabet"><span>O</span></Link>
-              <Link to="/learning/alphabet"><span>P</span></Link>
-              <Link to="/learning/alphabet"><span>Q</span></Link>
-              <Link to="/learning/alphabet"><span>R</span></Link>
-              <Link to="/learning/alphabet"><span>S</span></Link>
-              <Link to="/learning/alphabet"><span>T</span></Link>
-              <Link to="/learning/alphabet"><span>U</span></Link>
-              <Link to="/learning/alphabet"><span>V</span></Link>
-              <Link to="/learning/alphabet"><span>W</span></Link>
-              <Link to="/learning/alphabet"><span>X</span></Link>
-              <Link to="/learning/alphabet"><span>Y</span></Link>
-              <Link to="/learning/alphabet"><span>Z</span></Link>
+
+          <div className="table-body">
+            <div className="col sbj-col">
+              <div className="sbj-grid">
+                {subjects.map((s) => (
+                  <Link to="/learning/subjects" key={s.les_id}>
+                    <span>{s.meaning || s.title}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="col num-col">
-            <ul>
-              <Link to="/learning/numbers"><li>1-10</li></Link>
-              <Link to="/learning/numbers"><li>11-20</li></Link>
-              <Link to="/learning/numbers"><li>21-30</li></Link>
-              <Link to="/learning/numbers"><li>31-40</li></Link>
-              <Link to="/learning/numbers"><li>41-50</li></Link>
-            </ul>
+
+            <div className="col az-col">
+              <div className="az-grid">
+                {alphabet.map((a) => (
+                  <Link to="/learning/alphabet" key={a.les_id}>
+                    <span>{a.meaning.replace("Chữ ", "")}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="col num-col">
+              <div className="num-grid">
+                {numbers.map((n) => (
+                  <Link to="/learning/numbers" key={n.les_id}>
+                    <span>{n.meaning}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <Footer />
     </>

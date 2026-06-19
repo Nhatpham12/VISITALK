@@ -4,13 +4,11 @@ import Footer from "../components/Footer";
 import { lessonService, accessService } from "../services/api";
 import "../CSS/Numbers.css";
 
-const ITEMS_PER_PAGE = 9;
-
 const Numbers = () => {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     lessonService
@@ -32,14 +30,6 @@ const Numbers = () => {
       });
   }, []);
 
-  const TOTAL_PAGES = Math.ceil(lessons.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentEntries = lessons.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  const goTo = (page) => {
-    if (page >= 1 && page <= TOTAL_PAGES) setCurrentPage(page);
-  };
-
   return (
     <>
       <Navbar />
@@ -56,87 +46,52 @@ const Numbers = () => {
       )}
 
       {!loading && !error && (
-        <>
-          <hr className="numbers-divider" />
+        <div className="numbers-container">
+          {lessons.map((lesson) => (
+            <div
+              className={`numbers-card ${selectedId === lesson.les_id ? "numbers-card--selected" : ""}`}
+              key={lesson.les_id}
+              onClick={() => {
+                setSelectedId(
+                  selectedId === lesson.les_id ? null : lesson.les_id,
+                );
+                if (selectedId !== lesson.les_id)
+                  accessService.recordAccess(lesson.les_id);
+              }}
+            >
+              <div className="numbers-card__top">
+                <h3 className="numbers-card__title">{lesson.meaning}</h3>
 
-          <div className="numbers-container">
-            {currentEntries.map((lesson) => (
-              <div
-                className="numbers-card"
-                key={lesson.les_id}
-                onClick={() => accessService.recordAccess(lesson.les_id)}
-              >
-                <div className="numbers-card__top">
-                  <h3 className="numbers-card__title">{lesson.meaning}</h3>
+                <div className="numbers-card__tags">
+                  <span className="tag tag--type">
+                    <img src="/Assets/Images/icon-type.png" alt="" />
+                    Ngôn ngữ ký hiệu
+                  </span>
+                  <span className="tag tag--region">
+                    <img src="/Assets/Images/icon-region.png" alt="" />
+                    Số tự nhiên
+                  </span>
+                </div>
 
-                  <div className="numbers-card__tags">
-                    <span className="tag tag--type">
-                      <img src="/Assets/Images/icon-type.png" alt="" />
-                      Ngôn ngữ ký hiệu
-                    </span>
-                    <span className="tag tag--region">
-                      <img src="/Assets/Images/icon-region.png" alt="" />
-                      Số tự nhiên
-                    </span>
+                {selectedId === lesson.les_id && lesson.img_url && (
+                  <div className="numbers-card__img-box">
+                    <img
+                      src={lesson.img_url}
+                      alt={lesson.meaning}
+                      className="numbers-card__img"
+                    />
                   </div>
+                )}
 
-                  {/* {lesson.img_url && (
-                    <div className="numbers-card__img-box">
-                      <img
-                        src={lesson.img_url}
-                        alt={lesson.meaning}
-                        className="numbers-card__img"
-                      />
-                    </div>
-                  )} */}
-
-                  <p className="numbers-card__desc">{lesson.content}</p>
-                </div>
-
-                <div className="numbers-card__number">
-                  {lesson.meaning.replace("Số ", "")}
-                </div>
+                <p className="numbers-card__desc">{lesson.content}</p>
               </div>
-            ))}
-          </div>
 
-          {/* Pagination */}
-          <div className="numbers-pagination">
-            <button
-              className="pagination-btn"
-              onClick={() => goTo(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              ←
-            </button>
-
-            <span className="pagination-label">Trước</span>
-
-            <div className="pagination-pages">
-              {Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    className={`pagination-page ${currentPage === page ? "active" : ""}`}
-                    onClick={() => goTo(page)}
-                  >
-                    {page}
-                  </button>
-                ),
-              )}
+              <div className="numbers-card__number">
+                {lesson.meaning.replace("Số ", "")}
+              </div>
             </div>
-
-            <span className="pagination-label">Sau</span>
-
-            <button
-              className="pagination-btn"
-              onClick={() => goTo(currentPage + 1)}
-              disabled={currentPage === TOTAL_PAGES}
-            >
-              →
-            </button>
-          </div>
-        </>
+          ))}
+        </div>
       )}
 
       <Footer />

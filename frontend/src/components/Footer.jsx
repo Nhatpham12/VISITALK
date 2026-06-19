@@ -12,7 +12,7 @@ const Footer = () => {
         </h3>
         <div className="in4">
           <p>Địa chỉ: 97 Man Thiện, Hiệp Phú, Thủ Đức, Thành phố Hồ Chí Minh</p>
-          <p>Hotline: 0123456789</p>
+          <p>Hotline: 0935856528</p>
           <p>Email: nhat88672@gmail.com</p>
           <p>Facebook: Nhật Phạm</p>
         </div>

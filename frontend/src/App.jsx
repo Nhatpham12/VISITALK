@@ -27,6 +27,7 @@ import Alphabet from "./pages/Alphabet";
 import Numbers from "./pages/Numbers";
 import Subjects from "./pages/Subjects";
 import Update from "./pages/Update";
+import LessonsControl from "./pages/LessonsControl";
 
 // Guard ngược: đã login thì không vào /login /signup /welcome được nữa
 function PublicOnlyRoute({ children }) {
@@ -53,6 +54,7 @@ function App() {
           <Route path="/introduce" element={<Introduce />} />
           <Route path="/securitypolicy" element={<Securitypolicy />} />
           <Route path="/termofser" element={<Termofser />} />
+          <Route path="/lessonscontrol" element={<LessonsControl />} />
 
           {/* Chỉ khi CHƯA đăng nhập */}
           <Route

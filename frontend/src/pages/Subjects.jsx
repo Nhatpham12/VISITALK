@@ -8,6 +8,7 @@ const Subjects = () => {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     lessonService
@@ -51,9 +52,15 @@ const Subjects = () => {
           <div className="subjects-container">
             {lessons.map((lesson) => (
               <div
-                className="subjects-card"
+                className={`subjects-card ${selectedId === lesson.les_id ? "subjects-card--selected" : ""}`}
                 key={lesson.les_id}
-                onClick={() => accessService.recordAccess(lesson.les_id)}
+                onClick={() => {
+                  setSelectedId(
+                    selectedId === lesson.les_id ? null : lesson.les_id,
+                  );
+                  if (selectedId !== lesson.les_id)
+                    accessService.recordAccess(lesson.les_id);
+                }}
               >
                 <div className="subjects-card__top">
                   <h3 className="subjects-card__title">
@@ -71,7 +78,7 @@ const Subjects = () => {
                     </span>
                   </div>
 
-                  {/* {lesson.img_url && (
+                  {selectedId === lesson.les_id && lesson.img_url && (
                     <div className="subjects-card__img-box">
                       <img
                         src={lesson.img_url}
@@ -79,7 +86,7 @@ const Subjects = () => {
                         className="subjects-card__img"
                       />
                     </div>
-                  )} */}
+                  )}
 
                   <p className="subjects-card__desc">{lesson.content}</p>
                 </div>
