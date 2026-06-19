@@ -18,21 +18,54 @@
 
 ## ✨ Tính Năng Chính
 
-✅ **Dịch thuật thời gian thực** — Nhận diện cử chỉ tay qua webcam với AI Models  
-✅ **Quản lý tài khoản** — Xác thực, hồ sơ, lịch sử phiên làm việc  
-✅ **Hệ thống học tập** — Khóa học chào hỏi, bảng chữ cái, số đếm  
-✅ **Dashboard Admin** — Quản lý người dùng, bài học, báo cáo  
-✅ **Super Admin System** — Quản lý admin, cài đặt hệ thống  
-✅ **Giao diện responsive** — Tối ưu cho mọi thiết bị  
+### 🤖 Dịch Ngôn Ngữ Ký Hiệu Thời Gian Thực
+- Nhận diện 21 điểm landmark tay qua webcam bằng **MediaPipe HandLandmarker**
+- Trích xuất 84 đặc trưng (tọa độ thô + normalized) gửi về backend Python
+- **MLPClassifier** dự đoán 29 lớp: chữ A-Z, space, delete, nothing
+- Hệ thống ổn định: gesture phải giữ yên **12 frame** liên tiếp trước khi accept
+- UI: camera live, confidence arc, progress bar ổn định, top-3 probability chart
+
+### 📚 Hệ Thống Học Tập
+- **Bảng chữ cái VSL**: A-Z + 6 dấu thanh Việt (huyền, nặng, ngã, sắc, râu, hỏi)
+- **Số đếm**: 0-12, 40, 80, 90, 100, 1K, 5K, 10K, 1 triệu, 1 tỉ
+- **Từ thông dụng**: chào, áo, bác sĩ, bạn thân, bệnh viện, chạy... (20+ từ)
+- Flashcard: click để xem ảnh + mô tả chi tiết cách thực hiện ký hiệu
+- Theo dõi lượt truy cập bài học của từng user
+
+### 👤 Quản Lý Tài Khoản & Phiên
+- Đăng ký/đăng nhập JWT (hết hạn 7 ngày), auto-login sau đăng ký
+- bcrypt hash mật khẩu, validated username/email/password
+- Theo dõi phiên: IP, thiết bị, thời lượng sử dụng
+- Tích lũy `total_online_time` trên từng user
+
+### 🔐 Bảo Mật & Rate Limiting
+- JWT + session validation trên mỗi request (logout thực sự vô hiệu hóa token)
+- Rate limit: login 10/15ph, register 20/giờ, API 500/15ph
+- ProtectedRoute + PublicOnlyRoute phân quyền user/admin
+- Admin không thể tự ban hoặc xóa chính mình
+
+### 📊 Dashboard Admin
+- **Quản lý người dùng**: xem, thêm, sửa, ban/unban, xóa
+- **Quản lý bài học**: CRUD bài học ký hiệu
+- **Báo cáo thống kê**: tổng user, lượt truy cập, biểu đồ 7 ngày, xuất PDF
+
+### 🏗️ Kiến Trúc Kỹ Thuật
+- **Docker multi-stage**: Node.js + Python ML backend | Nginx React frontend | MySQL
+- **CI/CD**: GitHub Actions → Build → GHCR → Deploy VPS
+- **Nginx**: HTTP→HTTPS, Cloudflare proxy, SPA fallback, static cache (JS/CSS 1yr)
+- Connection pool 10 kết nối, timezone +07:00
 
 ---
 
 ## 🛠️ Công Nghệ
 
-- **Frontend**: React 19 + Vite + React Router
-- **Backend**: Node.js + Express + MySQL
-- **AI**: MediaPipe + Gesture Recognition Models
-- **Bảo mật**: JWT, bcrypt, Rate Limiting, CORS, Helmet
+| Layer | Stack |
+|-------|-------|
+| **Frontend** | React 19 + Vite + React Router v6 |
+| **Backend** | Node.js + Express.js + MySQL2 |
+| **AI/ML** | MediaPipe HandLandmarker + scikit-learn MLPClassifier |
+| **Bảo mật** | JWT (7 ngày) + bcrypt + Rate Limiting + CORS |
+| **DevOps** | Docker Compose + GitHub Actions + GHCR + VPS (Nginx) |
 
 ---
 
@@ -40,19 +73,29 @@
 
 ```
 VISITALK/
-├── frontend/          # React + Vite (Port 5173)
-│   └── src/
-│       ├── pages/     # Translate, Learning, Admin, etc.
-│       ├── components/
-│       ├── services/  # API client
-│       └── context/   # Auth state
-├── backend/           # Node.js + Express (Port 5001)
-│   ├── routes/
-│   ├── controllers/
-│   ├── middleware/
-│   └── models/
-├── models/            # AI Models (v1, v2)
-└── VISITALK DB.txt    # Database Schema
+├── frontend/              # React + Vite (Port 5173)
+│   ├── src/
+│   │   ├── pages/         # Translate, Learning, Admin, etc.
+│   │   ├── components/    # Navbar, Footer, ProtectedRoute
+│   │   ├── services/      # API client (auth, predict, lessons...)
+│   │   ├── context/       # AuthContext (global auth state)
+│   │   └── CSS/
+│   └── public/model/      # ML models (joblib, TensorFlow.js)
+├── backend/               # Node.js + Express (Port 5001)
+│   ├── routes/            # auth, users, lessons, predict, reports
+│   ├── controllers/       # Business logic
+│   ├── middleware/        # JWT auth, role guard
+│   ├── models/            # MySQL queries
+│   ├── predict_server.py  # Python ML inference (stdin/stdout)
+│   └── seeders/           # Auto-create admin account
+├── .github/workflows/     # CI/CD (ci.yml + cd.yml)
+├── docker-compose.yml     # Local dev (MySQL + Backend + Frontend)
+├── docker-compose.prod.yml # Production (GHCR images)
+├── Dockerfile             # Multi-stage: frontend-build → backend → frontend
+├── nginx-docker.conf      # Nginx config inside Docker
+├── nginx.conf             # VPS-level Nginx (HTTPS + Cloudflare)
+├── init.sql               # Database schema + seed data
+└── .env                   # Environment variables (gitignored)
 ```
 
 ---
@@ -99,27 +142,36 @@ npm run dev
 
 ## 🌳 Quy Trình Người Dùng
 
-1. **Đăng ký/Đăng nhập** — `/signup` → `/login`
-2. **Sử dụng dịch thuật** — `/translate` (bật webcam, thực hiện cử chỉ)
-3. **Học bài** — `/learning` (Greeting, Alphabet, Numbers)
-4. **Quản lý hồ sơ** — `/personal` (xem/sửa thông tin)
-5. **Admin Panel** — `/admin` (quản lý người dùng, bài học)
+### User
+1. **Đăng ký** → `/signup` → auto-login → `/`
+2. **Dịch thuật** → `/translate` → bật webcam → thực hiện cử chỉ → nhận text
+3. **Học bài** → `/learning` → chọn Alphabet/Numbers/Subjects → xem flashcard
+4. **Hồ sơ** → `/personal` → xem/sửa thông tin
+5. **Đăng xuất** → lưu thời lượng phiên
+
+### Admin
+1. **Đăng nhập** → `/admin` (redirect tự động)
+2. **Quản lý user** → ban/unban, thêm, xóa
+3. **Quản lý bài học** → `/lessonscontrol` → CRUD lessons
+4. **Báo cáo** → `/report` → thống kê, biểu đồ, xuất PDF
 
 ---
 
 ## 📈 Build & Deploy
 
-### Build Frontend
+### Local Development (Docker)
 ```bash
-cd frontend
-npm run build    # Output: dist/
-npm run preview  # Preview locally
+docker compose up -d
+# Frontend: http://localhost:5173
+# Backend:  http://localhost:5001
+# MySQL:    localhost:3307
 ```
 
-### Deploy
-- **Vercel**: `npm install -g vercel && vercel`
-- **Netlify**: `netlify deploy --prod --dir=dist`
-- **Heroku**: `heroku create visitalk-backend && git push heroku main`
+### CI/CD Pipeline
+- **CI** (`ci.yml`): Push/PR → `main`/`master` → Build Docker images (validate only)
+- **CD** (`cd.yml`): CI thành công → Push images lên GHCR → SSH deploy lên VPS
+- **VPS**: Nginx reverse proxy → containers (backend:5001, frontend:3080)
+- **Domain**: `visitalk.io.vn` (Cloudflare + Let's Encrypt SSL)
 
 ---
 
