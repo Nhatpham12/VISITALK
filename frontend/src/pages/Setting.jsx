@@ -97,7 +97,7 @@ const Setting = () => {
                 <div className="card-footer-report">
                   <Link to="/report">
                     <img
-                      src="/Assets/Images/Report.png"
+                      src="/Assets/Images/report.png"
                       className="report-bg"
                       alt=""
                     />
