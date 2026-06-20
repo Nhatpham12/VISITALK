@@ -10,9 +10,35 @@ import "../CSS/Translate.css";
 import { predictService } from "../services/api";
 
 const VSL_CLASSES = [
-  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-  "space", "del", "nothing",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+  "space",
+  "del",
+  "nothing",
 ];
 
 const STABLE_FRAMES = 12;
@@ -26,7 +52,6 @@ export default function Translate() {
   const rafRef = useRef(null);
   const pausedRef = useRef(false);
   const stableRef = useRef({ label: null, count: 0 });
-
 
   // ── States ──
   const [phase, setPhase] = useState("model"); // model | cam | ready | error
@@ -194,9 +219,8 @@ export default function Translate() {
 
           const wrist = landmarks[0];
           const mcp = landmarks[9];
-          const handSize = Math.sqrt(
-            (mcp.x - wrist.x) ** 2 + (mcp.y - wrist.y) ** 2
-          ) || 1;
+          const handSize =
+            Math.sqrt((mcp.x - wrist.x) ** 2 + (mcp.y - wrist.y) ** 2) || 1;
           const features = [];
           for (let i = 0; i < 21; i++) {
             features.push(landmarks[i].x);
@@ -625,9 +649,7 @@ export default function Translate() {
                   </div>
 
                   <div className="alphabet-block">
-                    <p className="section-label">
-                      Danh sách ký tự VSL hỗ trợ
-                    </p>
+                    <p className="section-label">Danh sách ký tự VSL hỗ trợ</p>
                     <div className="alphabet-grid">
                       {VSL_CLASSES.filter((c) => c.length === 1).map((c) => (
                         <div
