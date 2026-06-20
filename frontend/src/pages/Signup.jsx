@@ -20,6 +20,24 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const getErrorInfo = (message) => {
+    if (message.includes("Username đã tồn tại") || message.includes("Username hoặc email đã tồn tại"))
+      return { title: "Tên đăng nhập đã tồn tại", icon: "❌" };
+    if (message.includes("Email đã được sử dụng"))
+      return { title: "Email đã được sử dụng", icon: "❌" };
+    if (message.includes("Email không hợp lệ"))
+      return { title: "Email không hợp lệ", icon: "⚠️" };
+    if (message.includes("Tên đăng nhập không hợp lệ") || message.includes("chữ cái, số và dấu gạch dưới"))
+      return { title: "Tên đăng nhập không hợp lệ", icon: "⚠️" };
+    if (message.includes("Mật khẩu") && message.includes("8 ký tự"))
+      return { title: "Mật khẩu quá ngắn", icon: "⚠️" };
+    if (message.includes("Dữ liệu không hợp lệ"))
+      return { title: "Dữ liệu không hợp lệ", icon: "⚠️" };
+    if (message.includes("Lỗi kết nối database"))
+      return { title: "Lỗi kết nối", icon: "🔌" };
+    return { title: "Đăng ký thất bại", icon: "⚠️" };
+  };
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
@@ -157,15 +175,18 @@ const Signup = () => {
             </div>
           ))}
 
-          {error && (
-            <div className="signup-alert signup-alert--error">
-              <span className="signup-alert__icon">⚠️</span>
-              <div className="signup-alert__content">
-                <strong>Đăng ký thất bại</strong>
-                <p>{error}</p>
+          {error && (() => {
+            const errInfo = getErrorInfo(error);
+            return (
+              <div className="signup-alert signup-alert--error">
+                <span className="signup-alert__icon">{errInfo.icon}</span>
+                <div className="signup-alert__content">
+                  <strong>{errInfo.title}</strong>
+                  <p>{error}</p>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           <div className="sign-up-but">
             <button id="sign-up" type="submit" disabled={loading}>

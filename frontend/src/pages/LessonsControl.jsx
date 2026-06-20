@@ -30,6 +30,13 @@ const LessonsControl = () => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateError, setUpdateError] = useState("");
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterHasImage, setFilterHasImage] = useState("");
+  const [sortKey, setSortKey] = useState("");
+  const [sortDir, setSortDir] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+
   const fetchLessons = () => {
     setLoading(true);
     lessonService
@@ -76,6 +83,24 @@ const LessonsControl = () => {
     } catch (err) {
       alert(err.message);
     }
+  };
+
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+    setCurrentPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setFilterHasImage("");
+    setSortKey("");
+    setSortDir("asc");
+    setCurrentPage(1);
   };
 
   const handleSelectLesson = (lessonId) => {
@@ -303,73 +328,217 @@ const LessonsControl = () => {
         )}
 
         <div className="table-section">
+          <div className="toolbar-section">
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Tìm theo tên, ý nghĩa, nội dung..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
+            <div className="filter-bar">
+              <div className="filter-group">
+                <label>Hình ảnh:</label>
+                <select
+                  className="filter-select"
+                  value={filterHasImage}
+                  onChange={(e) => {
+                    setFilterHasImage(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="">Tất cả</option>
+                  <option value="yes">Có hình ảnh</option>
+                  <option value="no">Không có</option>
+                </select>
+              </div>
+              <button className="filter-reset-btn" onClick={handleResetFilters}>
+                Đặt lại
+              </button>
+            </div>
+          </div>
           <div className="table-wrapper">
             {loading && <p>Đang tải dữ liệu...</p>}
             {error && <p style={{ color: "red" }}>{error}</p>}
-            {!loading && !error && (
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Tiêu đề</th>
-                    <th>Hình ảnh</th>
-                    <th>Nội dung</th>
-                    <th>Ý nghĩa</th>
-                    <th>Hành động</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lessons.length === 0 ? (
+            {!loading && !error && (() => {
+              const term = searchTerm.toLowerCase();
+              let filteredLessons = lessons.filter((l) => {
+                const matchSearch =
+                  l.title?.toLowerCase().includes(term) ||
+                  l.meaning?.toLowerCase().includes(term) ||
+                  l.content?.toLowerCase().includes(term);
+                const matchImage =
+                  filterHasImage === "" ||
+                  (filterHasImage === "yes" && l.img_url) ||
+                  (filterHasImage === "no" && !l.img_url);
+                return matchSearch && matchImage;
+              });
+
+              if (sortKey) {
+                filteredLessons.sort((a, b) => {
+                  let valA = a[sortKey] ?? "";
+                  let valB = b[sortKey] ?? "";
+                  valA = String(valA).toLowerCase();
+                  valB = String(valB).toLowerCase();
+                  if (valA < valB) return sortDir === "asc" ? -1 : 1;
+                  if (valA > valB) return sortDir === "asc" ? 1 : -1;
+                  return 0;
+                });
+              }
+
+              const totalPages = Math.ceil(
+                filteredLessons.length / rowsPerPage,
+              );
+              const startIdx = (currentPage - 1) * rowsPerPage;
+              const paginatedLessons = filteredLessons.slice(
+                startIdx,
+                startIdx + rowsPerPage,
+              );
+
+              const sortIcon = (key) => {
+                if (sortKey !== key)
+                  return <span className="sort-icon">⇅</span>;
+                return (
+                  <span className="sort-icon active">
+                    {sortDir === "asc" ? "▲" : "▼"}
+                  </span>
+                );
+              };
+
+              return (
+                <>
+                <table className="user-table">
+                  <thead>
                     <tr>
-                      <td colSpan="6">Chưa có dữ liệu bài học</td>
+                      <th>ID</th>
+                      <th
+                        className="sortable"
+                        onClick={() => handleSort("title")}
+                      >
+                        Tiêu đề {sortIcon("title")}
+                      </th>
+                      <th>Hình ảnh</th>
+                      <th>Nội dung</th>
+                      <th
+                        className="sortable"
+                        onClick={() => handleSort("meaning")}
+                      >
+                        Ý nghĩa {sortIcon("meaning")}
+                      </th>
+                      <th>Hành động</th>
                     </tr>
-                  ) : (
-                    lessons.map((l) => (
-                      <tr className="user-row" key={l.les_id}>
-                        <td>{l.les_id.substring(0, 8)}...</td>
-                        <td>{l.title}</td>
-                        <td>
-                          {l.img_url ? (
-                            <img
-                              src={l.img_url}
-                              alt={l.title}
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                objectFit: "cover",
-                                borderRadius: "4px",
-                              }}
-                            />
-                          ) : (
-                            "Không có"
-                          )}
-                        </td>
-                        <td>
-                          <div
-                            className="content-cell"
-                            onMouseEnter={handleContentHover}
-                          >
-                            <span>{l.content || "-"}</span>
-                            {l.content && (
-                              <span className="tooltip-text">{l.content}</span>
-                            )}
-                          </div>
-                        </td>
-                        <td>{l.meaning || "-"}</td>
-                        <td>
-                          <button
-                            onClick={() => handleDelete(l.les_id)}
-                            style={{ color: "red", fontSize: "12px" }}
-                          >
-                            Xóa
-                          </button>
-                        </td>
+                  </thead>
+                  <tbody>
+                    {paginatedLessons.length === 0 ? (
+                      <tr>
+                        <td colSpan="6">{searchTerm || filterHasImage ? "Không tìm thấy kết quả" : "Chưa có dữ liệu bài học"}</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            )}
+                    ) : (
+                      paginatedLessons.map((l) => (
+                        <tr className="user-row" key={l.les_id}>
+                          <td>{l.les_id.substring(0, 8)}...</td>
+                          <td>{l.title}</td>
+                          <td>
+                            {l.img_url ? (
+                              <img
+                                src={l.img_url}
+                                alt={l.title}
+                                style={{
+                                  width: "50px",
+                                  height: "50px",
+                                  objectFit: "cover",
+                                  borderRadius: "4px",
+                                }}
+                              />
+                            ) : (
+                              "Không có"
+                            )}
+                          </td>
+                          <td>
+                            <div
+                              className="content-cell"
+                              onMouseEnter={handleContentHover}
+                            >
+                              <span>{l.content || "-"}</span>
+                              {l.content && (
+                                <span className="tooltip-text">{l.content}</span>
+                              )}
+                            </div>
+                          </td>
+                          <td>{l.meaning || "-"}</td>
+                          <td>
+                            <button
+                              onClick={() => handleDelete(l.les_id)}
+                              style={{ color: "red", fontSize: "12px" }}
+                            >
+                              Xóa
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+                {filteredLessons.length > rowsPerPage && (
+                  <div className="pagination">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.max(1, p - 1))
+                      }
+                    >
+                      ←
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter((p) => {
+                        if (totalPages <= 5) return true;
+                        if (p === 1 || p === totalPages) return true;
+                        if (Math.abs(p - currentPage) <= 1) return true;
+                        return false;
+                      })
+                      .reduce((acc, p, idx, arr) => {
+                        if (idx > 0 && p - arr[idx - 1] > 1)
+                          acc.push("...");
+                        acc.push(p);
+                        return acc;
+                      }, [])
+                      .map((p, idx) =>
+                        p === "..." ? (
+                          <span key={`ellipsis-${idx}`} className="page-info">
+                            ...
+                          </span>
+                        ) : (
+                          <button
+                            key={p}
+                            className={
+                              currentPage === p ? "active-page" : ""
+                            }
+                            onClick={() => setCurrentPage(p)}
+                          >
+                            {p}
+                          </button>
+                        ),
+                      )}
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
+                    >
+                      →
+                    </button>
+                    <span className="page-info">
+                      {filteredLessons.length} kết quả
+                    </span>
+                  </div>
+                )}
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>

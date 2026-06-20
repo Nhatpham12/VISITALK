@@ -62,6 +62,170 @@ body {
   min-height: auto;
 }
 
+.admin-page .toolbar-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 0;
+}
+
+.admin-page .search-bar {
+  display: flex;
+  align-items: center;
+}
+
+.admin-page .search-bar input {
+  width: 280px;
+  padding: 10px 16px;
+  border: 2px solid #1a2a4a;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.admin-page .search-bar input:focus {
+  border-color: #2d4a80;
+}
+
+.admin-page .search-bar input::placeholder {
+  color: #aab5c8;
+}
+
+.admin-page .filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-page .filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-page .filter-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2a4a;
+  white-space: nowrap;
+}
+
+.admin-page .filter-select {
+  padding: 8px 12px;
+  border: 2px solid #1a2a4a;
+  border-radius: 10px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+  color: #1a2a4a;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.admin-page .filter-select:focus {
+  border-color: #2d4a80;
+}
+
+.admin-page .filter-date {
+  padding: 8px 12px;
+  border: 2px solid #1a2a4a;
+  border-radius: 10px;
+  font-size: 13px;
+  outline: none;
+  color: #1a2a4a;
+  transition: border-color 0.15s;
+}
+
+.admin-page .filter-date:focus {
+  border-color: #2d4a80;
+}
+
+.admin-page .filter-reset-btn {
+  padding: 8px 14px;
+  border: 2px solid #e0e8f5;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #e0e8f5;
+  color: #1a2a4a;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.admin-page .filter-reset-btn:hover {
+  background: #1a2a4a;
+  color: #fff;
+  border-color: #1a2a4a;
+}
+
+.admin-page .user-table thead th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: background 0.15s;
+}
+
+.admin-page .user-table thead th.sortable:hover {
+  background-color: #2d4a80;
+}
+
+.admin-page .sort-icon {
+  margin-left: 4px;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.admin-page .sort-icon.active {
+  opacity: 1;
+}
+
+.admin-page .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px;
+}
+
+.admin-page .pagination button {
+  padding: 6px 14px;
+  border: 2px solid #1a2a4a;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fff;
+  color: #1a2a4a;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.admin-page .pagination button:hover:not(:disabled) {
+  background: #1a2a4a;
+  color: #fff;
+}
+
+.admin-page .pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-page .pagination button.active-page {
+  background: #1a2a4a;
+  color: #fff;
+}
+
+.admin-page .pagination .page-info {
+  font-size: 13px;
+  color: #1a2a4a;
+  font-weight: 600;
+  margin: 0 8px;
+}
+
 .admin-page .table-wrapper {
   border: 2.5px solid #1a2a4a;
   border-radius: 18px;

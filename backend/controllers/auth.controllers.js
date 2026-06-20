@@ -35,6 +35,16 @@ const register = (req, res) => {
       users.insert(data, (err, insertId) => {
         if (err) {
           console.error(`[REGISTER] Lỗi insert user: ${err.message}, username=${username}`);
+          const msg = err.message || "";
+          if (msg.includes("Duplicate entry")) {
+            if (msg.includes("username")) return res.status(400).json({ message: "Username đã tồn tại" });
+            if (msg.includes("email")) return res.status(400).json({ message: "Email đã được sử dụng" });
+            return res.status(400).json({ message: "Username hoặc email đã tồn tại" });
+          }
+          if (msg.includes("chk_email")) return res.status(400).json({ message: "Email không hợp lệ" });
+          if (msg.includes("chk_username")) return res.status(400).json({ message: "Tên đăng nhập không hợp lệ" });
+          if (msg.includes("check") || msg.includes("Check")) return res.status(400).json({ message: "Dữ liệu không hợp lệ" });
+          if (msg.includes("connect") || msg.includes("ECONNREFUSED")) return res.status(500).json({ message: "Lỗi kết nối database" });
           return res.status(500).json({ message: "Lỗi tạo tài khoản" });
         }
         console.log(`[REGISTER] Đăng ký thành công: username=${username}, id=${insertId}`);
