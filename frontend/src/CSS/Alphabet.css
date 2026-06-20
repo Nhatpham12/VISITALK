@@ -73,6 +73,11 @@ body {
   box-shadow: 0 8px 24px rgba(26, 39, 68, 0.15);
 }
 
+.alphabet-card--selected {
+  background: #b8d0ea;
+  box-shadow: 0 8px 24px rgba(26, 39, 68, 0.2);
+}
+
 /* ── Tags ── */
 .alphabet-card__tags {
   display: flex;
@@ -141,6 +146,12 @@ body {
   color: #1a2a4a;
   letter-spacing: -1px;
   line-height: 1;
+}
+
+.alphabet-card__letter--dau {
+  font-size: 32px;
+  color: #6b4c2a;
+  letter-spacing: 0;
 }
 
 /* ── Description ── */

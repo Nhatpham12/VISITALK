@@ -26,11 +26,16 @@ const Learning = () => {
   const subjects = lessons.filter(
     (l) =>
       !l.title.toLowerCase().includes("chữ") &&
-      !l.title.toLowerCase().includes("số"),
+      !l.title.toLowerCase().includes("số") &&
+      !l.title.toLowerCase().includes("dấu"),
   );
 
   const alphabet = lessons
-    .filter((l) => l.title.toLowerCase().includes("chữ"))
+    .filter(
+      (l) =>
+        l.title.toLowerCase().includes("chữ") ||
+        l.title.toLowerCase().includes("dấu"),
+    )
     .sort((a, b) => a.meaning.localeCompare(b.meaning));
 
   const numbers = lessons
