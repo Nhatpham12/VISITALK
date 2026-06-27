@@ -28,6 +28,8 @@ import Numbers from "./pages/Numbers";
 import Subjects from "./pages/Subjects";
 import Update from "./pages/Update";
 import LessonsControl from "./pages/LessonsControl";
+import Flashcard from "./pages/Flashcard";
+import Quiz from "./pages/Quiz";
 
 // Guard ngược: đã login thì không vào /login /signup /welcome được nữa
 function PublicOnlyRoute({ children }) {
@@ -159,6 +161,38 @@ function App() {
             element={
               <ProtectedRoute>
                 <Subjects />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning/flashcard"
+            element={
+              <ProtectedRoute>
+                <Flashcard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning/flashcard/:category"
+            element={
+              <ProtectedRoute>
+                <Flashcard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning/quiz"
+            element={
+              <ProtectedRoute>
+                <Quiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/learning/quiz/:category"
+            element={
+              <ProtectedRoute>
+                <Quiz />
               </ProtectedRoute>
             }
           />

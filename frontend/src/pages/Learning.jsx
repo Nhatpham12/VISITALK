@@ -65,49 +65,71 @@ const Learning = () => {
       )}
 
       {!loading && !error && (
-        <div className="dictionary-table">
-          <div className="table-header">
-            <div className="col">Chủ đề</div>
-            <div className="col">
-              <Link to="/learning/alphabet">A-Z</Link>
+        <>
+          <div className="dictionary-table">
+            <div className="table-header">
+              <div className="col">Chủ đề</div>
+              <div className="col">
+                <Link to="/learning/alphabet">A-Z</Link>
+              </div>
+              <div className="col">
+                <Link to="/learning/numbers">Số tự nhiên</Link>
+              </div>
             </div>
-            <div className="col">
-              <Link to="/learning/numbers">Số tự nhiên</Link>
+
+            <div className="table-body">
+              <div className="col sbj-col">
+                <div className="sbj-grid">
+                  {subjects.map((s) => (
+                    <Link to="/learning/subjects" key={s.les_id}>
+                      <span>{s.meaning || s.title}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="col az-col">
+                <div className="az-grid">
+                  {alphabet.map((a) => (
+                    <Link to="/learning/alphabet" key={a.les_id}>
+                      <span>{a.meaning.replace("Chữ ", "")}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="col num-col">
+                <div className="num-grid">
+                  {numbers.map((n) => (
+                    <Link to="/learning/numbers" key={n.les_id}>
+                      <span>{n.meaning}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="table-body">
-            <div className="col sbj-col">
-              <div className="sbj-grid">
-                {subjects.map((s) => (
-                  <Link to="/learning/subjects" key={s.les_id}>
-                    <span>{s.meaning || s.title}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className="col az-col">
-              <div className="az-grid">
-                {alphabet.map((a) => (
-                  <Link to="/learning/alphabet" key={a.les_id}>
-                    <span>{a.meaning.replace("Chữ ", "")}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className="col num-col">
-              <div className="num-grid">
-                {numbers.map((n) => (
-                  <Link to="/learning/numbers" key={n.les_id}>
-                    <span>{n.meaning}</span>
-                  </Link>
-                ))}
-              </div>
+          <div className="review-section">
+            <h2 className="review-title">ÔN TẬP & THI</h2>
+            <div className="review-cards">
+              <Link to="/learning/flashcard" className="review-card">
+                <div className="review-card__icon">&#128179;</div>
+                <h3 className="review-card__title">Flashcard</h3>
+                <p className="review-card__desc">
+                  Ôn tập từ vựng với thẻ ghi nhớ. Lật thẻ để xem đáp án.
+                </p>
+              </Link>
+              <Link to="/learning/quiz" className="review-card">
+                <div className="review-card__icon">&#9997;</div>
+                <h3 className="review-card__title">Trắc nghiệm</h3>
+                <p className="review-card__desc">
+                  Kiểm tra kiến thức với bài thi chọn hình hoặc nhập chữ.
+                </p>
+              </Link>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       <Footer />
